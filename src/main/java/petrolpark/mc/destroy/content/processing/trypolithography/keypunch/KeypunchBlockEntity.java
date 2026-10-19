@@ -4,9 +4,9 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 
-import com.petrolpark.compat.create.block.entity.behaviour.AbstractRememberPlacerBehaviour;
-import com.petrolpark.compat.create.item.directional.DirectionalTransportedItemStack;
-import com.petrolpark.compat.create.item.directional.IDirectionalOnBelt;
+import petrolpark.mc.library.compat.create.core.world.block.entity.behaviour.AbstractRememberPlacerBehaviour;
+import petrolpark.mc.library.compat.create.core.world.item.transported.DirectionalTransportedItemStack;
+import petrolpark.mc.library.compat.create.core.world.item.transported.IDirectionalBeltItem;
 import petrolpark.mc.destroy.Destroy;
 import petrolpark.mc.destroy.DestroyAdvancementTrigger;
 import petrolpark.mc.destroy.DestroyMessages;
@@ -15,7 +15,7 @@ import petrolpark.mc.destroy.content.processing.trypolithography.CircuitPatternI
 import petrolpark.mc.destroy.content.processing.trypolithography.CircuitPuncherHandler;
 import petrolpark.mc.destroy.content.processing.trypolithography.keypunch.CircuitPunchingBehaviour.CircuitPunchingSpecifics;
 import petrolpark.mc.destroy.core.data.advancement.DestroyAdvancementBehaviour;
-import com.petrolpark.util.BinaryMatrix4x4;
+import petrolpark.mc.library.util.BinaryMatrix4x4;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntity;
 import com.simibubi.create.content.kinetics.belt.transport.TransportedItemStack;
 import com.simibubi.create.foundation.blockEntity.behaviour.BehaviourType;

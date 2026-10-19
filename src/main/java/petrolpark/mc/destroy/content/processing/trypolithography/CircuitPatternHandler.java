@@ -16,7 +16,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonSyntaxException;
 import petrolpark.mc.destroy.Destroy;
 import petrolpark.mc.destroy.DestroyMessages;
-import com.petrolpark.util.BinaryMatrix4x4;
+import petrolpark.mc.library.util.BinaryMatrix4x4;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;

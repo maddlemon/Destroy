@@ -31,7 +31,7 @@ public class SaturatedCarbonHydrogenation extends ElectrophilicAddition {
 
     @Override
     public void transform(ReactionBuilder builder) {
-        builder.addSimpleItemTagCatalyst(AllTags.forgeItemTag("dusts/nickel"), 1f);
+        builder.addSimpleItemTagCatalyst(AllTags.commonItemTag("dusts/nickel"), 1f);
     };
     
 };

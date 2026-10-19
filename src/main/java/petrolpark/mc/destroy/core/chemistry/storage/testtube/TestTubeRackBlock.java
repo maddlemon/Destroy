@@ -6,7 +6,7 @@ import petrolpark.mc.destroy.DestroyBlockEntityTypes;
 import petrolpark.mc.destroy.DestroyVoxelShapes;
 import petrolpark.mc.destroy.core.chemistry.storage.IMixtureStorageItem;
 import petrolpark.mc.destroy.core.chemistry.storage.ISpecialMixtureContainerBlock;
-import com.petrolpark.util.RayHelper;
+import petrolpark.mc.library.util.RayHelper;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
 import com.simibubi.create.foundation.block.IBE;
 import com.simibubi.create.foundation.item.ItemHelper;

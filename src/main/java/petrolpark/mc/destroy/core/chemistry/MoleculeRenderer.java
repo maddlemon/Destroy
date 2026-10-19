@@ -22,7 +22,7 @@ import petrolpark.mc.destroy.chemistry.legacy.LegacySpecies;
 import petrolpark.mc.destroy.chemistry.serializer.Branch;
 import petrolpark.mc.destroy.chemistry.serializer.Edge;
 import petrolpark.mc.destroy.chemistry.serializer.Node;
-import com.petrolpark.util.MathsHelper;
+import petrolpark.mc.library.util.MathsHelper;
 
 import dev.engine_room.flywheel.lib.transform.TransformStack;
 import net.createmod.catnip.animation.AnimationTickHolder;

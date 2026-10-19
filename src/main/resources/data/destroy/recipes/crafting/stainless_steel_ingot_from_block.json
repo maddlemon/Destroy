@@ -2,7 +2,7 @@
     "type": "minecraft:crafting_shapeless",
     "ingredients": [
       {
-        "tag": "forge:storage_blocks/stainless_steel"
+        "tag": "c:storage_blocks/stainless_steel"
       }
     ],
     "result": {

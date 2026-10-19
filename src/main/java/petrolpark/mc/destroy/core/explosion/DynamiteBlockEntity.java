@@ -1,6 +1,6 @@
 package petrolpark.mc.destroy.core.explosion;
 
-import static com.petrolpark.compat.create.CreateClient.OUTLINER;
+import static petrolpark.mc.library.compat.create.PetrolparkCreateClient.OUTLINER;
 
 import java.util.Arrays;
 import java.util.List;

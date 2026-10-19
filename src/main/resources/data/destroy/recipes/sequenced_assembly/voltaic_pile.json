@@ -31,7 +31,7 @@
             "item": "destroy:unfinished_voltaic_pile"
           },
           {
-            "tag": "forge:plates/copper"
+            "tag": "c:plates/copper"
           }
         ],
         "results": [
@@ -64,7 +64,7 @@
             "item": "destroy:unfinished_voltaic_pile"
           },
           {
-            "tag": "forge:plates/zinc"
+            "tag": "c:plates/zinc"
           }
         ],
         "results": [

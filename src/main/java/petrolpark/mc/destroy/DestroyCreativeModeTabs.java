@@ -2,9 +2,9 @@ package petrolpark.mc.destroy;
 
 import java.util.function.Supplier;
 
-import com.petrolpark.client.creativemodetab.CustomTab;
-import com.petrolpark.client.creativemodetab.CustomTab.ITabEntry;
-import com.petrolpark.compat.CompatMods;
+import petrolpark.mc.library.core.world.item.creativeModeTab.CustomTab;
+import petrolpark.mc.library.core.world.item.creativeModeTab.CustomTab.ITabEntry;
+import petrolpark.mc.library.compat.Mods;
 import petrolpark.mc.destroy.config.DestroySubstancesConfigs;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.AllCreativeModeTabs;
@@ -22,12 +22,12 @@ import net.minecraft.world.level.block.Blocks;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
-import net.neoforged.neoforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredHolder;
 
 public class DestroyCreativeModeTabs {
     public static final DeferredRegister<CreativeModeTab> TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, Destroy.MOD_ID);
 
-	public static final RegistryObject<CreativeModeTab> MAIN_TAB = TABS.register(
+	public static final DeferredHolder<CreativeModeTab, CreativeModeTab> MAIN_TAB = TABS.register(
 		"base",
 		() -> new CustomTab.Builder(CreativeModeTab.Row.TOP, 0)
 			.add(
@@ -112,7 +112,7 @@ public class DestroyCreativeModeTabs {
 	};
 
 	public static final ITabEntry.Item i(ResourceLocation itemId) {
-		return new ITabEntry.ConditionalItem(() -> new ItemStack(NeoForgeRegistries.ITEMS.getDelegate(itemId).get().value()), () -> CompatMods.BIG_CANNONS.isLoaded() && NeoForgeRegistries.ITEMS.containsKey(itemId));
+		return new ITabEntry.ConditionalItem(() -> new ItemStack(NeoForgeRegistries.ITEMS.getDelegate(itemId).get().value()), () -> Mods.BIG_CANNONS.isLoaded() && NeoForgeRegistries.ITEMS.containsKey(itemId));
 	};
 
 	public static final ITabEntry.ConditionalItem c(ItemProviderEntry<?> item, Supplier<Boolean> condition) {

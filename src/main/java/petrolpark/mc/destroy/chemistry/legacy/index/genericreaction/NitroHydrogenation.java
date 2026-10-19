@@ -37,7 +37,7 @@ public class NitroHydrogenation extends SingleGroupGenericReaction<NitroGroup> {
             .addReactant(DestroyMolecules.HYDROGEN, 3)
             .addProduct(DestroyMolecules.WATER, 2)
             .addProduct(moleculeBuilder().structure(structure).build())
-            .addSimpleItemTagCatalyst(AllTags.forgeItemTag("dusts/palladium"), 1.0f)
+            .addSimpleItemTagCatalyst(AllTags.commonItemTag("dusts/palladium"), 1.0f)
             .build();
     };
     

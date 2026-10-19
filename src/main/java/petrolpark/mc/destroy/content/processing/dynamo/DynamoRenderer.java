@@ -1,6 +1,6 @@
 package petrolpark.mc.destroy.content.processing.dynamo;
 
-import static com.petrolpark.compat.create.CreateClient.OUTLINER;
+import static petrolpark.mc.library.compat.create.PetrolparkCreateClient.OUTLINER;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import petrolpark.mc.destroy.client.DestroyPartials;

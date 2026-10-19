@@ -2,7 +2,7 @@ package petrolpark.mc.destroy.content.processing.trypolithography;
 
 import petrolpark.mc.destroy.DestroyItems;
 import petrolpark.mc.destroy.content.processing.trypolithography.keypunch.KeypunchBlockEntity;
-import com.petrolpark.util.BinaryMatrix4x4;
+import petrolpark.mc.library.util.BinaryMatrix4x4;
 import com.simibubi.create.content.logistics.depot.EjectorBlockEntity;
 import com.simibubi.create.foundation.ponder.CreateSceneBuilder;
 import com.simibubi.create.foundation.ponder.element.BeltItemElement;

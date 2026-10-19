@@ -3,6 +3,6 @@
     "conductivity": 50,
     "transparent": false,
     "blocks": [
-        "#forge:storage_blocks/iron"
+        "#c:storage_blocks/iron"
     ]
 }

@@ -10,7 +10,7 @@
         "tag": "destroy:plastics/rigid"
       },
       "B": {
-        "tag": "forge:dyes/blue"
+        "tag": "c:dyes/blue"
       },
       "S": {
         "item": "minecraft:wooden_shovel"

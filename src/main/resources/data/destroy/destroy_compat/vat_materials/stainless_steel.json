@@ -3,6 +3,6 @@
     "conductivity": 35,
     "transparent": false,
     "blocks": [
-        "#forge:storage_blocks/stainless_steel"
+        "#c:storage_blocks/stainless_steel"
     ]
 }

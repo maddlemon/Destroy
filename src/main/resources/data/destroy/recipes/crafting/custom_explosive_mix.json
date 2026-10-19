@@ -10,7 +10,7 @@
         "tag": "destroy:plastics"
       },
       "S": {
-        "tag": "forge:string"
+        "tag": "c:strings"
       }
     },
     "result": {

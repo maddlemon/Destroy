@@ -8,7 +8,7 @@ import javax.annotation.Nullable;
 import com.simibubi.create.api.equipment.goggles.IHaveGoggleInformation;
 import org.jetbrains.annotations.NotNull;
 
-import com.petrolpark.compat.create.block.entity.behaviour.AbstractRememberPlacerBehaviour;
+import petrolpark.mc.library.compat.create.core.world.block.entity.behaviour.AbstractRememberPlacerBehaviour;
 import petrolpark.mc.destroy.DestroyAdvancementTrigger;
 import petrolpark.mc.destroy.DestroyBlocks;
 import petrolpark.mc.destroy.DestroyFluids;

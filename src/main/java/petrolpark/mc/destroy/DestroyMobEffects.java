@@ -17,13 +17,13 @@ import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
-import net.neoforged.neoforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredHolder;
 
 public class DestroyMobEffects {
 
     public static final DeferredRegister<MobEffect> MOB_EFFECTS = DeferredRegister.create(NeoForgeRegistries.MOB_EFFECTS, Destroy.MOD_ID);
 
-    public static final RegistryObject<MobEffect> 
+    public static final DeferredHolder<MobEffect, MobEffect> 
 
     CANCER = MOB_EFFECTS.register("cancer",
         () -> new UncurableMobEffect(MobEffectCategory.NEUTRAL, 0)

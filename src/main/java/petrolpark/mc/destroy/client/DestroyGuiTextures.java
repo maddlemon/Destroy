@@ -9,7 +9,7 @@ import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
-import com.petrolpark.client.rendering.IGuiTexture;
+import petrolpark.mc.library.core.client.rendering.IGuiTexture;
 import petrolpark.mc.destroy.Destroy;
 import petrolpark.mc.destroy.MoveToPetrolparkLibrary;
 

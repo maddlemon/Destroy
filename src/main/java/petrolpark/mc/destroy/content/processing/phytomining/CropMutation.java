@@ -116,11 +116,11 @@ public class CropMutation {
 
     public BlockState getResultantBlockUnder(BlockState ore) {
         if (!this.successful || !this.oreSpecific) return ore;
-        if (ore.is(AllTags.forgeBlockTag("ores_in_ground/deepslate"))) {
+        if (ore.is(AllTags.commonBlockTag("ores_in_ground/deepslate"))) {
             return Blocks.DEEPSLATE.defaultBlockState();
-        } else if (ore.is(AllTags.forgeBlockTag("ores_in_ground/netherrack"))) {
+        } else if (ore.is(AllTags.commonBlockTag("ores_in_ground/netherrack"))) {
             return Blocks.NETHERRACK.defaultBlockState();
-        } else if (ore.is(AllTags.forgeBlockTag("ores_in_ground/end_stone"))) {
+        } else if (ore.is(AllTags.commonBlockTag("ores_in_ground/end_stone"))) {
             return Blocks.END_STONE.defaultBlockState();
         } else {
             return Blocks.STONE.defaultBlockState();

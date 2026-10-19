@@ -6,13 +6,13 @@
     ],
     "key": {
       "B": {
-        "tag": "forge:storage_blocks/brass"
+        "tag": "c:storage_blocks/brass"
       },
       "S": {
         "item": "create:shaft"
       },
       "P": {
-        "tag": "forge:plates/brass"
+        "tag": "c:plates/brass"
       },
       "L": {
         "item": "create:large_cogwheel"

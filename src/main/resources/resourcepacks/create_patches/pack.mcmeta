@@ -1,6 +1,7 @@
 {
   "pack": {
-    "pack_format": 15,
+    "pack_format": 48,
+    "supported_formats": [0, 2147483647],
     "description": "Slightly modifies some Create resources"
   }
 }

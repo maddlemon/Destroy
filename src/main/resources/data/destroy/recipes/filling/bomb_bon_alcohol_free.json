@@ -2,7 +2,7 @@
     "type": "create:filling",
     "conditions": [
       {
-        "type": "forge:not",
+        "type": "neoforge:not",
         "value": {
           "type": "petrolpark:config_boolean",
           "mod": "destroy",
@@ -15,7 +15,7 @@
         "item": "destroy:empty_bomb_bon"
       },
       {
-        "fluidTag": "forge:chocolate",
+        "fluidTag": "c:chocolate",
         "amount": 200
       }
     ],

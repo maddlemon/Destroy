@@ -2,26 +2,26 @@
     "type": "create:mixing",
     "ingredients": [
       {
-        "fluidTag": "forge:urine",
+        "fluidTag": "destroy:urine",
         "amount": 250
       },
       {
-        "tag": "forge:ingots/lead"
+        "tag": "c:ingots/lead"
       },
       {
-        "tag": "forge:ingots/lead"
+        "tag": "c:ingots/lead"
       },
       {
-        "tag": "forge:dyes/black"
+        "tag": "c:dyes/black"
       },
       {
-        "tag": "forge:dyes/white"
+        "tag": "c:dyes/white"
       },
       {
-        "tag": "forge:dyes/yellow"
+        "tag": "c:dyes/yellow"
       },
       {
-        "tag": "forge:dyes/red"
+        "tag": "c:dyes/red"
       }
     ],
     "results": [

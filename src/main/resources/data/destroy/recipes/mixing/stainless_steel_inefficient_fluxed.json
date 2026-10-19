@@ -2,22 +2,22 @@
     "type": "create:mixing",
     "ingredients": [
       {
-        "tag": "forge:nuggets/chromium"
+        "tag": "c:nuggets/chromium"
       },
       {
-        "tag": "forge:nuggets/chromium"
+        "tag": "c:nuggets/chromium"
       },
       {
-        "tag": "forge:ingots/nickel"
+        "tag": "c:ingots/nickel"
       },
       {
         "item": "minecraft:charcoal"
       },
       {
-        "tag": "forge:ingots/iron"
+        "tag": "c:ingots/iron"
       },
       {
-        "tag": "forge:ingots/iron"
+        "tag": "c:ingots/iron"
       },
       {
         "tag": "destroy:fluxes"

@@ -2,7 +2,7 @@
     "type": "create:crushing",
     "ingredients": [
       {
-        "tag": "forge:plates/iron"
+        "tag": "c:plates/iron"
       }
     ],
     "results": [

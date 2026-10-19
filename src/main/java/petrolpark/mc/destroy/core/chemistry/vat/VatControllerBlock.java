@@ -2,7 +2,7 @@ package petrolpark.mc.destroy.core.chemistry.vat;
 
 import javax.annotation.Nullable;
 
-import com.petrolpark.compat.create.block.entity.behaviour.AbstractRememberPlacerBehaviour;
+import petrolpark.mc.library.compat.create.core.world.block.entity.behaviour.AbstractRememberPlacerBehaviour;
 import petrolpark.mc.destroy.DestroyBlockEntityTypes;
 import petrolpark.mc.destroy.core.chemistry.storage.IMixtureStorageItem;
 import petrolpark.mc.destroy.core.chemistry.storage.ISpecialMixtureContainerBlock;

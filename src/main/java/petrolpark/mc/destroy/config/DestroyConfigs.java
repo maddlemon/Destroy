@@ -16,14 +16,14 @@ import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.config.ModConfigEvent;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
-@EventBusSubscriber
+@EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD)
 public class DestroyConfigs {
     
     private static final Map<ModConfig.Type, ConfigBase> CONFIGS = new EnumMap<>(ModConfig.Type.class);
 
 	private static DestroyClientConfigs client;
 	private static DestroyCommonConfigs common;
-	private static DestroyServerConfigs server;
+	private static DestroyWorldConfigs server;
 
 	public static DestroyClientConfigs client() {
 		return client;
@@ -33,7 +33,7 @@ public class DestroyConfigs {
 		return common;
 	};
 
-	public static DestroyServerConfigs server() {
+	public static DestroyWorldConfigs server() {
 		return server;
 	};
 
@@ -57,7 +57,7 @@ public class DestroyConfigs {
 	public static void register(ModLoadingContext context, ModContainer container) {
 		client = register(DestroyClientConfigs::new, ModConfig.Type.CLIENT);
 		common = register(DestroyCommonConfigs::new, ModConfig.Type.COMMON);
-		server = register(DestroyServerConfigs::new, ModConfig.Type.SERVER);
+		server = register(DestroyWorldConfigs::new, ModConfig.Type.SERVER);
 
 		for (Entry<ModConfig.Type, ConfigBase> pair : CONFIGS.entrySet()) container.registerConfig(pair.getKey(), pair.getValue().specification);
 

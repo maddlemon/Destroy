@@ -1,6 +1,6 @@
 package petrolpark.mc.destroy.content.oil.pumpjack;
 
-import static com.petrolpark.compat.create.CreateClient.OUTLINER;
+import static petrolpark.mc.library.compat.create.PetrolparkCreateClient.OUTLINER;
 
 import java.util.Set;
 

@@ -8,7 +8,7 @@ import com.mojang.datafixers.util.Either;
 import com.petrolpark.PetrolparkItemDisplayContexts;
 import petrolpark.mc.destroy.Destroy;
 import petrolpark.mc.destroy.client.DummyBaker;
-import com.petrolpark.util.BinaryMatrix4x4;
+import petrolpark.mc.library.util.BinaryMatrix4x4;
 import com.simibubi.create.foundation.item.render.CustomRenderedItemModel;
 import com.simibubi.create.foundation.item.render.CustomRenderedItemModelRenderer;
 import com.simibubi.create.foundation.item.render.PartialItemModelRenderer;

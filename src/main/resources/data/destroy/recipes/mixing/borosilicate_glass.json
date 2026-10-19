@@ -2,19 +2,19 @@
     "type": "create:mixing",
     "ingredients": [
       {
-        "tag": "forge:dusts/silica"
+        "tag": "c:dusts/silica"
       },
       {
-        "tag": "forge:dusts/silica"
+        "tag": "c:dusts/silica"
       },
       {
-        "tag": "forge:dusts/silica"
+        "tag": "c:dusts/silica"
       },
       {
-        "tag": "forge:dusts/lime"
+        "tag": "c:dusts/lime"
       },
       {
-        "tag": "forge:raw_materials/borax"
+        "tag": "c:raw_materials/borax"
       }
     ],
     "results": [

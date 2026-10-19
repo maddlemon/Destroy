@@ -63,19 +63,19 @@ public class DestroyFluids {
     public static final FluidEntry<VirtualFluid>
     
     URINE = virtualFluid("urine")
-        .tag(AllTags.forgeFluidTag("urine"))
+        .tag(Fluids.URINE.tag)
         .register(),
     APPLE_JUICE = coloredWaterFluid("apple_juice", 0xC0F2DB46)
-        .tag(AllTags.forgeFluidTag("apple_juice"))
+        .tag(Fluids.APPLE_JUICE.tag)
         .register(),
     CHORUS_WINE = coloredSwirlingFluid("chorus_wine", 0x808000C0)
         .register(),
     CREAM = virtualFluid("cream")
         .register(),
     CRUDE_OIL = virtualFluid("crude_oil")
-        .tag(AllTags.forgeFluidTag("crude_oil"), Fluids.AMPLIFIES_SMOG.tag)
+        .tag(Fluids.CRUDE_OIL.tag, Fluids.AMPLIFIES_SMOG.tag)
         .bucket()
-        .tag(AllTags.forgeItemTag("buckets/crude_oil"))
+        .tag(AllTags.commonItemTag("buckets/crude_oil"))
         .build()
         .register(),
     MOLTEN_CINNABAR = virtualFluid("molten_cinnabar")

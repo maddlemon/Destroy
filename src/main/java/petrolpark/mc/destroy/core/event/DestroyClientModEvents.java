@@ -1,6 +1,6 @@
 package petrolpark.mc.destroy.core.event;
 
-import com.petrolpark.client.rendering.item.decorator.DecayingItemDecorator;
+import petrolpark.mc.library.core.world.item.decay.DecayingItemDecorator;
 import petrolpark.mc.destroy.Destroy;
 import petrolpark.mc.destroy.DestroyBlocks;
 import petrolpark.mc.destroy.DestroyItems;

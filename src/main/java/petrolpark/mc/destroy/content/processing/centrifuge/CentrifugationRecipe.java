@@ -6,7 +6,7 @@ import java.util.HashSet;
 import com.ibm.icu.impl.locale.XCldrStub.ImmutableSet;
 import petrolpark.mc.destroy.DestroyRecipeTypes;
 import petrolpark.mc.destroy.core.recipe.SingleFluidRecipe;
-import com.petrolpark.recipe.advancedprocessing.IBiomeSpecificProcessingRecipe;
+import petrolpark.mc.library.core.data.recipe.IBiomeSpecificRecipe;
 import com.simibubi.create.content.processing.recipe.ProcessingRecipeBuilder.ProcessingRecipeParams;
 
 import net.neoforged.neoforge.fluids.FluidStack;

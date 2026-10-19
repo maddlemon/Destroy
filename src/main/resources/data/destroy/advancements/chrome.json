@@ -6,7 +6,7 @@
         "conditions": {
             "items": [
                 {
-                  "tag": "forge:ingots/chromium"
+                  "tag": "c:ingots/chromium"
                 }
             ]
         }
@@ -16,7 +16,7 @@
         "conditions": {
           "items": [
             {
-              "tag": "forge:nuggets/chromium"
+              "tag": "c:nuggets/chromium"
             }
           ]
         }

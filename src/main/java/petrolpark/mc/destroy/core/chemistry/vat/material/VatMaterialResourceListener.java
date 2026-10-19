@@ -9,9 +9,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import petrolpark.mc.destroy.DestroyMessages;
-import com.petrolpark.recipe.ingredient.BlockIngredient;
-import com.petrolpark.recipe.ingredient.BlockIngredient.BlockTagIngredient;
-import com.petrolpark.recipe.ingredient.BlockIngredient.SingleBlockIngredient;
+import petrolpark.mc.library.core.data.recipe.ingredient.BlockIngredient;
+import petrolpark.mc.library.core.data.recipe.ingredient.BlockIngredient.BlockTagIngredient;
+import petrolpark.mc.library.core.data.recipe.ingredient.BlockIngredient.SingleBlockIngredient;
 
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;

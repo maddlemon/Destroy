@@ -3,11 +3,9 @@ package petrolpark.mc.destroy.core.explosion.mixedexplosive;
 import java.util.List;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.petrolpark.compat.CompatMods;
 import petrolpark.mc.destroy.client.DestroyGuiTextures;
 import petrolpark.mc.destroy.client.DestroyIcons;
 import petrolpark.mc.destroy.client.DestroyLang;
-import petrolpark.mc.destroy.compat.jei.category.MixableExplosiveCategory;
 import com.simibubi.create.foundation.gui.AllIcons;
 import com.simibubi.create.foundation.gui.menu.AbstractSimiContainerScreen;
 import com.simibubi.create.foundation.gui.widget.IconButton;
@@ -27,7 +25,7 @@ public class MixedExplosiveScreen extends AbstractSimiContainerScreen<MixedExplo
     private final IMixedExplosiveBlockEntity be;
     private ExplosiveProperties explosiveProperties = null;
 
-    protected IconButton viewJeiButton, confirmButton;
+    protected IconButton confirmButton;
 
     public MixedExplosiveScreen(MixedExplosiveMenu container, Inventory inv, Component title) {
         super(container, inv, title);
@@ -46,12 +44,6 @@ public class MixedExplosiveScreen extends AbstractSimiContainerScreen<MixedExplo
 		confirmButton.withCallback(() -> {if (minecraft != null && minecraft.player != null) minecraft.player.closeContainer();}); // It thinks minecraft and player might be null
 		addRenderableWidget(confirmButton);
 
-        if (CompatMods.JEI.isLoaded()) {
-            viewJeiButton = new IconButton(getGuiLeft() + 8, getGuiTop() + background.height - 24, DestroyIcons.QUESTION_MARK)
-                .withCallback(() -> CompatMods.JEI.executeIfInstalled(() -> MixableExplosiveCategory::openCategoryView));
-            viewJeiButton.setToolTip(DestroyLang.translate("tooltip.view_mixable_explosives").component());
-            addRenderableWidget(viewJeiButton);
-        };
     };
 
     @Override

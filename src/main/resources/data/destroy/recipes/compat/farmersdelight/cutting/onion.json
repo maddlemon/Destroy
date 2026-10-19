@@ -1,14 +1,14 @@
 {
     "conditions": [
         {
-            "type": "forge:mod_loaded",
+            "type": "neoforge:mod_loaded",
             "modid": "farmersdelight"
         }
     ],
     "type": "farmersdelight:cutting",
     "ingredients": [
       {
-        "tag": "forge:crops/onion"
+        "tag": "c:crops/onion"
       }
     ],
     "result": [
@@ -17,6 +17,6 @@
       }
     ],
     "tool": {
-      "tag": "forge:tools/knives"
+      "tag": "c:tools/knives"
     }
   }

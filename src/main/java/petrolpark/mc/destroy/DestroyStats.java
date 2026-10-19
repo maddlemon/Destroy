@@ -10,7 +10,7 @@ import net.minecraft.stats.StatFormatter;
 import net.minecraft.stats.Stats;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredHolder;
 
 public class DestroyStats {
 
@@ -18,11 +18,11 @@ public class DestroyStats {
 
     private static Map<ResourceLocation, StatFormatter> FORMATTERS = new HashMap<>();
 
-    public static final RegistryObject<ResourceLocation> NOVEL_COMPOUNDS_SYNTHESIZED = register("novel_compounds_synthesized", StatFormatter.DEFAULT);
+    public static final DeferredHolder<ResourceLocation, ResourceLocation> NOVEL_COMPOUNDS_SYNTHESIZED = register("novel_compounds_synthesized", StatFormatter.DEFAULT);
 
-    private static final RegistryObject<ResourceLocation> register(String name, StatFormatter formatter) {
+    private static final DeferredHolder<ResourceLocation, ResourceLocation> register(String name, StatFormatter formatter) {
         ResourceLocation rl = Destroy.asResource(name);
-        RegistryObject<ResourceLocation> stat = STATS.register(name, () -> rl);
+        DeferredHolder<ResourceLocation, ResourceLocation> stat = STATS.register(name, () -> rl);
         FORMATTERS.put(rl, formatter);
         return stat;
     };

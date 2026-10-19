@@ -8,15 +8,15 @@ import net.minecraft.world.level.storage.loot.providers.number.LootNumberProvide
 import net.minecraft.world.level.storage.loot.providers.number.NumberProvider;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredHolder;
 
 public class DestroyNumberProviders {
 
     public static final DeferredRegister<LootNumberProviderType> NUMBER_PROVIDERS = DeferredRegister.create(Registries.LOOT_NUMBER_PROVIDER_TYPE, Destroy.MOD_ID);
 
-    public static final RegistryObject<LootNumberProviderType> POLLUTION = register("pollution", new PollutionNumberProvider.Serializer());
+    public static final DeferredHolder<LootNumberProviderType, LootNumberProviderType> POLLUTION = register("pollution", new PollutionNumberProvider.Serializer());
 
-    private static RegistryObject<LootNumberProviderType> register(String name, Serializer<? extends NumberProvider> serializer) {
+    private static DeferredHolder<LootNumberProviderType, LootNumberProviderType> register(String name, Serializer<? extends NumberProvider> serializer) {
         return NUMBER_PROVIDERS.register(name, () -> new LootNumberProviderType(serializer));
     };
 

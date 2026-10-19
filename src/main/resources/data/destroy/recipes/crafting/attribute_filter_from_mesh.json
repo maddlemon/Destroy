@@ -8,7 +8,7 @@
         "item": "destroy:mesh"
       },
       "A": {
-        "tag": "forge:nuggets/brass"
+        "tag": "c:nuggets/brass"
       }
     },
     "result": {

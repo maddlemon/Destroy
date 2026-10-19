@@ -2,17 +2,17 @@
     "type": "create:mixing",
     "conditions": [
       {
-        "type": "forge:not",
+        "type": "neoforge:not",
         "value": {
-          "type": "forge:and",
+          "type": "neoforge:and",
           "values": [
             {
-              "type": "forge:tag_empty",
-              "tag": "forge:raw_materials/sulfur"
+              "type": "neoforge:tag_empty",
+              "tag": "c:raw_materials/sulfur"
             },
             {
-              "type": "forge:tag_empty",
-              "tag": "forge:dusts/sulfur"
+              "type": "neoforge:tag_empty",
+              "tag": "c:dusts/sulfur"
             }
           ]
         }
@@ -21,10 +21,10 @@
     "ingredients": [
       [
         {
-          "tag": "forge:raw_materials/sulfur"
+          "tag": "c:raw_materials/sulfur"
         },
         {
-          "tag": "forge:dusts/sulfur"
+          "tag": "c:dusts/sulfur"
         }
       ],
       {

@@ -9,7 +9,7 @@
         "tag": "destroy:plastics/rubber"
       },
       "B": {
-        "tag": "forge:dyes/black"
+        "tag": "c:dyes/black"
       }
     },
     "result": {

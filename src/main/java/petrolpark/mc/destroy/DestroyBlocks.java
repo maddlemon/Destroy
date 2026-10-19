@@ -863,9 +863,9 @@ public class DestroyBlocks {
 
     CARBON_PERIODIC_TABLE_BLOCK = REGISTRATE.block("carbon_periodic_table_block", PeriodicTableBlock::new)
         .initialProperties(CARBON_FIBER_BLOCK)
-        .tag(Tags.Blocks.STORAGE_BLOCKS, AllTags.forgeBlockTag("storage_blocks/carbon_fiber"))
+        .tag(Tags.Blocks.STORAGE_BLOCKS, AllTags.commonBlockTag("storage_blocks/carbon_fiber"))
         .item(PeriodicTableBlockItem::new)
-        .tag(Tags.Items.STORAGE_BLOCKS, forgeItemTag("storage_blocks/carbon_fiber"))
+        .tag(Tags.Items.STORAGE_BLOCKS, commonItemTag("storage_blocks/carbon_fiber"))
         .build()
         .register();
 
@@ -904,9 +904,9 @@ public class DestroyBlocks {
     CHROMIUM_PERIODIC_TABLE_BLOCK = REGISTRATE.block("chromium_periodic_table_block", PeriodicTableBlock::new)
         .initialProperties(CHROMIUM_BLOCK)
         .transform(TagGen.pickaxeOnly())
-        .tag(Tags.Blocks.STORAGE_BLOCKS, AllTags.forgeBlockTag("storage_blocks/chromium"))
+        .tag(Tags.Blocks.STORAGE_BLOCKS, AllTags.commonBlockTag("storage_blocks/chromium"))
         .item(PeriodicTableBlockItem::new)
-        .tag(Tags.Items.STORAGE_BLOCKS, forgeItemTag("storage_blocks/chromium"))
+        .tag(Tags.Items.STORAGE_BLOCKS, commonItemTag("storage_blocks/chromium"))
         .build()
         .register(),
 
@@ -922,9 +922,9 @@ public class DestroyBlocks {
     NICKEL_PERIODIC_TABLE_BLOCK = REGISTRATE.block("nickel_periodic_table_block", PeriodicTableBlock::new)
         .initialProperties(NICKEL_BLOCK)
         .transform(TagGen.pickaxeOnly())
-        .tag(Tags.Blocks.STORAGE_BLOCKS, AllTags.forgeBlockTag("storage_blocks/nickel"))
+        .tag(Tags.Blocks.STORAGE_BLOCKS, AllTags.commonBlockTag("storage_blocks/nickel"))
         .item(PeriodicTableBlockItem::new)
-        .tag(Tags.Items.STORAGE_BLOCKS, forgeItemTag("storage_blocks/nickel"))
+        .tag(Tags.Items.STORAGE_BLOCKS, commonItemTag("storage_blocks/nickel"))
         .build()
         .register(),
 
@@ -940,45 +940,45 @@ public class DestroyBlocks {
     ZINC_PERIODIC_TABLE_BLOCK = REGISTRATE.block("zinc_periodic_table_block", PeriodicTableBlock::new)
         .initialProperties(AllBlocks.ZINC_BLOCK)
         .transform(TagGen.pickaxeOnly())
-        .tag(Tags.Blocks.STORAGE_BLOCKS, AllTags.forgeBlockTag("storage_blocks/zinc"))
+        .tag(Tags.Blocks.STORAGE_BLOCKS, AllTags.commonBlockTag("storage_blocks/zinc"))
         .item(PeriodicTableBlockItem::new)
-        .tag(Tags.Items.STORAGE_BLOCKS, forgeItemTag("storage_blocks/zinc"))
+        .tag(Tags.Items.STORAGE_BLOCKS, commonItemTag("storage_blocks/zinc"))
         .build()
         .register(),
 
     RHODIUM_PERIODIC_TABLE_BLOCK = REGISTRATE.block("rhodium_periodic_table_block", PeriodicTableBlock::new)
         .initialProperties(RHODIUM_BLOCK)
         .transform(TagGen.pickaxeOnly())
-        .tag(Tags.Blocks.STORAGE_BLOCKS, AllTags.forgeBlockTag("storage_blocks/rhodium"))
+        .tag(Tags.Blocks.STORAGE_BLOCKS, AllTags.commonBlockTag("storage_blocks/rhodium"))
         .item(PeriodicTableBlockItem::new)
-        .tag(Tags.Items.STORAGE_BLOCKS, forgeItemTag("storage_blocks/rhodium"))
+        .tag(Tags.Items.STORAGE_BLOCKS, commonItemTag("storage_blocks/rhodium"))
         .build()
         .register(),
 
     PALLADIUM_PERIODIC_TABLE_BLOCK = REGISTRATE.block("palladium_periodic_table_block", PeriodicTableBlock::new)
         .initialProperties(PALLADIUM_BLOCK)
         .transform(TagGen.pickaxeOnly())
-        .tag(Tags.Blocks.STORAGE_BLOCKS, AllTags.forgeBlockTag("storage_blocks/palladium"))
+        .tag(Tags.Blocks.STORAGE_BLOCKS, AllTags.commonBlockTag("storage_blocks/palladium"))
         .item(PeriodicTableBlockItem::new)
-        .tag(Tags.Items.STORAGE_BLOCKS, forgeItemTag("storage_blocks/palladium"))
+        .tag(Tags.Items.STORAGE_BLOCKS, commonItemTag("storage_blocks/palladium"))
         .build()
         .register(),
 
     IODINE_PERIODIC_TABLE_BLOCK = REGISTRATE.block("iodine_periodic_table_block", PeriodicTableBlock::new)
         .initialProperties(IODINE_BLOCK)
         .transform(TagGen.pickaxeOnly())
-        .tag(Tags.Blocks.STORAGE_BLOCKS, AllTags.forgeBlockTag("storage_blocks/iodine"))
+        .tag(Tags.Blocks.STORAGE_BLOCKS, AllTags.commonBlockTag("storage_blocks/iodine"))
         .item(PeriodicTableBlockItem::new)
-        .tag(Tags.Items.STORAGE_BLOCKS, forgeItemTag("storage_blocks/iodine"))
+        .tag(Tags.Items.STORAGE_BLOCKS, commonItemTag("storage_blocks/iodine"))
         .build()
         .register(),
 
     PLATINUM_PERIODIC_TABLE_BLOCK = REGISTRATE.block("platinum_periodic_table_block", PeriodicTableBlock::new)
         .initialProperties(CHROMIUM_BLOCK)
         .transform(TagGen.pickaxeOnly())
-        .tag(Tags.Blocks.STORAGE_BLOCKS, AllTags.forgeBlockTag("storage_blocks/platinum"))
+        .tag(Tags.Blocks.STORAGE_BLOCKS, AllTags.commonBlockTag("storage_blocks/platinum"))
         .item(PeriodicTableBlockItem::new)
-        .tag(Tags.Items.STORAGE_BLOCKS, forgeItemTag("storage_blocks/platinum"))
+        .tag(Tags.Items.STORAGE_BLOCKS, commonItemTag("storage_blocks/platinum"))
         .build()
         .register(),
 
@@ -1005,9 +1005,9 @@ public class DestroyBlocks {
     LEAD_PERIODIC_TABLE_BLOCK = REGISTRATE.block("lead_periodic_table_block", PeriodicTableBlock::new)
         .initialProperties(CHROMIUM_BLOCK)
         .transform(TagGen.pickaxeOnly())
-        .tag(Tags.Blocks.STORAGE_BLOCKS, AllTags.forgeBlockTag("storage_blocks/lead"))
+        .tag(Tags.Blocks.STORAGE_BLOCKS, AllTags.commonBlockTag("storage_blocks/lead"))
         .item(PeriodicTableBlockItem::new)
-        .tag(Tags.Items.STORAGE_BLOCKS, forgeItemTag("storage_blocks/lead"))
+        .tag(Tags.Items.STORAGE_BLOCKS, commonItemTag("storage_blocks/lead"))
         .build()
         .register();
 
@@ -1043,9 +1043,9 @@ public class DestroyBlocks {
         .properties(p -> p
             .strength(6f)
             .mapColor(MapColor.SNOW)
-        ).tag(Tags.Blocks.GLASS, BlockTags.MINEABLE_WITH_PICKAXE)
+        ).tag(Tags.Blocks.GLASS_BLOCKS, BlockTags.MINEABLE_WITH_PICKAXE)
         .item()
-        .tag(Tags.Items.GLASS)
+        .tag(Tags.Items.GLASS_BLOCKS)
         .build()
         .register();
 
@@ -1055,10 +1055,10 @@ public class DestroyBlocks {
         .initialProperties(() -> Blocks.GLASS)
         .properties(p -> p
             .strength(2f)
-        ).tag(Tags.Blocks.GLASS, Tags.Blocks.GLASS_COLORLESS, BlockTags.MINEABLE_WITH_PICKAXE)
+        ).tag(Tags.Blocks.GLASS_BLOCKS, Tags.Blocks.GLASS_BLOCKS_COLORLESS, BlockTags.MINEABLE_WITH_PICKAXE)
         .onRegister(CreateRegistrate.connectedTextures(() -> new SimpleCTBehaviour(DestroySpriteShifts.BOROSILICATE_GLASS)))
         .item()
-        .tag(Tags.Items.GLASS, Tags.Items.GLASS_COLORLESS)
+        .tag(Tags.Items.GLASS_BLOCKS, Tags.Items.GLASS_BLOCKS_COLORLESS)
         .build()
         .register();
 

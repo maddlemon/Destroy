@@ -8,10 +8,10 @@
     ],
     "key": {
       "S": {
-        "tag": "forge:plates/stainless_steel"
+        "tag": "c:plates/stainless_steel"
       },
       "R": {
-        "tag": "forge:rods/stainless_steel"
+        "tag": "c:rods/stainless_steel"
       },
       "G": {
         "item": "destroy:borosilicate_glass_fiber"

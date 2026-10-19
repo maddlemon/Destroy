@@ -2,8 +2,8 @@ package petrolpark.mc.destroy.core.explosion;
 
 import java.util.function.Supplier;
 
-import com.petrolpark.client.ponder.particle.PetrolparkEmitters;
-import com.petrolpark.compat.CompatMods;
+import petrolpark.mc.library.core.client.ponder.particle.PetrolparkEmitters;
+import petrolpark.mc.library.compat.Mods;
 import petrolpark.mc.destroy.DestroyBlocks;
 import petrolpark.mc.destroy.DestroyItems;
 import petrolpark.mc.destroy.core.explosion.mixedexplosive.IDyeableMixedExplosiveBlockEntity;
@@ -252,7 +252,7 @@ public class ExplosivesPonderScenes {
         scene.world().modifyBlockEntity(second, MixedExplosiveBlockEntity.class, be -> be.setCustomName(name));
         scene.idle(55);
 
-        if (CompatMods.BIG_CANNONS.isLoaded()) {
+        if (Mods.BIG_CANNONS.isLoaded()) {
             scene.overlay().showText(100)
                 .text("This text is defined in a language file.")
                 .colored(PonderPalette.RED)

@@ -6,7 +6,7 @@
         "conditions": {
             "items": [
                 {
-                    "tag": "forge:raw_materials/borax"
+                    "tag": "c:raw_materials/borax"
                 }
             ]
         }

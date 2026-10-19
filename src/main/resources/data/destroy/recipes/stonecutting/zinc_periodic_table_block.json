@@ -1,7 +1,7 @@
 {
     "type": "minecraft:stonecutting",
     "ingredient": {
-      "tag": "forge:storage_blocks/zinc"
+      "tag": "c:storage_blocks/zinc"
     },
     "result": "destroy:zinc_periodic_table_block",
     "count": 1

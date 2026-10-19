@@ -3,7 +3,7 @@ package petrolpark.mc.destroy.core.item;
 import java.util.stream.Stream;
 
 import petrolpark.mc.destroy.MoveToPetrolparkLibrary;
-import com.petrolpark.util.ItemHelper;
+import petrolpark.mc.library.util.ItemHelper;
 
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;

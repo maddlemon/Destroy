@@ -1,12 +1,7 @@
 package petrolpark.mc.destroy.config;
 
-import net.createmod.catnip.config.ConfigBase;
-
-public class DestroyCommonConfigs extends ConfigBase {
-
-    @Override
-    public String getName() {
-        return "common";
-    };
+public class DestroyCommonConfigs extends DestroyConfigBase {
     
+    public final ConfigBool enableBabyBlue = b(true, "enableBabyBlue", "Allow the crafting and effects of Baby Blue-related products");
+    public final ConfigBool enableAlcohol = b(true, "enableAlcohol", "Allow the crafting and effects of alcoholic products");
 };

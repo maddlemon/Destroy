@@ -6,7 +6,7 @@
         "item": "minecraft:andesite"
       },
       "B": {
-        "tag": "forge:nuggets/chromium"
+        "tag": "c:nuggets/chromium"
       }
     },
     "pattern": [

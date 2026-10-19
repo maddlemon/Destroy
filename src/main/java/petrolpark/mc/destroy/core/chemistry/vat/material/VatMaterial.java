@@ -7,7 +7,7 @@ import java.util.Optional;
 import java.util.Iterator;
 
 import petrolpark.mc.destroy.DestroyBlocks;
-import com.petrolpark.recipe.ingredient.BlockIngredient;
+import petrolpark.mc.library.core.data.recipe.ingredient.BlockIngredient;
 
 import net.minecraft.world.level.block.state.BlockState;
 

@@ -53,7 +53,7 @@ import petrolpark.mc.destroy.core.pollution.Pollution.PollutionType;
 import petrolpark.mc.destroy.core.pollution.PollutionCommand;
 import petrolpark.mc.destroy.core.pollution.PollutionHelper;
 import petrolpark.mc.destroy.core.pollution.SyncChunkPollutionS2CPacket;
-import com.petrolpark.recipe.ingredient.BlockIngredient;
+import petrolpark.mc.library.core.data.recipe.ingredient.BlockIngredient;
 import com.simibubi.create.AllItems;
 import com.simibubi.create.content.equipment.potatoCannon.PotatoProjectileEntity;
 import com.simibubi.create.content.processing.burner.BlazeBurnerBlockItem;

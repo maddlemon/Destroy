@@ -5,7 +5,7 @@ import java.util.Map;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Either;
-import com.petrolpark.client.rendering.item.TransparentItemRenderer;
+import petrolpark.mc.library.core.client.rendering.item.TransparentItemRenderer;
 import petrolpark.mc.destroy.Destroy;
 import petrolpark.mc.destroy.DestroyItems;
 import petrolpark.mc.destroy.client.DummyBaker;

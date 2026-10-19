@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 
 import com.petrolpark.contamination.HasContaminantItemAttribute;
 import petrolpark.mc.destroy.DestroyItemAttributeTypes;
-import com.petrolpark.util.BinaryMatrix4x4;
+import petrolpark.mc.library.util.BinaryMatrix4x4;
 import com.simibubi.create.content.logistics.item.filter.attribute.ItemAttribute;
 import com.simibubi.create.content.logistics.item.filter.attribute.ItemAttributeType;
 

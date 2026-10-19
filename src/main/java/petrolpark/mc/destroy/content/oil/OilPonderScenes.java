@@ -1,6 +1,6 @@
 package petrolpark.mc.destroy.content.oil;
 
-import com.petrolpark.client.ponder.PonderPlayer;
+import petrolpark.mc.library.core.client.ponder.PonderPlayer;
 import petrolpark.mc.destroy.DestroyFluids;
 import petrolpark.mc.destroy.DestroyItems;
 import petrolpark.mc.destroy.content.oil.pumpjack.PumpjackBlockEntity;

@@ -20,7 +20,7 @@ import petrolpark.mc.destroy.chemistry.minecraft.MixtureFluid;
 import petrolpark.mc.destroy.core.chemistry.recipe.MixtureConversionRecipe;
 import petrolpark.mc.destroy.core.chemistry.vat.IVatHeaterBlock;
 import petrolpark.mc.destroy.core.pollution.Pollution;
-import com.petrolpark.util.BigItemStack;
+import petrolpark.mc.library.util.BigItemStack;
 import com.simibubi.create.content.processing.basin.BasinBlockEntity;
 import com.simibubi.create.content.processing.basin.BasinRecipe;
 import com.simibubi.create.content.processing.recipe.ProcessingRecipeBuilder;

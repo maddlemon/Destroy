@@ -14,7 +14,7 @@
             "item": "destroy:unfinished_catalytic_converter"
           },
           {
-            "tag": "forge:plates/stainless_steel"
+            "tag": "c:plates/stainless_steel"
           }
         ],
         "results": [
@@ -30,7 +30,7 @@
             "item": "destroy:unfinished_catalytic_converter"
           },
           {
-            "tag": "forge:dusts/platinum"
+            "tag": "c:dusts/platinum"
           }
         ],
         "results": [
@@ -46,7 +46,7 @@
             "item": "destroy:unfinished_catalytic_converter"
           },
           {
-            "tag": "forge:dusts/palladium"
+            "tag": "c:dusts/palladium"
           }
         ],
         "results": [
@@ -62,7 +62,7 @@
             "item": "destroy:unfinished_catalytic_converter"
           },
           {
-            "tag": "forge:dusts/rhodium"
+            "tag": "c:dusts/rhodium"
           }
         ],
         "results": [
@@ -78,7 +78,7 @@
             "item": "destroy:unfinished_catalytic_converter"
           },
           {
-            "tag": "forge:plates/stainless_steel"
+            "tag": "c:plates/stainless_steel"
           }
         ],
         "results": [

@@ -40,7 +40,7 @@ public class NitrileHydrogenation extends SingleGroupGenericReaction<NitrileGrou
         return reactionBuilder()
             .addReactant(reactant.getMolecule())
             .addReactant(DestroyMolecules.HYDROGEN, 2)
-            .addSimpleItemTagCatalyst(AllTags.forgeItemTag("dusts/nickel"), 1f)
+            .addSimpleItemTagCatalyst(AllTags.commonItemTag("dusts/nickel"), 1f)
             .addProduct(moleculeBuilder().structure(structure).build())
             .build();
     };

@@ -1,7 +1,7 @@
 {
     "type": "minecraft:smelting",
     "ingredient": {
-      "tag": "forge:ores/nickel"
+      "tag": "c:ores/nickel"
     },
     "result": "destroy:nickel_ingot",
     "experience": 0.1,

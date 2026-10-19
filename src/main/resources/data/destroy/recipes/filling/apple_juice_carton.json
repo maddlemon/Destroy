@@ -5,7 +5,7 @@
         "item": "destroy:empty_carton"
       },
       {
-        "fluidTag": "forge:apple_juice",
+        "fluidTag": "destroy:apple_juice",
         "amount": 250
       }
     ],

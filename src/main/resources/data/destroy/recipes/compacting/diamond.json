@@ -17,7 +17,7 @@
         "item": "destroy:nanodiamonds"
       },
       {
-        "tag": "forge:raw_materials/borax"
+        "tag": "c:raw_materials/borax"
       }
     ],
     "results": [

@@ -1,6 +1,5 @@
 package petrolpark.mc.destroy;
 
-import com.petrolpark.data.advancement.SimpleAdvancementTrigger;
 import petrolpark.mc.destroy.chemistry.legacy.LegacyReaction;
 import petrolpark.mc.destroy.chemistry.legacy.ReactionResult;
 import petrolpark.mc.destroy.chemistry.legacy.reactionresult.DestroyAdvancementReactionResult;
@@ -8,6 +7,7 @@ import net.createmod.catnip.lang.Lang;
 
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.CriteriaTriggers;
+import net.minecraft.advancements.critereon.PlayerTrigger;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -32,14 +32,12 @@ public enum DestroyAdvancementTrigger {
     CATALYTIC_CONVERTER,
     USE_CENTRIFUGE("use_centrifuge", "centrifuge"),
     COLORIMETER,
-    COMPLETE_SEISMOGRAPH,
     CUT_ONIONS,
     DISTILL("distill", "distillation"),
     CHARGE_WITH_DYNAMO("charge_with_dynamo", "dynamo_charging"),
     ELECTROLYZE_WITH_DYNAMO("electrolyze_with_dynamo", "dynamo_electrolysis"),
     ETHYLANTHRAQUINONE,
     EXTRUDE,
-    FILL_SEISMOGRAPH,
     FIREPROOF_FLINT_AND_STEEL,
     DETONATE("detonate", "explosive"),
     HABER_PROCESS,
@@ -57,7 +55,6 @@ public enum DestroyAdvancementTrigger {
     PROPANOL,
     USE_PUMPJACK("use_pumpjack", "pumpjack"),
     JUMP_ON_SAND_CASTLE("jump_on_sand_castle", "sand_castle"),
-    USE_SEISMOMETER,
     SIPHON,
     STEAM_REFORMATION,
     TAP_TREE,
@@ -68,12 +65,12 @@ public enum DestroyAdvancementTrigger {
 
     private String triggerId;
     private String[] advancementIds;
-    private SimpleAdvancementTrigger trigger;
+    private PlayerTrigger trigger;
 
     DestroyAdvancementTrigger() {
         triggerId = Lang.asId(name());
         advancementIds = new String[]{Lang.asId(name())};
-        trigger = new SimpleAdvancementTrigger(Destroy.asResource(triggerId));
+        trigger = new PlayerTrigger();
     };
 
     DestroyAdvancementTrigger(String triggerAndAdvancementId) {
@@ -83,7 +80,7 @@ public enum DestroyAdvancementTrigger {
     DestroyAdvancementTrigger(String triggerId, String ...advancementIds) {
         this.triggerId = triggerId;
         this.advancementIds = advancementIds;
-        trigger = new SimpleAdvancementTrigger(Destroy.asResource(triggerId));
+        trigger = new PlayerTrigger();
     };
 
     public void award(Level level, Player player) {
@@ -110,7 +107,7 @@ public enum DestroyAdvancementTrigger {
 
     public static void register() {
         for (DestroyAdvancementTrigger e : values()) {
-            CriteriaTriggers.register(e.trigger);
+            CriteriaTriggers.register(Destroy.asResource(e.triggerId), e.trigger);
         };
     };
 }

@@ -35,7 +35,7 @@ public class DestroyReactions {
     ACETYLENE_TRIMERIZATION = builder()
         .id("acetylene_trimerization")
         .addReactant(DestroyMolecules.ACETYLENE, 3)
-        .addSimpleItemTagCatalyst(AllTags.forgeItemTag("dusts/nickel"), 1f)
+        .addSimpleItemTagCatalyst(AllTags.commonItemTag("dusts/nickel"), 1f)
         .addProduct(DestroyMolecules.BENZENE)
         .build(),
 
@@ -66,7 +66,7 @@ public class DestroyReactions {
         .addReactant(DestroyMolecules.METHANE, 2, 1)
         .addReactant(DestroyMolecules.AMMONIA, 2, 1)
         .addReactant(DestroyMolecules.OXYGEN, 3, 1)
-        .addSimpleItemTagCatalyst(AllTags.forgeItemTag("dusts/platinum"), 1f)
+        .addSimpleItemTagCatalyst(AllTags.commonItemTag("dusts/platinum"), 1f)
         .addProduct(DestroyMolecules.HYDROGEN_CYANIDE, 2)
         .addProduct(DestroyMolecules.WATER, 6)
         .activationEnergy(50) //TODO tweak to make Reaction require very high temperatures
@@ -87,7 +87,7 @@ public class DestroyReactions {
         .id("anthraquinone_reduction")
         .addReactant(DestroyMolecules.ETHYLANTHRAQUINONE)
         .addReactant(DestroyMolecules.HYDROGEN)
-        .addSimpleItemTagCatalyst(AllTags.forgeItemTag("dusts/palladium"), 1f)
+        .addSimpleItemTagCatalyst(AllTags.commonItemTag("dusts/palladium"), 1f)
         .addProduct(DestroyMolecules.ETHYLANTHRAHYDROQUINONE)
         .build(),
 
@@ -118,14 +118,14 @@ public class DestroyReactions {
         .id("benzene_hydrogenation")
         .addReactant(DestroyMolecules.BENZENE)
         .addReactant(DestroyMolecules.HYDROGEN, 2, 1)
-        .addSimpleItemTagCatalyst(AllTags.forgeItemTag("dusts/nickel"), 1f)
+        .addSimpleItemTagCatalyst(AllTags.commonItemTag("dusts/nickel"), 1f)
         .addProduct(DestroyMolecules.CYCLOHEXENE)
         .build(),
 
     BORAX_DISSOLUTION = builder()
         .id("borax_dissolution")
         .addReactant(DestroyMolecules.PROTON, 2, 1)
-        .addSimpleItemTagReactant(AllTags.forgeItemTag("raw_materials/borax"), 15f)
+        .addSimpleItemTagReactant(AllTags.commonItemTag("raw_materials/borax"), 15f)
         .addCatalyst(DestroyMolecules.CHLORIDE, 1)
         .addProduct(DestroyMolecules.SODIUM_ION, 2)
         .addProduct(DestroyMolecules.WATER, 5)
@@ -272,7 +272,7 @@ public class DestroyReactions {
     CHROMIUM_DISSOLUTION = builder() //TODO replace with redox
         .id("chromium_dissolution")
         .addReactant(DestroyMolecules.PROTON, 6, 1)
-        .addSimpleItemTagReactant(AllTags.forgeItemTag("dusts/chromium"), 4.5f)
+        .addSimpleItemTagReactant(AllTags.commonItemTag("dusts/chromium"), 4.5f)
         .addProduct(DestroyMolecules.HYDROGEN, 3)
         .addProduct(DestroyMolecules.CHROMIUM_III, 2)
         .build(),
@@ -298,7 +298,7 @@ public class DestroyReactions {
         .id("cisplatin_synthesis")
         .addReactant(DestroyMolecules.CHLORIDE)
         .addReactant(DestroyMolecules.AMMONIA)
-        .addSimpleItemTagReactant(AllTags.forgeItemTag("dusts/platinum"), 2f)
+        .addSimpleItemTagReactant(AllTags.commonItemTag("dusts/platinum"), 2f)
         .addProduct(DestroyMolecules.CISPLATIN)
         .addProduct(DestroyMolecules.HYDROXIDE) //TODO change as this is not quite right
         .build(),
@@ -307,7 +307,7 @@ public class DestroyReactions {
         .id("contact_process")
         .addReactant(DestroyMolecules.SULFUR_DIOXIDE, 2, 1)
         .addReactant(DestroyMolecules.OXYGEN)
-        .addSimpleItemTagCatalyst(AllTags.forgeItemTag("dusts/platinum"), 3f)
+        .addSimpleItemTagCatalyst(AllTags.commonItemTag("dusts/platinum"), 3f)
         .addProduct(DestroyMolecules.SULFUR_TRIOXIDE, 2)
         .build(),
 
@@ -370,7 +370,7 @@ public class DestroyReactions {
     COPPER_DISSOLUTION = builder() //TODO replace with redox
         .id("copper_dissolution")
         .addReactant(DestroyMolecules.PROTON, 2, 1)
-        .addSimpleItemTagReactant(AllTags.forgeItemTag("dusts/copper"), 9f)
+        .addSimpleItemTagReactant(AllTags.commonItemTag("dusts/copper"), 9f)
         .addProduct(DestroyMolecules.HYDROGEN)
         .addProduct(DestroyMolecules.COPPER_II)
         .build(),
@@ -491,7 +491,7 @@ public class DestroyReactions {
         .id("haber_process")
         .addReactant(DestroyMolecules.NITROGEN)
         .addReactant(DestroyMolecules.HYDROGEN, 3, 0)
-        .addSimpleItemTagCatalyst(AllTags.forgeItemTag("dusts/iron"), 1f)
+        .addSimpleItemTagCatalyst(AllTags.commonItemTag("dusts/iron"), 1f)
         .addProduct(DestroyMolecules.AMMONIA, 2)
         .build(), //TODO add reversibility and appropriate rate constants
     //TODO add oxidation of nitrogen in air so this is more difficult
@@ -589,7 +589,7 @@ public class DestroyReactions {
     IRON_DISSOLUTION = builder() //TODO replace with redox
         .id("iron_dissolution")
         .addReactant(DestroyMolecules.PROTON, 6, 1)
-        .addSimpleItemTagReactant(AllTags.forgeItemTag("dusts/iron"), 4.5f)
+        .addSimpleItemTagReactant(AllTags.commonItemTag("dusts/iron"), 4.5f)
         .addProduct(DestroyMolecules.HYDROGEN, 3)
         .addProduct(DestroyMolecules.IRON_III, 2)
         .build(),
@@ -638,7 +638,7 @@ public class DestroyReactions {
     LEAD_DISSOLUTION = builder() //TODO replace with redox
         .id("lead_dissolution")
         .addReactant(DestroyMolecules.PROTON, 2, 1)
-        .addSimpleItemTagReactant(AllTags.forgeItemTag("dusts/lead"), 9f)
+        .addSimpleItemTagReactant(AllTags.commonItemTag("dusts/lead"), 9f)
         .addProduct(DestroyMolecules.HYDROGEN)
         .addProduct(DestroyMolecules.LEAD_II)
         .build(),
@@ -654,7 +654,7 @@ public class DestroyReactions {
     LIME_SLAKING = builder()
         .id("lime_slaking")
         .addReactant(DestroyMolecules.WATER)
-        .addSimpleItemTagReactant(AllTags.forgeItemTag("dusts/lime"), 2f)
+        .addSimpleItemTagReactant(AllTags.commonItemTag("dusts/lime"), 2f)
         .addProduct(DestroyMolecules.CALCIUM_ION)
         .addProduct(DestroyMolecules.HYDROXIDE, 2)
         .build(),
@@ -684,8 +684,8 @@ public class DestroyReactions {
         .id("methanol_synthesis")
         .addReactant(DestroyMolecules.CARBON_MONOXIDE)
         .addReactant(DestroyMolecules.HYDROGEN, 2, 1) //TODO check rate exponent of hydrogen
-        .addSimpleItemTagCatalyst(AllTags.forgeItemTag("dusts/copper"), 1f)
-        .addSimpleItemTagCatalyst(AllTags.forgeItemTag("dusts/zinc"), 1f)
+        .addSimpleItemTagCatalyst(AllTags.commonItemTag("dusts/copper"), 1f)
+        .addSimpleItemTagCatalyst(AllTags.commonItemTag("dusts/zinc"), 1f)
         .addProduct(DestroyMolecules.METHANOL)
         .build(), //TODO ensure high pressure is used
 
@@ -725,7 +725,7 @@ public class DestroyReactions {
     NICKEL_DISSOLUTION = builder() //TODO replace with redox
         .id("nickel_dissolution")
         .addReactant(DestroyMolecules.PROTON, 2, 1)
-        .addSimpleItemTagReactant(AllTags.forgeItemTag("dusts/nickel"), 9f)
+        .addSimpleItemTagReactant(AllTags.commonItemTag("dusts/nickel"), 9f)
         .addProduct(DestroyMolecules.HYDROGEN)
         .addProduct(DestroyMolecules.NICKEL_ION)
         .build(),
@@ -795,7 +795,7 @@ public class DestroyReactions {
         .id("ostwald_process")
         .addReactant(DestroyMolecules.AMMONIA)
         .addReactant(DestroyMolecules.OXYGEN, 2)
-        .addSimpleItemTagCatalyst(AllTags.forgeItemTag("dusts/rhodium"), 1f)
+        .addSimpleItemTagCatalyst(AllTags.commonItemTag("dusts/rhodium"), 1f)
         .addProduct(DestroyMolecules.WATER)
         .addProduct(DestroyMolecules.NITRIC_ACID)
         .withResult(0f, DestroyAdvancementTrigger.OSTWALD_PROCESS::asReactionResult)
@@ -853,7 +853,7 @@ public class DestroyReactions {
     SODIUM_AMALGAMIZATION = builder()
         .id("sodium_amalgamization")
         .addReactant(DestroyMolecules.MERCURY, 0, 1)
-        .addSimpleItemTagReactant(AllTags.forgeItemTag("ingots/sodium"), 9.9f) // One sodium ingot = 10 moles of sodium atoms
+        .addSimpleItemTagReactant(AllTags.commonItemTag("ingots/sodium"), 9.9f) // One sodium ingot = 10 moles of sodium atoms
         .addProduct(DestroyMolecules.SODIUM_METAL)
         .activationEnergy(1f) // Very fast as long as Mercury is present
         .reverseReaction(r -> r
@@ -911,7 +911,7 @@ public class DestroyReactions {
         .id("steam_reformation")
         .addReactant(DestroyMolecules.WATER)
         .addReactant(DestroyMolecules.METHANE)
-        .addSimpleItemTagCatalyst(AllTags.forgeItemTag("dusts/nickel"), 1f)
+        .addSimpleItemTagCatalyst(AllTags.commonItemTag("dusts/nickel"), 1f)
         .addProduct(DestroyMolecules.CARBON_MONOXIDE)
         .addProduct(DestroyMolecules.HYDROGEN, 3)
         .reversible()
@@ -981,7 +981,7 @@ public class DestroyReactions {
         .id("tetraethyllead_synthesis")
         .addReactant(DestroyMolecules.SODIUM_METAL, 4)
         .addReactant(DestroyMolecules.CHLOROETHANE, 4)
-        .addSimpleItemTagReactant(AllTags.forgeItemTag("dusts/lead"), 2.5f)
+        .addSimpleItemTagReactant(AllTags.commonItemTag("dusts/lead"), 2.5f)
         .addProduct(DestroyMolecules.TETRAETHYLLEAD)
         .addProduct(DestroyMolecules.SODIUM_ION, 4)
         .addProduct(DestroyMolecules.CHLORIDE, 4)
@@ -1052,7 +1052,7 @@ public class DestroyReactions {
         .addReactant(DestroyMolecules.ETHENE, 2, 1)
         .addReactant(DestroyMolecules.ACETIC_ACID, 2, 1)
         .addReactant(DestroyMolecules.OXYGEN)
-        .addSimpleItemTagCatalyst(AllTags.forgeItemTag("dusts/palladium"), 1f)
+        .addSimpleItemTagCatalyst(AllTags.commonItemTag("dusts/palladium"), 1f)
         .addProduct(DestroyMolecules.VINYL_ACETATE, 2)
         .addProduct(DestroyMolecules.WATER, 2)
         .build(),
@@ -1060,7 +1060,7 @@ public class DestroyReactions {
     ZINC_DISSOLUTION = builder() //TODO replace with redox
         .id("zinc_dissolution")
         .addReactant(DestroyMolecules.PROTON, 2, 1)
-        .addSimpleItemTagReactant(AllTags.forgeItemTag("dusts/zinc"), 9f)
+        .addSimpleItemTagReactant(AllTags.commonItemTag("dusts/zinc"), 9f)
         .addProduct(DestroyMolecules.HYDROGEN)
         .addProduct(DestroyMolecules.ZINC_ION)
         .build(),

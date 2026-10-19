@@ -2,7 +2,7 @@ package petrolpark.mc.destroy.content.processing.moltenblock;
 
 import petrolpark.mc.destroy.DestroyBlocks;
 import petrolpark.mc.destroy.DestroyItems;
-import com.petrolpark.fluid.ICustomBlockStateFluid;
+import petrolpark.mc.library.core.world.fluid.ICustomBlockStateFluid;
 import com.simibubi.create.content.fluids.VirtualFluid;
 
 import net.minecraft.world.item.Item;

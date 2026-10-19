@@ -2,9 +2,9 @@ package petrolpark.mc.destroy.content.processing;
 
 import java.util.List;
 
-import com.petrolpark.client.ponder.PonderPlayer;
-import com.petrolpark.client.ponder.instruction.LivingEntitySwingInstruction;
-import com.petrolpark.client.ponder.instruction.OutlineAABBInstruction;
+import petrolpark.mc.library.core.client.ponder.PonderPlayer;
+import petrolpark.mc.library.core.client.ponder.instruction.LivingEntitySwingInstruction;
+import petrolpark.mc.library.core.client.ponder.instruction.OutlineAABBInstruction;
 import petrolpark.mc.destroy.Destroy;
 import petrolpark.mc.destroy.DestroyBlocks;
 import petrolpark.mc.destroy.DestroyFluids;

@@ -7,13 +7,13 @@
     ],
     "key": {
       "P": {
-        "tag": "forge:plates/stainless_steel"
+        "tag": "c:plates/stainless_steel"
       },
       "R": {
-        "tag": "forge:rods/stainless_steel"
+        "tag": "c:rods/stainless_steel"
       },
       "G": {
-        "tag": "forge:glass"
+        "tag": "c:glass_blocks"
       }
     },
     "result": {

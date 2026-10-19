@@ -1,6 +1,6 @@
 package petrolpark.mc.destroy.client;
 
-import com.petrolpark.client.rendering.PetrolparkNineSlice;
+import petrolpark.mc.library.core.client.rendering.PetrolparkNineSlice;
 import petrolpark.mc.destroy.MoveToPetrolparkLibrary;
 
 @MoveToPetrolparkLibrary //Already moved in 1.21.1

@@ -1,6 +1,6 @@
 package petrolpark.mc.destroy.content.processing.trypolithography.keypunch;
 
-import com.petrolpark.compat.create.block.entity.behaviour.AbstractRememberPlacerBehaviour;
+import petrolpark.mc.library.compat.create.core.world.block.entity.behaviour.AbstractRememberPlacerBehaviour;
 import petrolpark.mc.destroy.Destroy;
 import petrolpark.mc.destroy.DestroyBlockEntityTypes;
 import com.simibubi.create.AllItems;

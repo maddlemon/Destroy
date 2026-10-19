@@ -6,7 +6,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-import com.petrolpark.compat.create.item.directional.DirectionalTransportedItemStack;
+import petrolpark.mc.library.compat.create.core.world.item.transported.DirectionalTransportedItemStack;
 import petrolpark.mc.destroy.Destroy;
 import petrolpark.mc.destroy.DestroyItems;
 import petrolpark.mc.destroy.client.DestroyGuiTextures;

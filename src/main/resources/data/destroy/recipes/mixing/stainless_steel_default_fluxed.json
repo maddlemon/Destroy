@@ -2,31 +2,31 @@
     "type": "create:mixing",
     "ingredients": [
       {
-        "tag": "forge:dusts/chromium"
+        "tag": "c:dusts/chromium"
       },
       {
-        "tag": "forge:dusts/nickel"
+        "tag": "c:dusts/nickel"
       },
       {
-        "tag": "forge:dusts/nickel"
+        "tag": "c:dusts/nickel"
       },
       {
         "item": "minecraft:charcoal"
       },
       {
-        "tag": "forge:dusts/iron"
+        "tag": "c:dusts/iron"
       },
       {
-        "tag": "forge:dusts/iron"
+        "tag": "c:dusts/iron"
       },
       {
-        "tag": "forge:dusts/iron"
+        "tag": "c:dusts/iron"
       },
       {
-        "tag": "forge:dusts/iron"
+        "tag": "c:dusts/iron"
       },
       {
-        "tag": "forge:dusts/iron"
+        "tag": "c:dusts/iron"
       },
       {
         "tag": "destroy:fluxes"

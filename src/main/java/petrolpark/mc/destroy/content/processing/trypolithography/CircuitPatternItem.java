@@ -1,7 +1,7 @@
 package petrolpark.mc.destroy.content.processing.trypolithography;
 
-import com.petrolpark.compat.create.item.directional.IDirectionalOnBelt;
-import com.petrolpark.util.NBTHelper;
+import petrolpark.mc.library.compat.create.core.world.item.transported.IDirectionalBeltItem;
+import petrolpark.mc.library.util.NBTHelper;
 import com.simibubi.create.content.processing.sequenced.SequencedAssemblyItem;
 
 import net.minecraft.world.item.Item;

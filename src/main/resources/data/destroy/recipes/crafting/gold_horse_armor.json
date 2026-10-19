@@ -10,10 +10,10 @@
         "item": "destroy:nylon"
       },
       "L": {
-        "tag": "forge:leather"
+        "tag": "c:leathers"
       },
       "P": {
-        "tag": "forge:plates/gold"
+        "tag": "c:plates/gold"
       }
     },
     "result": {

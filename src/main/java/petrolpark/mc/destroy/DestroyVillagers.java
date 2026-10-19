@@ -8,16 +8,16 @@ import net.minecraft.world.entity.npc.VillagerProfession;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
-import net.neoforged.neoforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredHolder;
 
 public class DestroyVillagers {
 
     private static final DeferredRegister<PoiType> POI_TYPES = DeferredRegister.create(NeoForgeRegistries.POI_TYPES, Destroy.MOD_ID);
     private static final DeferredRegister<VillagerProfession> VILLAGER_PROFESSIONS = DeferredRegister.create(NeoForgeRegistries.VILLAGER_PROFESSIONS, Destroy.MOD_ID);
 
-    public static final RegistryObject<PoiType> AGING_BARREL_POI = POI_TYPES.register("aging_barrel_poi", () -> new PoiType(ImmutableSet.copyOf(DestroyBlocks.AGING_BARREL.get().getStateDefinition().getPossibleStates()), 1, 1));
+    public static final DeferredHolder<PoiType, PoiType> AGING_BARREL_POI = POI_TYPES.register("aging_barrel_poi", () -> new PoiType(ImmutableSet.copyOf(DestroyBlocks.AGING_BARREL.get().getStateDefinition().getPossibleStates()), 1, 1));
     
-    public static final RegistryObject<VillagerProfession> INNKEEPER = VILLAGER_PROFESSIONS.register("innkeeper", () -> new VillagerProfession(
+    public static final DeferredHolder<VillagerProfession, VillagerProfession> INNKEEPER = VILLAGER_PROFESSIONS.register("innkeeper", () -> new VillagerProfession(
         "innkeeper",
         poi -> poi.get() == AGING_BARREL_POI.get(),
         poi -> poi.get() == AGING_BARREL_POI.get(),

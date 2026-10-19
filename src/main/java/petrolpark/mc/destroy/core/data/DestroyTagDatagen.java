@@ -1,6 +1,5 @@
 package petrolpark.mc.destroy.core.data;
 
-import com.petrolpark.compat.CompatMods;
 import petrolpark.mc.destroy.Destroy;
 import petrolpark.mc.destroy.DestroyItems;
 import petrolpark.mc.destroy.DestroyTags;
@@ -34,27 +33,19 @@ public class DestroyTagDatagen {
             .addTag(DestroyTags.Items.SPRAY_BOTTLES.tag)
             .addTag(DestroyTags.Items.SYRINGES.tag);
 
-        // Curios Tags
-        prov.tag(TagKey.create(Registries.ITEM, CompatMods.CURIOS.asResource("head")))
-            .add(DestroyItems.LABORATORY_GOGGLES.get(), DestroyItems.GOLD_LABORATORY_GOGGLES.get(), DestroyItems.PAPER_MASK.get());
 
         // Destroy Tags
         prov.tag(DestroyTags.Items.CHEMICAL_PROTECTION_EYES.tag)
             .add(AllItems.GOGGLES.get())
-            .addOptionalTag(CompatMods.BIG_CANNONS.asResource("gas_mask"));
         prov.tag(DestroyTags.Items.CHEMICAL_PROTECTION_HEAD.tag)
-            .addOptionalTag(CompatMods.BIG_CANNONS.asResource("gas_mask"));
         prov.tag(DestroyTags.Items.CHEMICAL_PROTECTION_NOSE.tag)
-            .addOptionalTag(CompatMods.BIG_CANNONS.asResource("gas_mask"));
         prov.tag(DestroyTags.Items.CHEMICAL_PROTECTION_MOUTH.tag)
-            .addOptionalTag(CompatMods.BIG_CANNONS.asResource("gas_mask"));
         prov.tag(DestroyTags.Items.EYES.tag)
             .add(Items.SPIDER_EYE, Items.ENDER_EYE);
         prov.tag(DestroyTags.Items.FERTILIZERS.tag)
             .add(Items.ROTTEN_FLESH, Items.ROOTED_DIRT, Items.BONE_MEAL);
         prov.tag(DestroyTags.Items.SCHEMATICANNON_FUELS.tag)
             .add(Items.GUNPOWDER)
-            .addOptional(CompatMods.BIG_CANNONS.asResource("packed_gunpowder"))
             .addTag(DestroyTags.Items.PRIMARY_EXPLOSIVES.tag)
             .addTag(DestroyTags.Items.SECONDARY_EXPLOSIVES.tag);
         prov.tag(DestroyTags.Items.TEST_TUBE_RACK_STORABLE.tag)

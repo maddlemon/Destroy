@@ -10,13 +10,13 @@
         "item": "create:shaft"
       },
       "P": {
-        "tag": "forge:ingots/copper"
+        "tag": "c:ingots/copper"
       },
       "A": {
         "item": "create:andesite_alloy"
       },
       "R": {
-        "tag": "forge:raw_materials/iron"
+        "tag": "c:raw_materials/iron"
       },
       "B": {
         "tag": "minecraft:coals"

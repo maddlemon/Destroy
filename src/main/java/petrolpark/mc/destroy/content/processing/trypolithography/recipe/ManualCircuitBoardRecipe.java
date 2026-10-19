@@ -11,7 +11,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import petrolpark.mc.destroy.DestroyRecipeTypes;
 import petrolpark.mc.destroy.content.processing.trypolithography.CircuitPatternItem;
-import com.petrolpark.recipe.manualonly.ManualOnlyShapedRecipe;
+import petrolpark.mc.library.core.world.item.crafting.ManualOnlyCraftingRecipe;
 
 import net.createmod.catnip.data.Iterate;
 import net.minecraft.core.NonNullList;

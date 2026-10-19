@@ -3,7 +3,7 @@ package petrolpark.mc.destroy.core.chemistry;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.petrolpark.client.ponder.instruction.HighlightTagInstruction;
+import petrolpark.mc.library.core.client.ponder.instruction.HighlightTagInstruction;
 import petrolpark.mc.destroy.DestroyItems;
 import petrolpark.mc.destroy.client.DestroyParticleTypes;
 import petrolpark.mc.destroy.client.DestroyPonderTags;

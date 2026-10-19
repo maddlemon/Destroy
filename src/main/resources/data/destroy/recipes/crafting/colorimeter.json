@@ -12,7 +12,7 @@
             "pattern": "destroy:shared_hard_0"
         },
         "P": {
-            "tag": "forge:plates/stainless_steel"
+            "tag": "c:plates/stainless_steel"
         },
         "E": {
             "tag": "destroy:eyes"
