@@ -1,0 +1,20 @@
+package petrolpark.mc.destroy.compat.jei;
+
+import petrolpark.mc.destroy.compat.jei.recipemanager.ChemicalSpeciesRecipeManagerPlugin;
+
+import mezz.jei.api.ingredients.subtypes.IIngredientSubtypeInterpreter;
+import mezz.jei.api.ingredients.subtypes.UidContext;
+import net.neoforged.neoforge.fluids.FluidStack;
+
+/**
+ * The proper interpretation of Mixtures is done by interpreting all of the contents of the Mixture separately in {@link ChemicalSpeciesRecipeManagerPlugin}.
+*/ 
+public class MixtureFluidSubtypeInterpreter implements IIngredientSubtypeInterpreter<FluidStack> {
+
+    @Override
+    public String apply(FluidStack ingredient, UidContext context) {
+        if (!ingredient.hasTag()) return IIngredientSubtypeInterpreter.NONE;
+        return ingredient.getOrCreateTag().getAsString();
+    };
+    
+};

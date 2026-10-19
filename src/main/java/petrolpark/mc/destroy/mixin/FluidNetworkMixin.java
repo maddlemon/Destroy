@@ -1,0 +1,33 @@
+package petrolpark.mc.destroy.mixin;
+
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import petrolpark.mc.destroy.DestroyFluids;
+import com.simibubi.create.content.fluids.FluidNetwork;
+
+import net.neoforged.neoforge.fluids.FluidStack;
+
+@Mixin(FluidNetwork.class)
+public class FluidNetworkMixin {
+    @WrapOperation(
+            method="Lcom/simibubi/create/content/fluids/FluidNetwork;tick()V",
+            at=@At(
+                    value="INVOKE",
+                    ordinal=0,
+                    target="Lnet/neoforged/neoforge/fluids/FluidStack;isFluidEqual(Lnet/neoforged/neoforge/fluids/FluidStack;)Z"
+            ),
+            remap=false
+    )
+    private boolean considerMixturesEqual(FluidStack fluid, FluidStack other, Operation<Boolean> original) {
+        if(original.call(fluid, other))
+            return true;
+        else if(DestroyFluids.isMixture(fluid) && DestroyFluids.isMixture(other)) {
+            return true;
+        }
+
+        return false;
+    }
+};
