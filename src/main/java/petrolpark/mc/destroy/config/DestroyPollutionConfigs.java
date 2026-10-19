@@ -1,6 +1,6 @@
 package petrolpark.mc.destroy.config;
 
-import petrolpark.mc.destroy.client.DestroyLang;
+import petrolpark.mc.destroy.util.DestroyLang;
 
 public class DestroyPollutionConfigs extends DestroyConfigBase {
 

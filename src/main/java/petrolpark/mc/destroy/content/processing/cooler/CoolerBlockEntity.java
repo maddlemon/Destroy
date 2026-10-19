@@ -15,7 +15,7 @@ import petrolpark.mc.destroy.DestroyTags.Fluids;
 import petrolpark.mc.destroy.chemistry.legacy.LegacySpecies;
 import petrolpark.mc.destroy.chemistry.legacy.ReadOnlyMixture;
 import petrolpark.mc.destroy.chemistry.legacy.index.DestroyMolecules;
-import petrolpark.mc.destroy.client.DestroyLang;
+import petrolpark.mc.destroy.util.DestroyLang;
 import petrolpark.mc.destroy.config.DestroyAllConfigs;
 import petrolpark.mc.destroy.core.pollution.PollutionHelper;
 import com.simibubi.create.AllBlocks;

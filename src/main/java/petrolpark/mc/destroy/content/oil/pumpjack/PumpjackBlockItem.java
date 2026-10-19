@@ -17,7 +17,7 @@ import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.fml.DistExecutor;
+import petrolpark.mc.destroy.Destroy;
 
 public class PumpjackBlockItem extends BlockItem {
 
@@ -29,7 +29,7 @@ public class PumpjackBlockItem extends BlockItem {
     public InteractionResult place(BlockPlaceContext context) {
         InteractionResult result = super.place(context);
         if (result == InteractionResult.FAIL && context.getLevel().isClientSide()) {
-            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> showBounds(context));
+            Destroy.unsafeRunClient(() -> () -> showBounds(context));
         };
         return result;
     };

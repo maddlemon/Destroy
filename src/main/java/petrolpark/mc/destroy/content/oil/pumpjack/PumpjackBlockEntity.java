@@ -42,7 +42,7 @@ import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.common.util.LazyOptional;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
-import net.neoforged.fml.DistExecutor;
+import petrolpark.mc.destroy.Destroy;
 
 public class PumpjackBlockEntity extends SmartBlockEntity implements IHaveGoggleInformation {
 
@@ -99,7 +99,7 @@ public class PumpjackBlockEntity extends SmartBlockEntity implements IHaveGoggle
 
         // Sounds
         if (getLevel().isClientSide()) {
-            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> playClientSound());
+            Destroy.unsafeRunClient(() -> () -> playClientSound());
             return;
         };
 

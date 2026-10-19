@@ -1,7 +1,7 @@
 package petrolpark.mc.destroy.core.item.tooltip;
 
 import petrolpark.mc.destroy.DestroyTags.Items;
-import petrolpark.mc.destroy.client.DestroyLang;
+import petrolpark.mc.destroy.util.DestroyLang;
 import petrolpark.mc.destroy.config.DestroyAllConfigs;
 import com.simibubi.create.foundation.item.TooltipHelper;
 import com.simibubi.create.foundation.item.TooltipModifier;

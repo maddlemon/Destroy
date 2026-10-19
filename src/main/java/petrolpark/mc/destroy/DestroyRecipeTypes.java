@@ -42,8 +42,8 @@ import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 public enum DestroyRecipeTypes implements IRecipeTypeInfo {
     // Processing recipes
@@ -75,9 +75,9 @@ public enum DestroyRecipeTypes implements IRecipeTypeInfo {
     
     // This is alllllll copied from Create source code
     private final ResourceLocation id;
-    private final RegistryObject<RecipeSerializer<?>> serializerObject;
+    private final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<?>> serializerObject;
     @Nullable
-    private final RegistryObject<RecipeType<?>> typeObject;
+    private final DeferredHolder<RecipeType<?>, RecipeType<?>> typeObject;
     private final Supplier<RecipeType<?>> type;
 
     DestroyRecipeTypes(Supplier<RecipeSerializer<?>> serializerSupplier, Supplier<RecipeType<?>> typeSupplier) {

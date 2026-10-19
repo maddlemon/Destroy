@@ -2,7 +2,7 @@ package petrolpark.mc.destroy.core.chemistry.vat;
 
 import java.util.Optional;
 
-import net.createmod.catnip.platform.ForgeCatnipServices;
+import net.createmod.catnip.platform.CatnipServices;
 import org.jetbrains.annotations.NotNull;
 
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -154,14 +154,14 @@ public class VatRenderer extends SafeBlockEntityRenderer<VatControllerBlockEntit
         // Fluids
         FluidStack fluidStack = controller.getLiquidTankContents();
         if (!fluidStack.isEmpty()) {
-            ForgeCatnipServices.FLUID_RENDERER.renderFluidBox(fluidStack,
+            CatnipServices.FLUID_RENDERER.renderFluidBox(fluidStack,
                     (float)relativeInternalLowerCorner.x + 1 / 32f, (float)relativeInternalLowerCorner.y, (float)relativeInternalLowerCorner.z + 1 / 32f,
                     (float)relativeInternalUpperCorner.x - 1 / 32f, relativeFluidLevel, (float)relativeInternalUpperCorner.z - 1 / 32f,
                     bufferSource, ms, light, true, true);
         };
         FluidStack gasStack = MixtureFluid.gasOf(controller.getGasTankContents());
         if (!gasStack.isEmpty()) {
-            ForgeCatnipServices.FLUID_RENDERER.renderFluidBox(gasStack,
+            CatnipServices.FLUID_RENDERER.renderFluidBox(gasStack,
                     (float)relativeInternalLowerCorner.x + 1 / 32f, relativeFluidLevel, (float)relativeInternalLowerCorner.z + 1 / 32f,
                     (float)relativeInternalUpperCorner.x - 1 / 32f, (float)relativeInternalUpperCorner.y, (float)relativeInternalUpperCorner.z - 1 / 32f,
                     bufferSource, ms, light, true, true);

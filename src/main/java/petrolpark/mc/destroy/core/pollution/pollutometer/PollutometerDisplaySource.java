@@ -2,8 +2,8 @@ package petrolpark.mc.destroy.core.pollution.pollutometer;
 
 import javax.annotation.Nullable;
 
-import petrolpark.mc.destroy.core.pollution.Pollution.PollutionType;
-import petrolpark.mc.destroy.client.DestroyLang;
+import petrolpark.mc.destroy.core.pollution.PollutionType;
+import petrolpark.mc.destroy.util.DestroyLang;
 import petrolpark.mc.destroy.core.pollution.PollutionHelper;
 import com.simibubi.create.content.redstone.displayLink.DisplayLinkContext;
 import com.simibubi.create.content.redstone.displayLink.source.PercentOrProgressBarDisplaySource;

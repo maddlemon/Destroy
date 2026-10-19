@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import petrolpark.mc.destroy.client.DestroyLang;
+import petrolpark.mc.destroy.util.DestroyLang;
 import petrolpark.mc.destroy.core.chemistry.basinreaction.ExtendedBasinBehaviour;
 import petrolpark.mc.destroy.core.data.advancement.DestroyAdvancementBehaviour;
 import com.simibubi.create.content.processing.basin.BasinBlockEntity;

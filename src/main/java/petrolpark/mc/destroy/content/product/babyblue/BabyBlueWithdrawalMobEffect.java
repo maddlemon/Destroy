@@ -4,7 +4,7 @@ import petrolpark.mc.destroy.Destroy;
 import petrolpark.mc.destroy.DestroyDamageSources;
 import petrolpark.mc.destroy.DestroyItems;
 import petrolpark.mc.destroy.DestroyMobEffects;
-import petrolpark.mc.destroy.client.DestroyLang;
+import petrolpark.mc.destroy.util.DestroyLang;
 import petrolpark.mc.destroy.config.DestroySubstancesConfigs;
 import petrolpark.mc.destroy.core.mobeffect.UncurableMobEffect;
 

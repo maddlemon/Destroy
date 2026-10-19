@@ -2,7 +2,7 @@ package petrolpark.mc.destroy.core.chemistry.vat.observation;
 
 import petrolpark.mc.destroy.DestroyMessages;
 import petrolpark.mc.destroy.client.DestroyGuiTextures;
-import petrolpark.mc.destroy.client.DestroyLang;
+import petrolpark.mc.destroy.util.DestroyLang;
 import petrolpark.mc.destroy.core.chemistry.vat.VatSideBlockEntity;
 
 public class RedstoneMonitorVatSideScreen extends AbstractQuantityObservingScreen {

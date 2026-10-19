@@ -1,6 +1,6 @@
 package petrolpark.mc.destroy.config;
 
-import petrolpark.mc.destroy.client.DestroyLang.TemperatureUnit;
+import petrolpark.mc.destroy.util.DestroyLang.TemperatureUnit;
 
 public class DestroyClientChemistryConfigs extends DestroyConfigBase {
 

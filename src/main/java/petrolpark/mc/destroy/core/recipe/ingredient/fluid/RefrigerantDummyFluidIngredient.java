@@ -6,7 +6,7 @@ import java.util.List;
 import com.google.gson.JsonObject;
 import petrolpark.mc.destroy.chemistry.legacy.LegacyMixture;
 import petrolpark.mc.destroy.chemistry.legacy.index.DestroyMolecules;
-import petrolpark.mc.destroy.client.DestroyLang;
+import petrolpark.mc.destroy.util.DestroyLang;
 import com.simibubi.create.foundation.item.TooltipHelper;
 
 import net.createmod.catnip.lang.FontHelper;

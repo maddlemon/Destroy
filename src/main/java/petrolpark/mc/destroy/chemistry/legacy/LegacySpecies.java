@@ -20,7 +20,7 @@ import petrolpark.mc.destroy.chemistry.legacy.index.DestroyGroupTypes;
 import petrolpark.mc.destroy.chemistry.legacy.index.DestroyMolecules;
 import petrolpark.mc.destroy.chemistry.naming.INameableProduct;
 import petrolpark.mc.destroy.chemistry.serializer.Branch;
-import petrolpark.mc.destroy.client.DestroyLang;
+import petrolpark.mc.destroy.util.DestroyLang;
 import petrolpark.mc.destroy.core.chemistry.MoleculeRenderer;
 
 import net.createmod.catnip.data.Pair;

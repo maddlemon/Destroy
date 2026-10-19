@@ -10,7 +10,7 @@ import petrolpark.mc.library.compat.create.core.world.item.transported.Direction
 import petrolpark.mc.destroy.Destroy;
 import petrolpark.mc.destroy.DestroyItems;
 import petrolpark.mc.destroy.client.DestroyGuiTextures;
-import petrolpark.mc.destroy.client.DestroyLang;
+import petrolpark.mc.destroy.util.DestroyLang;
 import com.simibubi.create.foundation.item.render.SimpleCustomRenderer;
 
 import net.minecraft.ChatFormatting;

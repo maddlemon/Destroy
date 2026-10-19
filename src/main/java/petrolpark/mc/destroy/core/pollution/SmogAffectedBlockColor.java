@@ -5,7 +5,7 @@ import java.util.function.IntSupplier;
 
 import javax.annotation.Nullable;
 
-import petrolpark.mc.destroy.core.pollution.Pollution.PollutionType;
+import petrolpark.mc.destroy.core.pollution.PollutionType;
 
 import net.createmod.catnip.theme.Color;
 import net.createmod.ponder.api.level.PonderLevel;

@@ -14,7 +14,7 @@ import petrolpark.mc.destroy.config.DestroyAllConfigs;
 import petrolpark.mc.destroy.core.pollution.Pollution;
 import petrolpark.mc.destroy.core.pollution.PollutionHelper;
 import petrolpark.mc.destroy.core.pollution.SyncChunkPollutionS2CPacket;
-import petrolpark.mc.destroy.core.pollution.Pollution.PollutionType;
+import petrolpark.mc.destroy.core.pollution.PollutionType;
 import net.createmod.catnip.data.Couple;
 
 import net.minecraft.core.Holder;

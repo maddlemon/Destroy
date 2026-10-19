@@ -52,7 +52,7 @@ public class DestroyClientModEvents {
     };
 
     /**
-     * Override all the color generators to account for the {@link petrolpark.mc.destroy.core.pollution.Pollution.PollutionType smog level}.
+     * Override all the color generators to account for the {@link petrolpark.mc.destroy.core.pollution.PollutionType smog level}.
      * @param event
      */
     @SubscribeEvent

@@ -2,7 +2,7 @@ package petrolpark.mc.destroy.test;
 
 import java.util.Arrays;
 
-import petrolpark.mc.destroy.content.oil.seismology.SeismographItem.Seismograph;
+import petrolpark.mc.destroy.core.seismology.Seismograph;
 
 public class SeismographTest {
     

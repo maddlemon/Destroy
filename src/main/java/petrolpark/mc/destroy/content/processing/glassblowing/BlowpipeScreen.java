@@ -7,7 +7,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import petrolpark.mc.destroy.DestroyMessages;
 import petrolpark.mc.destroy.client.DestroyFluidRenderer;
 import petrolpark.mc.destroy.client.DestroyGuiTextures;
-import petrolpark.mc.destroy.client.DestroyLang;
+import petrolpark.mc.destroy.util.DestroyLang;
 import com.simibubi.create.foundation.fluid.FluidIngredient;
 import com.simibubi.create.foundation.recipe.RecipeFinder;
 import com.simibubi.create.foundation.utility.CreateLang;

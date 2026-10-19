@@ -6,7 +6,7 @@ import java.util.function.Supplier;
 
 import petrolpark.mc.destroy.DestroyBlocks;
 import petrolpark.mc.destroy.DestroyRecipeTypes;
-import petrolpark.mc.destroy.client.DestroyLang;
+import petrolpark.mc.destroy.util.DestroyLang;
 import com.simibubi.create.compat.jei.category.sequencedAssembly.SequencedAssemblySubCategory;
 import com.simibubi.create.content.processing.recipe.ProcessingRecipe;
 import com.simibubi.create.content.processing.recipe.ProcessingRecipeBuilder.ProcessingRecipeParams;

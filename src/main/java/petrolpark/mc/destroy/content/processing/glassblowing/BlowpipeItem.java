@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import petrolpark.mc.destroy.DestroyAdvancementTrigger;
-import petrolpark.mc.destroy.client.DestroyLang;
+import petrolpark.mc.destroy.util.DestroyLang;
 import petrolpark.mc.destroy.core.block.IPickUpPutDownBlock;
 import petrolpark.mc.destroy.core.chemistry.hazard.ChemistryHazardHelper;
 import com.simibubi.create.content.kinetics.deployer.DeployerFakePlayer;
@@ -51,7 +51,7 @@ import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
 import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
-import net.neoforged.fml.DistExecutor;
+import petrolpark.mc.destroy.Destroy;
 
 public class BlowpipeItem extends BlockItem implements CustomArmPoseItem {
 
@@ -71,7 +71,7 @@ public class BlowpipeItem extends BlockItem implements CustomArmPoseItem {
 
         // Choosing a recipe
         if (!(player instanceof FakePlayer) && ((player.isShiftKeyDown() && progress == 0) || recipe == null)) {
-            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> openScreen(hand));
+            Destroy.unsafeRunClient(() -> () -> openScreen(hand));
             return InteractionResultHolder.success(stack);
         };
 

@@ -28,7 +28,6 @@ import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.BlockHitResult;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.fml.DistExecutor;
 
 public class KeypunchBlock extends HorizontalKineticBlock implements IBE<KeypunchBlockEntity>, ICogWheel {
     
@@ -54,7 +53,7 @@ public class KeypunchBlock extends HorizontalKineticBlock implements IBE<Keypunc
         if (AllItems.WRENCH.isIn(player.getItemInHand(hand))) return InteractionResult.PASS;
 
         return onBlockEntityUse(level, pos, be -> {
-            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> displayScreen(be, player));
+            Destroy.unsafeRunClient(() -> () -> displayScreen(be, player));
             return InteractionResult.SUCCESS;
         });
     };

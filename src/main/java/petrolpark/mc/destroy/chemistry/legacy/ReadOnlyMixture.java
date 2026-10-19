@@ -15,7 +15,7 @@ import javax.annotation.Nullable;
 import petrolpark.mc.destroy.Destroy;
 import petrolpark.mc.destroy.chemistry.api.util.Constants;
 import petrolpark.mc.destroy.chemistry.legacy.index.DestroyMolecules;
-import petrolpark.mc.destroy.client.DestroyLang;
+import petrolpark.mc.destroy.util.DestroyLang;
 
 import net.createmod.catnip.nbt.NBTHelper;
 import net.minecraft.ChatFormatting;

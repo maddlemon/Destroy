@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import petrolpark.mc.destroy.Destroy;
-import petrolpark.mc.destroy.client.DestroyLang;
+import petrolpark.mc.destroy.util.DestroyLang;
 import petrolpark.mc.destroy.content.processing.trypolithography.keypunch.ICircuitPuncher;
 
 import net.createmod.catnip.levelWrappers.WorldHelper;

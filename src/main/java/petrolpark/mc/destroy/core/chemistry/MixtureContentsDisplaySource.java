@@ -8,8 +8,8 @@ import javax.annotation.Nullable;
 
 import petrolpark.mc.destroy.chemistry.legacy.ClientMixture;
 import petrolpark.mc.destroy.chemistry.legacy.ReadOnlyMixture;
-import petrolpark.mc.destroy.client.DestroyLang;
-import petrolpark.mc.destroy.client.DestroyLang.TemperatureUnit;
+import petrolpark.mc.destroy.util.DestroyLang;
+import petrolpark.mc.destroy.util.DestroyLang.TemperatureUnit;
 import com.simibubi.create.api.behaviour.display.DisplaySource;
 import com.simibubi.create.content.redstone.displayLink.DisplayLinkContext;
 import com.simibubi.create.content.redstone.displayLink.target.DisplayTargetStats;

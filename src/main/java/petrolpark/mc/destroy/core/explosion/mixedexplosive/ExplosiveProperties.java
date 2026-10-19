@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import petrolpark.mc.destroy.Destroy;
-import petrolpark.mc.destroy.client.DestroyLang;
+import petrolpark.mc.destroy.util.DestroyLang;
 import petrolpark.mc.destroy.util.DestroyReloadListener;
 import net.createmod.catnip.lang.Lang;
 

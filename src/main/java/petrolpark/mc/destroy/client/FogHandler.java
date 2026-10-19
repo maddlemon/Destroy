@@ -3,7 +3,7 @@ package petrolpark.mc.destroy.client;
 import petrolpark.mc.destroy.Destroy;
 import petrolpark.mc.destroy.DestroyClient;
 import petrolpark.mc.destroy.config.DestroyAllConfigs;
-import petrolpark.mc.destroy.core.pollution.Pollution.PollutionType;
+import petrolpark.mc.destroy.core.pollution.PollutionType;
 import petrolpark.mc.destroy.core.pollution.PollutionHelper;
 
 import net.createmod.catnip.animation.AnimationTickHolder;

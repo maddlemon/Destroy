@@ -1,7 +1,7 @@
 package petrolpark.mc.destroy;
 
 import static petrolpark.mc.destroy.Destroy.REGISTRATE;
-import static com.simibubi.create.AllTags.forgeItemTag;
+import static com.simibubi.create.AllTags.commonItemTag;
 
 import petrolpark.mc.library.compat.Mods;
 import petrolpark.mc.library.compat.curios.PetrolparkCuriosSetup;

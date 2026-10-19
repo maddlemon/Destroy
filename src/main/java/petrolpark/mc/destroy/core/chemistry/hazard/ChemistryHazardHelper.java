@@ -14,9 +14,9 @@ import petrolpark.mc.destroy.chemistry.legacy.LegacyElement;
 import petrolpark.mc.destroy.chemistry.legacy.LegacySpecies;
 import petrolpark.mc.destroy.chemistry.legacy.ReadOnlyMixture;
 import petrolpark.mc.destroy.chemistry.legacy.index.DestroyMolecules;
-import petrolpark.mc.destroy.client.DestroyLang;
+import petrolpark.mc.destroy.util.DestroyLang;
 import petrolpark.mc.destroy.config.DestroySubstancesConfigs;
-import petrolpark.mc.destroy.core.pollution.Pollution.PollutionType;
+import petrolpark.mc.destroy.core.pollution.PollutionType;
 import petrolpark.mc.destroy.core.pollution.PollutionHelper;
 
 import net.minecraft.nbt.CompoundTag;

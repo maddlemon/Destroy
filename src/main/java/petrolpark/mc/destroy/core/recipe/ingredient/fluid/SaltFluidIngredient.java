@@ -11,7 +11,7 @@ import petrolpark.mc.destroy.chemistry.legacy.LegacySpecies;
 import petrolpark.mc.destroy.chemistry.legacy.ReadOnlyMixture;
 import petrolpark.mc.destroy.chemistry.legacy.index.DestroyMolecules;
 import petrolpark.mc.destroy.chemistry.naming.NamedSalt;
-import petrolpark.mc.destroy.client.DestroyLang;
+import petrolpark.mc.destroy.util.DestroyLang;
 import petrolpark.mc.destroy.config.DestroyAllConfigs;
 import com.simibubi.create.foundation.item.TooltipHelper;
 import net.createmod.catnip.lang.FontHelper.Palette;

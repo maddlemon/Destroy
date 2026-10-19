@@ -11,7 +11,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import petrolpark.mc.destroy.DestroyMessages;
 import petrolpark.mc.destroy.client.DestroyGuiTextures;
 import petrolpark.mc.destroy.client.DestroyIcons;
-import petrolpark.mc.destroy.client.DestroyLang;
+import petrolpark.mc.destroy.util.DestroyLang;
 import petrolpark.mc.destroy.config.DestroyAllConfigs;
 import petrolpark.mc.destroy.content.redstone.programmer.RedstoneProgram.Channel;
 import petrolpark.mc.destroy.content.redstone.programmer.RedstoneProgram.PlayMode;

@@ -5,7 +5,7 @@ import java.util.function.Consumer;
 
 import org.joml.Vector3f;
 
-import petrolpark.mc.destroy.client.DestroyLang;
+import petrolpark.mc.destroy.util.DestroyLang;
 import petrolpark.mc.destroy.core.block.IPickUpPutDownBlock;
 import petrolpark.mc.destroy.core.chemistry.storage.IMixtureStorageItem;
 import petrolpark.mc.destroy.core.chemistry.storage.ItemMixtureTank;
@@ -40,7 +40,7 @@ import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
 import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
-import net.neoforged.fml.DistExecutor;
+import petrolpark.mc.destroy.Destroy;
 
 public class MeasuringCylinderBlockItem extends PlaceableMixtureTankItem<MeasuringCylinderBlock> implements ISimpleMixtureTankRenderInformation<ItemStack> {
 
@@ -61,7 +61,7 @@ public class MeasuringCylinderBlockItem extends PlaceableMixtureTankItem<Measuri
             Component itemName = mixtureItem.getNameRegardlessOfFluid(stack);
             Component blockName = state.getBlock().getName();
 
-            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> openTransferScreen(pos, face, hand,
+            Destroy.unsafeRunClient(() -> () -> openTransferScreen(pos, face, hand,
                     new ValueSettingsBoard(
                             DestroyLang.translate("tooltip.measuring_cylinder", blockToItem ? blockName : itemName, blockToItem ? itemName : blockName).component(),
                             maxTransfer,

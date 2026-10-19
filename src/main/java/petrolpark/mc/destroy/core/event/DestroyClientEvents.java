@@ -3,7 +3,7 @@ package petrolpark.mc.destroy.core.event;
 import com.mojang.datafixers.util.Either;
 import petrolpark.mc.destroy.Destroy;
 import petrolpark.mc.destroy.DestroyClient;
-import petrolpark.mc.destroy.client.DestroyLang;
+import petrolpark.mc.destroy.util.DestroyLang;
 import petrolpark.mc.destroy.content.oil.seismology.SeismometerItemRenderer;
 import petrolpark.mc.destroy.content.tool.swissarmyknife.SwissArmyKnifeItem;
 import petrolpark.mc.destroy.core.block.entity.BlockEntityBehaviourRenderer;

@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import petrolpark.mc.destroy.DestroyRecipeTypes;
-import petrolpark.mc.destroy.client.DestroyLang;
+import petrolpark.mc.destroy.util.DestroyLang;
 import petrolpark.mc.destroy.content.product.periodictable.ElementTankFillingRecipe;
 import petrolpark.mc.destroy.core.block.entity.IHaveLabGoggleInformation;
 import petrolpark.mc.destroy.core.fluid.GeniusFluidTankBehaviour;

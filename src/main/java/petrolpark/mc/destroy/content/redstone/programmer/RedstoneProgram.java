@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.function.Supplier;
 
 import com.google.common.collect.ImmutableList;
-import petrolpark.mc.destroy.client.DestroyLang;
+import petrolpark.mc.destroy.util.DestroyLang;
 import petrolpark.mc.destroy.config.DestroyAllConfigs;
 import com.simibubi.create.Create;
 import com.simibubi.create.content.redstone.link.IRedstoneLinkable;

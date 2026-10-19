@@ -72,7 +72,7 @@ public enum DestroyParticleTypes {
 
         private final String name; // ID of this particle
         private final Supplier<? extends ICustomParticleData<T>> typeProvider; // The class initializer for this Particle
-        private final RegistryObject<ParticleType<T>> object; // This Particle's Registry entry
+        private final DeferredHolder<ParticleType<?>, ParticleType<T>> object; // This Particle's Registry entry
 
         public ParticleEntry(String name, Supplier<? extends ICustomParticleData<T>> typeProvider) {
             this.name = name;

@@ -1,7 +1,7 @@
 package petrolpark.mc.destroy.chemistry.naming;
 
 import petrolpark.mc.destroy.chemistry.legacy.LegacySpecies;
-import petrolpark.mc.destroy.client.DestroyLang;
+import petrolpark.mc.destroy.util.DestroyLang;
 
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;

@@ -1,6 +1,6 @@
 package petrolpark.mc.destroy.core.pollution;
 
-import petrolpark.mc.destroy.core.pollution.Pollution.PollutionType;
+import petrolpark.mc.destroy.core.pollution.PollutionType;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.chunk.ChunkRenderDispatcher.RenderChunk;

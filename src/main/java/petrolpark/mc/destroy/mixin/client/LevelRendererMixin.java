@@ -14,7 +14,7 @@ import petrolpark.mc.destroy.core.fluid.TintedSplashParticle;
 import petrolpark.mc.destroy.core.pollution.ClientLevelPollutionData;
 import petrolpark.mc.destroy.core.pollution.Pollution;
 import petrolpark.mc.destroy.core.pollution.PollutionHelper;
-import petrolpark.mc.destroy.core.pollution.Pollution.PollutionType;
+import petrolpark.mc.destroy.core.pollution.PollutionType;
 
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -31,7 +31,7 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 /**
- * Mixin to Level Renderer to change the color of rain depending on the {@link petrolpark.mc.destroy.core.pollution.Pollution.PollutionType#ACID_RAIN acid rain} level.
+ * Mixin to Level Renderer to change the color of rain depending on the {@link petrolpark.mc.destroy.core.pollution.PollutionType#ACID_RAIN acid rain} level.
  */
 @Mixin(LevelRenderer.class)
 public class LevelRendererMixin {

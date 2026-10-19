@@ -2,7 +2,7 @@ package petrolpark.mc.destroy.core.debug;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
-import petrolpark.mc.destroy.client.DestroyLang;
+import petrolpark.mc.destroy.util.DestroyLang;
 
 import com.simibubi.create.api.contraption.BlockMovementChecks;
 import net.createmod.catnip.data.Iterate;

@@ -5,7 +5,7 @@ import java.util.Random;
 import petrolpark.mc.destroy.DestroyFluids;
 import petrolpark.mc.destroy.DestroyMessages;
 import petrolpark.mc.destroy.core.fluid.gasparticle.EvaporatingFluidS2CPacket;
-import petrolpark.mc.destroy.core.pollution.Pollution.PollutionType;
+import petrolpark.mc.destroy.core.pollution.PollutionType;
 import com.simibubi.create.api.effect.OpenPipeEffectHandler;
 
 import net.minecraft.core.BlockPos;

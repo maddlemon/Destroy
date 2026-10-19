@@ -1,7 +1,7 @@
 package petrolpark.mc.destroy;
 
 import static petrolpark.mc.destroy.Destroy.REGISTRATE;
-import static com.simibubi.create.AllTags.forgeItemTag;
+import static com.simibubi.create.AllTags.commonItemTag;
 import static com.simibubi.create.api.behaviour.display.DisplaySource.displaySource;
 import static com.simibubi.create.foundation.data.CreateRegistrate.casingConnectivity;
 import static com.simibubi.create.foundation.data.CreateRegistrate.connectedTextures;

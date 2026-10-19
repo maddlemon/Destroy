@@ -4,7 +4,7 @@ import java.text.DecimalFormat;
 import java.util.List;
 
 import petrolpark.mc.destroy.DestroyAdvancementTrigger;
-import petrolpark.mc.destroy.client.DestroyLang;
+import petrolpark.mc.destroy.util.DestroyLang;
 import petrolpark.mc.destroy.config.DestroyAllConfigs;
 import petrolpark.mc.destroy.core.block.entity.IHaveLabGoggleInformation;
 import petrolpark.mc.destroy.core.data.advancement.DestroyAdvancementBehaviour;

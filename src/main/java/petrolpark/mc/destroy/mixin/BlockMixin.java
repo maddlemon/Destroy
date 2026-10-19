@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import petrolpark.mc.destroy.core.pollution.PollutionHelper;
 import petrolpark.mc.destroy.DestroyTags;
-import petrolpark.mc.destroy.core.pollution.Pollution.PollutionType;
+import petrolpark.mc.destroy.core.pollution.PollutionType;
 import net.createmod.catnip.data.Pair;
 
 import net.minecraft.core.BlockPos;

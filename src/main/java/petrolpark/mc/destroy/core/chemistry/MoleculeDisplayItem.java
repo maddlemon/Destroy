@@ -10,8 +10,8 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import petrolpark.mc.destroy.DestroyItems;
 import petrolpark.mc.destroy.chemistry.legacy.LegacySpecies;
 import petrolpark.mc.destroy.chemistry.legacy.LegacySpeciesTag;
-import petrolpark.mc.destroy.client.DestroyLang;
-import petrolpark.mc.destroy.client.DestroyLang.TemperatureUnit;
+import petrolpark.mc.destroy.util.DestroyLang;
+import petrolpark.mc.destroy.util.DestroyLang.TemperatureUnit;
 import petrolpark.mc.destroy.config.DestroyAllConfigs;
 import petrolpark.mc.destroy.core.item.tooltip.DestroyTooltipComponent;
 

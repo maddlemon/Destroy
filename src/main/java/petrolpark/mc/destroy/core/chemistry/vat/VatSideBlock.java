@@ -53,7 +53,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.neoforged.fml.DistExecutor;
+import petrolpark.mc.destroy.Destroy;
 
 public class VatSideBlock extends CopycatBlock implements SpecialBlockItemRequirement, ISpecialMixtureContainerBlock {
 
@@ -73,7 +73,7 @@ public class VatSideBlock extends CopycatBlock implements SpecialBlockItemRequir
         return onBlockEntityUse(level, pos, be -> {
             if (!(be instanceof VatSideBlockEntity vbe)) return InteractionResult.PASS;
             if (vbe.getDisplayType().quantityObserved.isPresent()) {
-                DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> openScreen(vbe, player));
+                Destroy.unsafeRunClient(() -> () -> openScreen(vbe, player));
                 return InteractionResult.SUCCESS;
             };
             return InteractionResult.PASS;

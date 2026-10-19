@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import petrolpark.mc.destroy.DestroyItems;
 import petrolpark.mc.destroy.config.DestroyAllConfigs;
 import petrolpark.mc.destroy.core.pollution.PollutionHelper;
-import petrolpark.mc.destroy.core.pollution.Pollution.PollutionType;
+import petrolpark.mc.destroy.core.pollution.PollutionType;
 import petrolpark.mc.destroy.mixin.accessor.AbstractVillagerAccessor;
 import petrolpark.mc.destroy.mixin.accessor.AgeableMobAccessor;
 import petrolpark.mc.destroy.mixin.accessor.VillagerAccessor;

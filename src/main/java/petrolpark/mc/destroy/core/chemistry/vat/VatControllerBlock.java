@@ -33,7 +33,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.neoforged.fml.DistExecutor;
+import petrolpark.mc.destroy.Destroy;
 
 public class VatControllerBlock extends HorizontalDirectionalBlock implements IBE<VatControllerBlockEntity>, ISpecialMixtureContainerBlock, IWrenchable {
 
@@ -63,7 +63,7 @@ public class VatControllerBlock extends HorizontalDirectionalBlock implements IB
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         return onBlockEntityUse(level, pos, be -> {
             if (be.getVatOptional().isPresent()) {
-                DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> displayScreen(be, player));
+                Destroy.unsafeRunClient(() -> () -> displayScreen(be, player));
             } else if (!level.isClientSide()) {
                 boolean success = be.tryMakeVat();
                 SoundEvent sound = success ? AllSoundEvents.CONFIRM.getMainEvent() : AllSoundEvents.DENY.getMainEvent();

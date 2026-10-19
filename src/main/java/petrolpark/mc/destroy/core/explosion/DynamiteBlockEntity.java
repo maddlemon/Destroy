@@ -5,7 +5,7 @@ import static petrolpark.mc.library.compat.create.PetrolparkCreateClient.OUTLINE
 import java.util.Arrays;
 import java.util.List;
 
-import petrolpark.mc.destroy.client.DestroyLang;
+import petrolpark.mc.destroy.util.DestroyLang;
 import petrolpark.mc.destroy.config.DestroyAllConfigs;
 import petrolpark.mc.destroy.core.bettervaluesettings.SidedScrollValueBehaviour;
 import petrolpark.mc.destroy.core.block.entity.ISpecialWhenHoveredBlockEntity;

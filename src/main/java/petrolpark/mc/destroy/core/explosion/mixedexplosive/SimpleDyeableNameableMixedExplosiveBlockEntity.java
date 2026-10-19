@@ -28,11 +28,9 @@ import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.gameevent.GameEventListener;
 import net.minecraft.world.level.gameevent.PositionSource;
 import net.minecraft.world.level.gameevent.vibrations.VibrationSystem;
-import net.neoforged.api.distmarker.Dist;
 import net.neoforged.neoforge.capabilities.Capability;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.common.util.LazyOptional;
-import net.neoforged.fml.DistExecutor;
 import net.neoforged.neoforge.items.IItemHandler;
 
 public abstract class SimpleDyeableNameableMixedExplosiveBlockEntity extends SmartBlockEntity implements IDyeableMixedExplosiveBlockEntity, GameEventListener.Holder<VibrationSystem.Listener>, VibrationSystem {
@@ -121,7 +119,7 @@ public abstract class SimpleDyeableNameableMixedExplosiveBlockEntity extends Sma
     public void setColor(int color) {
         boolean rerender = color != this.color;
         this.color = color;
-        if (rerender) DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> IDyeableMixedExplosiveBlockEntity.reRender(getLevel(), getBlockPos()));
+        if (rerender) Destroy.unsafeRunClient(() -> () -> IDyeableMixedExplosiveBlockEntity.reRender(getLevel(), getBlockPos()));
         notifyUpdate();
     };
 

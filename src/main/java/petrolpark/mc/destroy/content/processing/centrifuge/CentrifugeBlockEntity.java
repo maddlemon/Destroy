@@ -22,7 +22,7 @@ import petrolpark.mc.destroy.chemistry.legacy.LegacyMixture;
 import petrolpark.mc.destroy.chemistry.legacy.LegacySpecies;
 import petrolpark.mc.destroy.chemistry.legacy.LegacyMixture.Phases;
 import petrolpark.mc.destroy.chemistry.minecraft.MixtureFluid;
-import petrolpark.mc.destroy.client.DestroyLang;
+import petrolpark.mc.destroy.util.DestroyLang;
 import petrolpark.mc.destroy.config.DestroyAllConfigs;
 import petrolpark.mc.destroy.content.processing.centrifuge.potion.PotionSeparationRecipes;
 import petrolpark.mc.destroy.core.block.entity.IDirectionalOutputFluidBlockEntity;

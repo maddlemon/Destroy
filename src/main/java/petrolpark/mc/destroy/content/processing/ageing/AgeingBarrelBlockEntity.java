@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 
 import petrolpark.mc.destroy.DestroyRecipeTypes;
 import petrolpark.mc.destroy.DestroySoundEvents;
-import petrolpark.mc.destroy.client.DestroyLang;
+import petrolpark.mc.destroy.util.DestroyLang;
 import petrolpark.mc.destroy.core.pollution.PollutingBehaviour;
 import com.simibubi.create.content.kinetics.belt.behaviour.DirectBeltInputBehaviour;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;

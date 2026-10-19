@@ -7,7 +7,7 @@ import petrolpark.mc.destroy.DestroyMessages;
 import petrolpark.mc.destroy.chemistry.legacy.LegacySpecies;
 import petrolpark.mc.destroy.client.DestroyGuiTextures;
 import petrolpark.mc.destroy.client.DestroyIcons;
-import petrolpark.mc.destroy.client.DestroyLang;
+import petrolpark.mc.destroy.util.DestroyLang;
 import petrolpark.mc.destroy.config.DestroyAllConfigs;
 import petrolpark.mc.destroy.core.chemistry.MoleculeRenderer;
 import petrolpark.mc.destroy.core.chemistry.vat.observation.AbstractQuantityObservingScreen;

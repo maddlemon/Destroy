@@ -7,7 +7,7 @@ import java.util.Map.Entry;
 import petrolpark.mc.destroy.chemistry.legacy.index.DestroyMolecules;
 import petrolpark.mc.destroy.chemistry.naming.INameableProduct;
 import petrolpark.mc.destroy.chemistry.naming.NamedSalt;
-import petrolpark.mc.destroy.client.DestroyLang;
+import petrolpark.mc.destroy.util.DestroyLang;
 import petrolpark.mc.destroy.config.DestroyAllConfigs;
 
 import net.createmod.catnip.theme.Color;

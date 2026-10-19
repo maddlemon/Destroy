@@ -11,14 +11,14 @@ import org.jetbrains.annotations.NotNull;
 import org.joml.Math;
 
 import petrolpark.mc.destroy.DestroyBlocks;
-import petrolpark.mc.destroy.client.DestroyLang;
-import petrolpark.mc.destroy.client.DestroyLang.TemperatureUnit;
+import petrolpark.mc.destroy.util.DestroyLang;
+import petrolpark.mc.destroy.util.DestroyLang.TemperatureUnit;
 import petrolpark.mc.destroy.config.DestroyAllConfigs;
 import petrolpark.mc.destroy.core.block.entity.IHaveLabGoggleInformation;
 import petrolpark.mc.destroy.core.chemistry.vat.material.VatMaterial;
 import petrolpark.mc.destroy.core.chemistry.vat.observation.RedstoneQuantityMonitorBehaviour;
 import petrolpark.mc.destroy.core.chemistry.vat.uv.IUVLampBlock;
-import petrolpark.mc.destroy.core.pollution.Pollution.PollutionType;
+import petrolpark.mc.destroy.core.pollution.PollutionType;
 import petrolpark.mc.destroy.core.pollution.PollutionHelper;
 import com.simibubi.create.api.equipment.goggles.IHaveHoveringInformation;
 import com.simibubi.create.content.contraptions.StructureTransform;

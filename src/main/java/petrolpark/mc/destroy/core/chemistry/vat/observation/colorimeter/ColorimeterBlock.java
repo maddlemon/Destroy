@@ -36,7 +36,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.fml.DistExecutor;
+import petrolpark.mc.destroy.Destroy;
 
 public class ColorimeterBlock extends HorizontalDirectionalBlock implements IBE<ColorimeterBlockEntity>, IWrenchable {
 
@@ -80,7 +80,7 @@ public class ColorimeterBlock extends HorizontalDirectionalBlock implements IBE<
                 if (DestroyFluids.isMixture(fluid)) species.addAll(ReadOnlyMixture.readNBT(ReadOnlyMixture::new, fluid.getOrCreateChildTag("Mixture")).getContents(false));
             };
 
-            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> openScreen(be, species, player));
+            Destroy.unsafeRunClient(() -> () -> openScreen(be, species, player));
             return InteractionResult.SUCCESS;
         });
     };

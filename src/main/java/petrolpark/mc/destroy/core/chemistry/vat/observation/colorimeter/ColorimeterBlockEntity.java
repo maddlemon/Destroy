@@ -10,7 +10,7 @@ import petrolpark.mc.destroy.DestroyBlockEntityTypes;
 import petrolpark.mc.destroy.DestroyFluids;
 import petrolpark.mc.destroy.chemistry.legacy.LegacySpecies;
 import petrolpark.mc.destroy.chemistry.legacy.ReadOnlyMixture;
-import petrolpark.mc.destroy.client.DestroyLang;
+import petrolpark.mc.destroy.util.DestroyLang;
 import petrolpark.mc.destroy.core.chemistry.MixtureContentsDisplaySource;
 import petrolpark.mc.destroy.core.chemistry.vat.VatControllerBlockEntity;
 import petrolpark.mc.destroy.core.chemistry.vat.material.VatMaterial;

@@ -5,7 +5,7 @@ import java.util.List;
 import com.mojang.blaze3d.vertex.PoseStack;
 import petrolpark.mc.destroy.client.DestroyGuiTextures;
 import petrolpark.mc.destroy.client.DestroyIcons;
-import petrolpark.mc.destroy.client.DestroyLang;
+import petrolpark.mc.destroy.util.DestroyLang;
 import com.simibubi.create.foundation.gui.AllIcons;
 import com.simibubi.create.foundation.gui.menu.AbstractSimiContainerScreen;
 import com.simibubi.create.foundation.gui.widget.IconButton;

@@ -23,7 +23,7 @@ import petrolpark.mc.destroy.chemistry.legacy.LegacyMixture.ReactionContext;
 import petrolpark.mc.destroy.chemistry.legacy.LegacyReaction;
 import petrolpark.mc.destroy.chemistry.legacy.ReadOnlyMixture;
 import petrolpark.mc.destroy.chemistry.minecraft.MixtureFluid;
-import petrolpark.mc.destroy.client.DestroyLang;
+import petrolpark.mc.destroy.util.DestroyLang;
 import petrolpark.mc.destroy.config.DestroyAllConfigs;
 import petrolpark.mc.destroy.core.block.entity.IHaveLabGoggleInformation;
 import petrolpark.mc.destroy.core.block.entity.ISpecialWhenHoveredBlockEntity;
