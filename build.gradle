@@ -177,6 +177,7 @@ java {
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
+    options.compilerArgs << '-Xmaxerrs' << '10000' // show the full error list during the port
 }
 
 tasks.withType(Copy) {

@@ -36,10 +36,7 @@ public class DestroyTagDatagen {
 
         // Destroy Tags
         prov.tag(DestroyTags.Items.CHEMICAL_PROTECTION_EYES.tag)
-            .add(AllItems.GOGGLES.get())
-        prov.tag(DestroyTags.Items.CHEMICAL_PROTECTION_HEAD.tag)
-        prov.tag(DestroyTags.Items.CHEMICAL_PROTECTION_NOSE.tag)
-        prov.tag(DestroyTags.Items.CHEMICAL_PROTECTION_MOUTH.tag)
+            .add(AllItems.GOGGLES.get());
         prov.tag(DestroyTags.Items.EYES.tag)
             .add(Items.SPIDER_EYE, Items.ENDER_EYE);
         prov.tag(DestroyTags.Items.FERTILIZERS.tag)
