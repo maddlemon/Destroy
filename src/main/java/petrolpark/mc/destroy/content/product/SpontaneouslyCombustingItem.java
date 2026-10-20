@@ -19,7 +19,7 @@ public class SpontaneouslyCombustingItem extends Item {
         super.inventoryTick(stack, level, entity, pSlotId, pIsSelected);
         if (level.getRandom().nextInt(1200) == 0) {
             stack.shrink(1);
-            entity.setSecondsOnFire(3);
+            entity.igniteForSeconds(3);
         };
     };
 

@@ -7,8 +7,7 @@ import java.util.function.Supplier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.registries.NeoForgeRegistries;
-import net.neoforged.neoforge.registries.tags.ITag;
+import net.minecraft.core.registries.BuiltInRegistries;
 
 public interface IItemReactant {
     
@@ -93,9 +92,8 @@ public interface IItemReactant {
 
         @Override
         public List<ItemStack> getDisplayedItemStacks() {
-            ITag<Item> tagIterable = NeoForgeRegistries.ITEMS.tags().getTag(tag);
-            List<ItemStack> displayedStacks = new ArrayList<>(tagIterable.size());
-            tagIterable.forEach(item -> displayedStacks.add(new ItemStack(item)));
+            List<ItemStack> displayedStacks = new ArrayList<>();
+            BuiltInRegistries.ITEM.getTag(tag).ifPresent(holders -> holders.forEach(holder -> displayedStacks.add(new ItemStack(holder.value()))));
             return displayedStacks;
         };
 

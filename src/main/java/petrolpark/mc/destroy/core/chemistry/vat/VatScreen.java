@@ -202,7 +202,7 @@ public class VatScreen extends AbstractSimiScreen {
     };
 
     @Override
-	public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
+	public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double delta) {
         if (moleculeScrollArea.contains((int)mouseX, (int)mouseY)) {
             float chaseTarget = moleculeScroll.getChaseTarget();
             float max = 37 - 169;

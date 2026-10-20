@@ -7,11 +7,13 @@ import javax.annotation.Nullable;
 import petrolpark.mc.destroy.DestroyBlockEntityTypes;
 import petrolpark.mc.destroy.DestroyVoxelShapes;
 import petrolpark.mc.destroy.core.block.IPickUpPutDownBlock;
+import petrolpark.mc.destroy.util.BlockUseHelper;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
 import com.simibubi.create.foundation.block.IBE;
 import com.simibubi.create.foundation.block.ProperWaterloggedBlock;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -58,6 +60,13 @@ public class RedstoneProgrammerBlock extends HorizontalDirectionalBlock implemen
     };
 
     @Override
+    protected ItemInteractionResult useItemOn(ItemStack heldItem, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+        return BlockUseHelper.asItemInteractionResult(use(state, level, pos, player, hand, hit));
+    };
+
+    /**
+     * 1.20.1's {@code Block#use}, unchanged (see {@link BlockUseHelper#asItemInteractionResult}).
+     */
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         if (!level.isClientSide() && player instanceof ServerPlayer serverPlayer) {
             withBlockEntityDo(level, pos, be -> serverPlayer.openMenu(be.programmer, buffer -> {
@@ -154,7 +163,7 @@ public class RedstoneProgrammerBlock extends HorizontalDirectionalBlock implemen
     };
 
     @Override
-	public boolean isPathfindable(BlockState state, BlockGetter reader, BlockPos pos, PathComputationType type) {
+	public boolean isPathfindable(BlockState state, PathComputationType type) {
 		return false;
 	}
 

@@ -75,8 +75,8 @@ public class TestTubeItem extends Item implements ILayerTintsWithAlphaItem, IMix
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag isAdvanced) {
-        super.appendHoverText(stack, level, tooltip, isAdvanced);
+    public void appendHoverText(ItemStack stack, Item.TooltipContext tooltipContext, List<Component> tooltip, TooltipFlag isAdvanced) {
+        super.appendHoverText(stack, tooltipContext, tooltip, isAdvanced);
         addContentsDescription(stack, tooltip);
     };
 

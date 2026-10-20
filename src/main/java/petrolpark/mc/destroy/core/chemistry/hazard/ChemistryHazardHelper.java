@@ -184,7 +184,7 @@ public class ChemistryHazardHelper {
         ItemStack stack = event.getItemStack();
         Player player = event.getEntity();
 
-        if (stack.isEdible()) {
+        if (stack.getFoodProperties(player) != null) {
             if (DestroySubstancesConfigs.babyBlueEnabled() && stack.getItem() != DestroyItems.BABY_BLUE_POWDER.get() && player.hasEffect(DestroyMobEffects.BABY_BLUE_WITHDRAWAL) && !stack.getFoodProperties(player).canAlwaysEat()) {
                 player.displayClientMessage(DestroyLang.translate("tooltip.eating_prevented.baby_blue").component(), true);
                 event.setCanceled(true);

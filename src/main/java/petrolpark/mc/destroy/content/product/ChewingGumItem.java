@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.content.product;
 
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
@@ -10,7 +11,7 @@ public class ChewingGumItem extends Item {
     };
 
     @Override
-    public int getUseDuration(ItemStack stack) {
+    public int getUseDuration(ItemStack stack, LivingEntity entity) {
         return 36000; // Half an hour
     };
     

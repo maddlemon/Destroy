@@ -1,7 +1,7 @@
 package petrolpark.mc.destroy;
 
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.simibubi.create.api.equipment.potatoCannon.PotatoProjectileBlockHitAction;
 import com.simibubi.create.api.registry.CreateBuiltInRegistries;
@@ -23,16 +23,16 @@ public class DestroyPotatoProjectileBlockHitActions {
     public static void init() {
     }
 
-    private static void register(String name, Codec<? extends PotatoProjectileBlockHitAction> codec) {
+    private static void register(String name, MapCodec<? extends PotatoProjectileBlockHitAction> codec) {
         Registry.register(CreateBuiltInRegistries.POTATO_PROJECTILE_BLOCK_HIT_ACTION, Destroy.asResource(name), codec);
     }
 
     private record ExplodeBlock(float radius, boolean causesFire, Level.ExplosionInteraction mode) implements PotatoProjectileBlockHitAction {
 
-        public static final Codec<ExplodeBlock> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+        public static final MapCodec<ExplodeBlock> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
                 ExtraCodecs.POSITIVE_FLOAT.fieldOf("radius").forGetter(ExplodeBlock::radius),
-                Codec.BOOL.fieldOf("causesFire").forGetter(ExplodeBlock::causesFire),
-                Codec.of(Codec.STRING.comap(Enum::name), Codec.STRING.map((value) -> Enum.valueOf(Level.ExplosionInteraction.class, value)))
+                com.mojang.serialization.Codec.BOOL.fieldOf("causesFire").forGetter(ExplodeBlock::causesFire),
+                com.mojang.serialization.Codec.of(com.mojang.serialization.Codec.STRING.comap(Enum::name), com.mojang.serialization.Codec.STRING.map((value) -> Enum.valueOf(Level.ExplosionInteraction.class, value)))
                         .fieldOf("mode").forGetter(ExplodeBlock::mode)).apply(instance, ExplodeBlock::new));
 
         @Override
@@ -45,7 +45,7 @@ public class DestroyPotatoProjectileBlockHitActions {
         }
 
         @Override
-        public Codec<? extends PotatoProjectileBlockHitAction> codec() {
+        public MapCodec<? extends PotatoProjectileBlockHitAction> codec() {
             return CODEC;
         }
     };

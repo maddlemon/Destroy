@@ -1,29 +1,21 @@
 package petrolpark.mc.destroy.core.item;
 
-import java.util.List;
-
-import petrolpark.mc.destroy.Destroy;
-import petrolpark.mc.destroy.DestroySoundEvents;
+import petrolpark.mc.destroy.DestroyJukeboxSongs;
 import petrolpark.mc.destroy.MoveToPetrolparkLibrary;
 
-import net.minecraft.network.chat.Component;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.RecordItem;
-import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.Level;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.item.EitherHolder;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.JukeboxPlayable;
 
+/**
+ * A disc that plays silence ({@link DestroyJukeboxSongs#BLANK}). As in 1.20.1 its track title is not shown in its tooltip.
+ */
 @MoveToPetrolparkLibrary
-public class BlankRecordItem extends RecordItem {
+public class BlankRecordItem extends Item {
 
-    @SuppressWarnings("deprecation")
     public BlankRecordItem(Properties properties) {
-        super(0, Destroy.datagen ? SoundEvents.STONE_STEP : DestroySoundEvents.SILENCE.getMainEvent(), properties, 5460);
-    };
-
-    @Override
-    public void appendHoverText(ItemStack pStack, Level pLevel, List<Component> pTooltip, TooltipFlag pFlag) {
-        // Don't add the track title
+        super(properties.component(DataComponents.JUKEBOX_PLAYABLE, new JukeboxPlayable(new EitherHolder<>(DestroyJukeboxSongs.BLANK), false)));
     };
     
 };

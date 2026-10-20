@@ -1,0 +1,8 @@
+{
+    "sound_event": "destroy:silence",
+    "description": {
+        "translate": "item.destroy.blank_music_disc.desc"
+    },
+    "length_in_seconds": 273.0,
+    "comparator_output": 0
+}

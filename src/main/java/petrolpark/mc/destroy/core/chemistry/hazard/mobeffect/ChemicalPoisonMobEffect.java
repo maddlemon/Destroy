@@ -37,7 +37,7 @@ public class ChemicalPoisonMobEffect extends UncurableMobEffect {
 
     @Override
     @SuppressWarnings("null") // We know the effect isn't null if its ticking
-    public void applyEffectTick(LivingEntity livingEntity, int amplifier) {
+    public boolean applyEffectTick(LivingEntity livingEntity, int amplifier) {
         if (!livingEntity.level().isClientSide()) {
             int duration = livingEntity.getEffect(DestroyMobEffects.CHEMICAL_POISON).getDuration(); // This is the bit it says is null
             if (duration % 50 == 0) {
@@ -45,11 +45,11 @@ public class ChemicalPoisonMobEffect extends UncurableMobEffect {
                 livingEntity.hurt(DestroyDamageSources.chemicalPoison(livingEntity.level(), molecule), 1f);
             };
         };
-        super.applyEffectTick(livingEntity, amplifier);
+        return super.applyEffectTick(livingEntity, amplifier);
     };
 
     @Override
-    public boolean isDurationEffectTick(int pDuration, int pAmplifier) {
+    public boolean shouldApplyEffectTickThisTick(int pDuration, int pAmplifier) {
         return true;
     };
 

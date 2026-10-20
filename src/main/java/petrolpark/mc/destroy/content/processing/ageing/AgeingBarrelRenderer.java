@@ -13,7 +13,7 @@ import dev.engine_room.flywheel.lib.transform.TransformStack;
 import net.createmod.catnip.animation.AnimationTickHolder;
 
 import net.createmod.catnip.math.VecHelper;
-import net.createmod.catnip.platform.CatnipServices;
+import net.createmod.catnip.platform.NeoForgeCatnipServices;
 import net.createmod.catnip.render.FluidRenderHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -48,7 +48,7 @@ public class AgeingBarrelRenderer extends SmartBlockEntityRenderer<AgeingBarrelB
         //render Items
         ms.pushPose();
         ms.translate(0.5f, 0.0f, 0.5f);
-        IItemHandlerModifiable inv = barrel.itemCapability.orElse(new ItemStackHandler());
+        IItemHandlerModifiable inv = barrel.itemCapability == null ? new ItemStackHandler() : barrel.itemCapability;
         List<ItemStack> itemStacks = new ArrayList<>();
         boolean renderYeast = false;
         //count all the Items
@@ -108,7 +108,7 @@ public class AgeingBarrelRenderer extends SmartBlockEntityRenderer<AgeingBarrelB
         float units = tank.getTotalUnits(partialTicks);
         float maxY = minY + (Mth.clamp(units / barrel.getTank().getCapacity(), 0, 1) * 8 / 12f);
         if (units < 1 || tank.getRenderedFluid().isEmpty()) return minY;
-        CatnipServices.FLUID_RENDERER.renderFluidBox(tank.getRenderedFluid(), 2 / 16f, minY, 2 / 16f, 14 / 16f, maxY, 14 / 16f, buffer, ms, light, false, true);
+        NeoForgeCatnipServices.FLUID_RENDERER.renderFluidBox(tank.getRenderedFluid(), 2 / 16f, minY, 2 / 16f, 14 / 16f, maxY, 14 / 16f, buffer, ms, light, false, true);
         return maxY;
     };
 

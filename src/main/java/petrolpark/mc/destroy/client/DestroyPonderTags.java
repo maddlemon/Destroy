@@ -7,11 +7,11 @@ import petrolpark.mc.destroy.core.chemistry.vat.material.VatMaterial;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.infrastructure.ponder.AllCreatePonderTags;
 import com.tterrag.registrate.util.entry.RegistryEntry;
-import net.createmod.catnip.platform.CatnipServices;
 import net.createmod.ponder.api.registration.MultiTagBuilder;
 import net.createmod.ponder.api.registration.PonderTagRegistrationHelper;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.ItemLike;
+import net.minecraft.core.registries.BuiltInRegistries;
 
 public class DestroyPonderTags {
 
@@ -20,12 +20,12 @@ public class DestroyPonderTags {
         DESTROY = Destroy.asResource("destroy"),
         VAT_SIDE_BLOCKS = Destroy.asResource("vat_side_blocks");
 
-    private static PonderTagRegistrationHelper<RegistryEntry<?>> HELPER = null;
+    private static PonderTagRegistrationHelper<RegistryEntry<?, ?>> HELPER = null;
     private static PonderTagRegistrationHelper<ItemLike> ITEM_HELPER = null;
 
     public static void register(PonderTagRegistrationHelper<ResourceLocation> helper) {
         HELPER = helper.withKeyFunction(RegistryEntry::getId);
-        ITEM_HELPER = helper.withKeyFunction(CatnipServices.REGISTRIES::getKeyOrThrow);
+        ITEM_HELPER = helper.withKeyFunction(itemLike -> BuiltInRegistries.ITEM.getKey(itemLike.asItem()));
 
         helper.registerTag(CHEMISTRY)
             .addToIndex()

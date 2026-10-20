@@ -6,6 +6,7 @@ import petrolpark.mc.destroy.DestroyBlockEntityTypes;
 import petrolpark.mc.destroy.DestroyVoxelShapes;
 import petrolpark.mc.destroy.core.chemistry.storage.IMixtureStorageItem;
 import petrolpark.mc.destroy.core.chemistry.storage.ISpecialMixtureContainerBlock;
+import petrolpark.mc.destroy.util.BlockUseHelper;
 import petrolpark.mc.library.util.RayHelper;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
 import com.simibubi.create.foundation.block.IBE;
@@ -16,6 +17,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.Direction.Axis;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -60,6 +62,13 @@ public class TestTubeRackBlock extends Block implements IBE<TestTubeRackBlockEnt
     };
 
     @Override
+    protected ItemInteractionResult useItemOn(ItemStack heldItem, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+        return BlockUseHelper.asItemInteractionResult(use(state, level, pos, player, hand, hit));
+    };
+
+    /**
+     * 1.20.1's {@code Block#use}, unchanged (see {@link BlockUseHelper#asItemInteractionResult}).
+     */
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         if (level.isClientSide() || hand != InteractionHand.MAIN_HAND) return InteractionResult.PASS;
         int tube = getTargetedTube(state, pos, player);
@@ -97,7 +106,7 @@ public class TestTubeRackBlock extends Block implements IBE<TestTubeRackBlockEnt
      */
     public static int getTargetedTube(BlockState state, BlockPos pos, Player player) {
         Vec3 start = player.getEyePosition();
-        Vec3 end = player.getEyePosition().add(player.getLookAngle().scale(player.getBlockReach()));
+        Vec3 end = player.getEyePosition().add(player.getLookAngle().scale(player.blockInteractionRange()));
         return RayHelper.getHit(List.of(getTubeBox(state, pos, 0), getTubeBox(state, pos, 1), getTubeBox(state, pos, 2), getTubeBox(state, pos, 3)), start, end);
     };
 

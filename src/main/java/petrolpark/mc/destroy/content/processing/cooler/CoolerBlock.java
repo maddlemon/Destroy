@@ -4,6 +4,7 @@ package petrolpark.mc.destroy.content.processing.cooler;
 import petrolpark.mc.destroy.DestroyBlockEntityTypes;
 import petrolpark.mc.destroy.DestroyVoxelShapes;
 import petrolpark.mc.destroy.content.processing.cooler.CoolerBlockEntity.ColdnessLevel;
+import petrolpark.mc.destroy.util.BlockUseHelper;
 import com.simibubi.create.AllItems;
 import com.simibubi.create.AllShapes;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
@@ -16,6 +17,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -61,6 +63,13 @@ public class CoolerBlock extends Block implements IBE<CoolerBlockEntity>, IWrenc
     };
 
     @Override
+    protected ItemInteractionResult useItemOn(ItemStack heldItem, BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult blockRayTraceResult) {
+        return BlockUseHelper.asItemInteractionResult(use(state, world, pos, player, hand, blockRayTraceResult));
+    };
+
+    /**
+     * 1.20.1's {@code Block#use}, unchanged (see {@link BlockUseHelper#asItemInteractionResult}).
+     */
     public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult blockRayTraceResult) {
         ItemStack stack = player.getItemInHand(hand);
         if (AllItems.CREATIVE_BLAZE_CAKE.isIn(stack)) {
@@ -115,7 +124,7 @@ public class CoolerBlock extends Block implements IBE<CoolerBlockEntity>, IWrenc
     };
 
     @Override
-	public boolean isPathfindable(BlockState state, BlockGetter reader, BlockPos pos, PathComputationType type) {
+	public boolean isPathfindable(BlockState state, PathComputationType type) {
 		return false;
 	};
     

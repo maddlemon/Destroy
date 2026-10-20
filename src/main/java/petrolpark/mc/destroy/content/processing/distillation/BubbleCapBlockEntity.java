@@ -221,7 +221,7 @@ public class BubbleCapBlockEntity extends SmartBlockEntity implements IHaveLabGo
     public int getLuminosity() {
         if (getTank().isEmpty()) return 0;
         FluidStack fluidStack = getTank().getFluid();
-        return fluidStack.getRawFluid().getFluidType().getLightLevel(fluidStack);
+        return fluidStack.getFluid().getFluidType().getLightLevel(fluidStack);
     };
 
 

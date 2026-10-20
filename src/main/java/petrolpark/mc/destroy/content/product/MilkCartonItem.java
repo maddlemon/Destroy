@@ -10,6 +10,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.common.EffectCures;
 
 public class MilkCartonItem extends DrinkItem {
 
@@ -22,7 +23,7 @@ public class MilkCartonItem extends DrinkItem {
 
         Set<MobEffectInstance> effects = Set.copyOf(livingEntity.getActiveEffects());
         for (MobEffectInstance effect : effects) {
-            if (effect.isCurativeItem(new ItemStack(Items.MILK_BUCKET)) && effect.getEffect().getCategory() == MobEffectCategory.HARMFUL) livingEntity.removeEffect(effect.getEffect());
+            if (effect.getCures().contains(EffectCures.MILK) && effect.getEffect().value().getCategory() == MobEffectCategory.HARMFUL) livingEntity.removeEffect(effect.getEffect());
         };
 
         return super.finishUsingItem(stack, level, livingEntity);

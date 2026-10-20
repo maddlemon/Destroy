@@ -107,23 +107,23 @@ public class DestroyFluids {
     CORRUPTING_POTION = coloredPotionFluid("corrupting_potion", 0xff00d000)
         .register();
 
-    private static FluidBuilder<VirtualFluid, CreateRegistrate> virtualFluid(String name) {
+    private static FluidBuilder<VirtualFluid, DestroyRegistrate> virtualFluid(String name) {
         return REGISTRATE.virtualFluid(name, Destroy.asResource("fluid/"+name), Destroy.asResource("fluid/"+name));
     };
 
-    private static FluidBuilder<VirtualFluid, CreateRegistrate> coloredWaterFluid(String name, int color) {
+    private static FluidBuilder<VirtualFluid, DestroyRegistrate> coloredWaterFluid(String name, int color) {
         return coloredFluid(name, color, ResourceLocation.fromNamespaceAndPath("minecraft", "block/water_still"), ResourceLocation.fromNamespaceAndPath("minecraft", "block/water_flow"));
     };
 
-    private static FluidBuilder<VirtualFluid, CreateRegistrate> coloredSwirlingFluid(String name, int color) {
+    private static FluidBuilder<VirtualFluid, DestroyRegistrate> coloredSwirlingFluid(String name, int color) {
         return coloredFluid(name, color, Destroy.asResource("fluid/swirling"), Destroy.asResource("fluid/swirling"));
     };
 
-    private static FluidBuilder<VirtualFluid, CreateRegistrate> coloredPotionFluid(String name, int color) {
+    private static FluidBuilder<VirtualFluid, DestroyRegistrate> coloredPotionFluid(String name, int color) {
         return coloredFluid(name, color, Create.asResource("fluid/potion_still"), Create.asResource("fluid/potion_flow"));
     };
 
-    private static FluidBuilder<VirtualFluid, CreateRegistrate> coloredFluid(String name, int color, ResourceLocation stillTexture, ResourceLocation flowingTexture) {
+    private static FluidBuilder<VirtualFluid, DestroyRegistrate> coloredFluid(String name, int color, ResourceLocation stillTexture, ResourceLocation flowingTexture) {
         return REGISTRATE.virtualFluid(name, stillTexture, flowingTexture, (properties, st, ft) -> new ColoredFluidType(properties, st, ft, color), VirtualFluid::createSource, VirtualFluid::createFlowing);
     };
 

@@ -1,5 +1,7 @@
 package petrolpark.mc.destroy;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
 import static petrolpark.mc.destroy.Destroy.REGISTRATE;
 import static com.simibubi.create.AllTags.commonItemTag;
 import static com.simibubi.create.api.behaviour.display.DisplaySource.displaySource;
@@ -75,16 +77,22 @@ import com.simibubi.create.foundation.data.BuilderTransformers;
 import com.simibubi.create.foundation.data.CreateRegistrate;
 import com.simibubi.create.foundation.data.SharedProperties;
 import com.simibubi.create.foundation.data.TagGen;
+import com.tterrag.registrate.builders.BlockBuilder;
+import com.tterrag.registrate.builders.ItemBuilder;
 import com.tterrag.registrate.providers.loot.RegistrateBlockLootTables;
 import com.tterrag.registrate.util.entry.BlockEntry;
 import com.tterrag.registrate.util.nullness.NonNullConsumer;
+import com.tterrag.registrate.util.nullness.NonNullFunction;
 
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.enchantment.Enchantments;
@@ -92,7 +100,7 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.DispenserBlock;
-import net.minecraft.world.level.block.GlassBlock;
+import net.minecraft.world.level.block.TransparentBlock;
 import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -469,7 +477,7 @@ public class DestroyBlocks {
         ).transform(TagGen.pickaxeOnly())
         .tag(BlockTags.NEEDS_IRON_TOOL)
         .tag(DestroyTags.Blocks.ARC_FURNACE_TRANSFORMABLE.tag)
-        .transform(TagGen.tagBlockAndItem("storage_blocks/carbon_fiber"))
+        .transform(tagBlockAndItem("storage_blocks/carbon_fiber"))
         .tag(Tags.Items.STORAGE_BLOCKS)
         .build()
         .register(),
@@ -484,7 +492,7 @@ public class DestroyBlocks {
         .tag(BlockTags.NEEDS_IRON_TOOL)
         .tag(Tags.Blocks.STORAGE_BLOCKS)
         .tag(BlockTags.BEACON_BASE_BLOCKS)
-        .transform(TagGen.tagBlockAndItem("storage_blocks/fluorite"))
+        .transform(tagBlockAndItem("storage_blocks/fluorite"))
         .tag(Tags.Items.STORAGE_BLOCKS)
         .build()
         .register(),
@@ -499,7 +507,7 @@ public class DestroyBlocks {
         .tag(BlockTags.NEEDS_STONE_TOOL)
         .tag(Tags.Blocks.STORAGE_BLOCKS)
         .tag(BlockTags.BEACON_BASE_BLOCKS)
-        .transform(TagGen.tagBlockAndItem("storage_blocks/raw_nickel"))
+        .transform(tagBlockAndItem("storage_blocks/raw_nickel"))
         .tag(Tags.Items.STORAGE_BLOCKS)
         .build()
         .register(),
@@ -513,7 +521,7 @@ public class DestroyBlocks {
         .tag(BlockTags.NEEDS_STONE_TOOL)
         .tag(Tags.Blocks.STORAGE_BLOCKS)
         .tag(BlockTags.BEACON_BASE_BLOCKS)
-        .transform(TagGen.tagBlockAndItem("storage_blocks/chromium"))
+        .transform(tagBlockAndItem("storage_blocks/chromium"))
         .tag(Tags.Items.STORAGE_BLOCKS)
         .build()
         .register(),
@@ -525,7 +533,7 @@ public class DestroyBlocks {
             .strength(2f, 2f)
         ).transform(TagGen.pickaxeOnly())
         .tag(BlockTags.NEEDS_STONE_TOOL, Tags.Blocks.STORAGE_BLOCKS)
-        .transform(TagGen.tagBlockAndItem("storage_blocks/iodine"))
+        .transform(tagBlockAndItem("storage_blocks/iodine"))
         .tag(Tags.Items.STORAGE_BLOCKS)
         .build()
         .register(),
@@ -552,7 +560,7 @@ public class DestroyBlocks {
         .tag(BlockTags.NEEDS_STONE_TOOL)
         .tag(Tags.Blocks.STORAGE_BLOCKS)
         .tag(BlockTags.BEACON_BASE_BLOCKS)
-        .transform(TagGen.tagBlockAndItem("storage_blocks/nickel"))
+        .transform(tagBlockAndItem("storage_blocks/nickel"))
         .tag(Tags.Items.STORAGE_BLOCKS)
         .build()
         .register(),
@@ -568,7 +576,7 @@ public class DestroyBlocks {
         .tag(BlockTags.NEEDS_DIAMOND_TOOL)
         .tag(Tags.Blocks.STORAGE_BLOCKS)
         .tag(BlockTags.BEACON_BASE_BLOCKS)
-        .transform(TagGen.tagBlockAndItem("storage_blocks/palladium"))
+        .transform(tagBlockAndItem("storage_blocks/palladium"))
         .tag(Tags.Items.STORAGE_BLOCKS)
         .build()
         .register(),
@@ -583,7 +591,7 @@ public class DestroyBlocks {
         .tag(BlockTags.NEEDS_IRON_TOOL)
         .tag(Tags.Blocks.STORAGE_BLOCKS)
         .tag(BlockTags.BEACON_BASE_BLOCKS)
-        .transform(TagGen.tagBlockAndItem("storage_blocks/platinum"))
+        .transform(tagBlockAndItem("storage_blocks/platinum"))
         .tag(Tags.Items.STORAGE_BLOCKS)
         .build()
         .register(),
@@ -599,7 +607,7 @@ public class DestroyBlocks {
         .tag(BlockTags.NEEDS_DIAMOND_TOOL)
         .tag(Tags.Blocks.STORAGE_BLOCKS)
         .tag(BlockTags.BEACON_BASE_BLOCKS)
-        .transform(TagGen.tagBlockAndItem("storage_blocks/rhodium"))
+        .transform(tagBlockAndItem("storage_blocks/rhodium"))
         .tag(Tags.Items.STORAGE_BLOCKS)
         .build()
         .register(),
@@ -614,7 +622,7 @@ public class DestroyBlocks {
         .tag(BlockTags.NEEDS_STONE_TOOL)
         .tag(Tags.Blocks.STORAGE_BLOCKS)
         .tag(BlockTags.BEACON_BASE_BLOCKS)
-        .transform(TagGen.tagBlockAndItem("storage_blocks/lead"))
+        .transform(tagBlockAndItem("storage_blocks/lead"))
         .tag(Tags.Items.STORAGE_BLOCKS)
         .build()
         .register();
@@ -633,7 +641,7 @@ public class DestroyBlocks {
         .tag(BlockTags.NEEDS_STONE_TOOL)
         .tag(Tags.Blocks.STORAGE_BLOCKS)
         .tag(BlockTags.BEACON_BASE_BLOCKS)
-        .transform(TagGen.tagBlockAndItem("storage_blocks/stainless_steel"))
+        .transform(tagBlockAndItem("storage_blocks/stainless_steel"))
         .tag(Tags.Items.STORAGE_BLOCKS)
         .build()
         .register();
@@ -644,7 +652,7 @@ public class DestroyBlocks {
         .tag(BlockTags.NEEDS_DIAMOND_TOOL)
         .tag(Tags.Blocks.STORAGE_BLOCKS)
         .tag(BlockTags.BEACON_BASE_BLOCKS)
-        .transform(TagGen.tagBlockAndItem("storage_blocks/rhodium"))
+        .transform(tagBlockAndItem("storage_blocks/rhodium"))
         .tag(Tags.Items.STORAGE_BLOCKS)
         .build()
         .register();
@@ -659,10 +667,10 @@ public class DestroyBlocks {
             .requiresCorrectToolForDrops()
             .strength(3f, 3f)
         ).transform(TagGen.pickaxeOnly())
-        .loot((lt, b) -> lt.add(b, RegistrateBlockLootTables.createSilkTouchDispatchTable(b, lt.applyExplosionDecay(b, LootItem.lootTableItem(DestroyItems.FLUORITE.get()).apply(ApplyBonusCount.addOreBonusCount(Enchantments.BLOCK_FORTUNE))))))
+        .loot((lt, b) -> lt.add(b, lt.createSilkTouchDispatchTable(b, lt.applyExplosionDecay(b, LootItem.lootTableItem(DestroyItems.FLUORITE.get()).apply(ApplyBonusCount.addOreBonusCount(lt.getRegistries().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.FORTUNE)))))))
         .tag(BlockTags.NEEDS_IRON_TOOL)
         .tag(Tags.Blocks.ORES)
-        .transform(TagGen.tagBlockAndItem("ores/fluorite", "ores_in_ground/stone"))
+        .transform(tagBlockAndItem("ores/fluorite", "ores_in_ground/stone"))
         .tag(Tags.Items.ORES)
         .build()
         .register();
@@ -676,10 +684,10 @@ public class DestroyBlocks {
             .sound(SoundType.DEEPSLATE)
             .strength(4.5f, 3f)
         ).transform(TagGen.pickaxeOnly())
-        .loot((lt, b) -> lt.add(b, RegistrateBlockLootTables.createSilkTouchDispatchTable(b, lt.applyExplosionDecay(b, LootItem.lootTableItem(DestroyItems.FLUORITE.get()).apply(ApplyBonusCount.addOreBonusCount(Enchantments.BLOCK_FORTUNE))))))
+        .loot((lt, b) -> lt.add(b, lt.createSilkTouchDispatchTable(b, lt.applyExplosionDecay(b, LootItem.lootTableItem(DestroyItems.FLUORITE.get()).apply(ApplyBonusCount.addOreBonusCount(lt.getRegistries().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.FORTUNE)))))))
         .tag(BlockTags.NEEDS_IRON_TOOL)
         .tag(Tags.Blocks.ORES)
-        .transform(TagGen.tagBlockAndItem("ores/fluorite", "ores_in_ground/deepslate"))
+        .transform(tagBlockAndItem("ores/fluorite", "ores_in_ground/deepslate"))
         .tag(Tags.Items.ORES)
         .build()
         .register();
@@ -692,10 +700,10 @@ public class DestroyBlocks {
             .requiresCorrectToolForDrops()
             .strength(4f, 9f)
         ).transform(TagGen.pickaxeOnly())
-        .loot((lt, b) -> lt.add(b, RegistrateBlockLootTables.createSilkTouchDispatchTable(b, lt.applyExplosionDecay(b, LootItem.lootTableItem(DestroyItems.FLUORITE.get()).apply(ApplyBonusCount.addOreBonusCount(Enchantments.BLOCK_FORTUNE))))))
+        .loot((lt, b) -> lt.add(b, lt.createSilkTouchDispatchTable(b, lt.applyExplosionDecay(b, LootItem.lootTableItem(DestroyItems.FLUORITE.get()).apply(ApplyBonusCount.addOreBonusCount(lt.getRegistries().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.FORTUNE)))))))
         .tag(BlockTags.NEEDS_IRON_TOOL)
         .tag(Tags.Blocks.ORES)
-        .transform(TagGen.tagBlockAndItem("ores/fluorite", "ores_in_ground/end_stone"))
+        .transform(tagBlockAndItem("ores/fluorite", "ores_in_ground/end_stone"))
         .tag(Tags.Items.ORES)
         .build()
         .register();
@@ -708,10 +716,10 @@ public class DestroyBlocks {
             .requiresCorrectToolForDrops()
             .strength(3f, 3f)
         ).transform(TagGen.pickaxeOnly())
-        .loot((lt, b) -> lt.add(b, RegistrateBlockLootTables.createSilkTouchDispatchTable(b, lt.applyExplosionDecay(b, LootItem.lootTableItem(DestroyItems.RAW_NICKEL.get()).apply(ApplyBonusCount.addOreBonusCount(Enchantments.BLOCK_FORTUNE))))))
+        .loot((lt, b) -> lt.add(b, lt.createSilkTouchDispatchTable(b, lt.applyExplosionDecay(b, LootItem.lootTableItem(DestroyItems.RAW_NICKEL.get()).apply(ApplyBonusCount.addOreBonusCount(lt.getRegistries().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.FORTUNE)))))))
         .tag(BlockTags.NEEDS_IRON_TOOL)
         .tag(Tags.Blocks.ORES)
-        .transform(TagGen.tagBlockAndItem("ores/nickel", "ores_in_ground/stone"))
+        .transform(tagBlockAndItem("ores/nickel", "ores_in_ground/stone"))
         .tag(Tags.Items.ORES)
         .build()
         .register();
@@ -725,10 +733,10 @@ public class DestroyBlocks {
             .sound(SoundType.DEEPSLATE)
             .strength(4.5f, 3f)
         ).transform(TagGen.pickaxeOnly())
-        .loot((lt, b) -> lt.add(b, RegistrateBlockLootTables.createSilkTouchDispatchTable(b, lt.applyExplosionDecay(b, LootItem.lootTableItem(DestroyItems.RAW_NICKEL.get()).apply(ApplyBonusCount.addOreBonusCount(Enchantments.BLOCK_FORTUNE))))))
+        .loot((lt, b) -> lt.add(b, lt.createSilkTouchDispatchTable(b, lt.applyExplosionDecay(b, LootItem.lootTableItem(DestroyItems.RAW_NICKEL.get()).apply(ApplyBonusCount.addOreBonusCount(lt.getRegistries().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.FORTUNE)))))))
         .tag(BlockTags.NEEDS_IRON_TOOL)
         .tag(Tags.Blocks.ORES)
-        .transform(TagGen.tagBlockAndItem("ores/nickel", "ores_in_ground/deepslate"))
+        .transform(tagBlockAndItem("ores/nickel", "ores_in_ground/deepslate"))
         .tag(Tags.Items.ORES)
         .build()
         .register();
@@ -742,7 +750,7 @@ public class DestroyBlocks {
             .requiresCorrectToolForDrops()
         ).onRegister(CreateRegistrate.connectedTextures(() -> new SimpleCTBehaviour(DestroySpriteShifts.NETHER_CROCOITE_BLOCK)))
         .transform(TagGen.pickaxeOnly())
-        .loot((lt, b) -> lt.add(b, RegistrateBlockLootTables.createSilkTouchDispatchTable(b, lt.applyExplosionDecay(b, LootItem.lootTableItem(DestroyItems.NETHER_CROCOITE.get()).apply(SetItemCountFunction.setCount(UniformGenerator.between(2.0f, 5.0f))).apply(ApplyBonusCount.addOreBonusCount(Enchantments.BLOCK_FORTUNE))))))
+        .loot((lt, b) -> lt.add(b, lt.createSilkTouchDispatchTable(b, lt.applyExplosionDecay(b, LootItem.lootTableItem(DestroyItems.NETHER_CROCOITE.get()).apply(SetItemCountFunction.setCount(UniformGenerator.between(2.0f, 5.0f))).apply(ApplyBonusCount.addOreBonusCount(lt.getRegistries().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.FORTUNE)))))))
         .tag(BlockTags.NEEDS_IRON_TOOL)
         .tag(Tags.Blocks.ORES, Tags.Blocks.ORES_IN_GROUND_NETHERRACK, Tags.Blocks.ORE_BEARING_GROUND_NETHERRACK)
         .item()
@@ -1031,7 +1039,7 @@ public class DestroyBlocks {
             .mapColor(MapColor.COLOR_YELLOW)
             .sound(SoundType.SLIME_BLOCK)
             .strength(0.2f)
-        ).loot((lt, b) -> lt.add(b, RegistrateBlockLootTables.createSilkTouchDispatchTable(b, LootItem.lootTableItem(DestroyItems.RAW_FRIES).apply(SetItemCountFunction.setCount(ConstantValue.exactly(5f))))))
+        ).loot((lt, b) -> lt.add(b, lt.createSilkTouchDispatchTable(b, LootItem.lootTableItem(DestroyItems.RAW_FRIES).apply(SetItemCountFunction.setCount(ConstantValue.exactly(5f))))))
         .tag(BlockTags.MINEABLE_WITH_SHOVEL, BlockTags.MINEABLE_WITH_HOE)
         .item()
         .build()
@@ -1050,9 +1058,9 @@ public class DestroyBlocks {
         .build()
         .register();
 
-    public static final BlockEntry<GlassBlock>
+    public static final BlockEntry<TransparentBlock>
     
-    BOROSILICATE_GLASS = REGISTRATE.block("borosilicate_glass", GlassBlock::new)
+    BOROSILICATE_GLASS = REGISTRATE.block("borosilicate_glass", TransparentBlock::new)
         .initialProperties(() -> Blocks.GLASS)
         .properties(p -> p
             .strength(2f)
@@ -1167,7 +1175,7 @@ public class DestroyBlocks {
             .mapColor(MapColor.COLOR_ORANGE)
             .sound(SoundType.SLIME_BLOCK)
             .strength(0.2f)
-        ).loot((lt, b) -> lt.add(b, RegistrateBlockLootTables.createSilkTouchDispatchTable(b, LootItem.lootTableItem(DestroyItems.CORDITE).apply(SetItemCountFunction.setCount(ConstantValue.exactly(5f))))))
+        ).loot((lt, b) -> lt.add(b, lt.createSilkTouchDispatchTable(b, LootItem.lootTableItem(DestroyItems.CORDITE).apply(SetItemCountFunction.setCount(ConstantValue.exactly(5f))))))
         .tag(BlockTags.MINEABLE_WITH_SHOVEL)
         .tag(BlockTags.MINEABLE_WITH_HOE)
         .item()
@@ -1198,6 +1206,15 @@ public class DestroyBlocks {
 
     public static boolean never(BlockState state, BlockGetter level, BlockPos pos, EntityType<?> entity) {
         return false;
+    };
+
+    /**
+     * 1.20.1 Create's {@code TagGen.tagBlockAndItem(String...)}: for each path, a common ({@code c:}, was {@code forge:}) Block tag and Item tag.
+     */
+    private static <T extends Block, P> NonNullFunction<BlockBuilder<T, P>, ItemBuilder<BlockItem, BlockBuilder<T, P>>> tagBlockAndItem(String... paths) {
+        final Map<TagKey<Block>, TagKey<Item>> tags = new LinkedHashMap<>();
+        for (String path : paths) tags.put(AllTags.commonBlockTag(path), AllTags.commonItemTag(path));
+        return TagGen.tagBlockAndItem(tags);
     };
 
     public static void register() {};

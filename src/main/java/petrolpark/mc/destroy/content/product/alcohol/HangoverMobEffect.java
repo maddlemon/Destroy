@@ -2,6 +2,7 @@ package petrolpark.mc.destroy.content.product.alcohol;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import petrolpark.mc.destroy.Destroy;
 import petrolpark.mc.destroy.DestroyDamageSources;
@@ -12,12 +13,15 @@ import petrolpark.mc.destroy.config.DestroyAllConfigs;
 import petrolpark.mc.destroy.core.mobeffect.DestroyMobEffect;
 
 import net.minecraft.world.effect.MobEffectCategory;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.*;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.common.EffectCure;
+import net.neoforged.neoforge.common.EffectCures;
 import net.neoforged.neoforge.event.PlayLevelSoundEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -28,14 +32,15 @@ public class HangoverMobEffect extends DestroyMobEffect {
     
     public HangoverMobEffect() {
         super(MobEffectCategory.HARMFUL, 0x59390B);
-        this.addAttributeModifier(Attributes.MOVEMENT_SPEED, "31875c8a-f500-477c-ac52-70355c6adc12", (double)-0.10F, AttributeModifier.Operation.MULTIPLY_TOTAL);
+        this.addAttributeModifier(Attributes.MOVEMENT_SPEED, "31875c8a-f500-477c-ac52-70355c6adc12", (double)-0.10F, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
     };
 
+    /**
+     * As in 1.20.1, milk does not cure this (its curative items did not include milk), but a Totem of Undying still clears it.
+     */
     @Override
-    public List<ItemStack> getCurativeItems() {
-        List<ItemStack> curativeItems = new ArrayList<ItemStack>();
-        curativeItems.add(new ItemStack(DestroyItems.ASPIRIN_SYRINGE.get()));
-        return curativeItems;
+    public void fillEffectCures(Set<EffectCure> cures, MobEffectInstance effectInstance) {
+        cures.add(EffectCures.PROTECTED_BY_TOTEM);
     };
 
     @SubscribeEvent

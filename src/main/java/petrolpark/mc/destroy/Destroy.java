@@ -73,6 +73,7 @@ public class Destroy {
         DestroyBlockEntityTypes.register();
         DestroyBlocks.register();
         DestroyMobEffects.register(modEventBus);
+        DestroyArmorMaterials.register(modEventBus);
         DestroyPotions.register(modEventBus);
         DestroyItems.register();
         DestroyMenuTypes.register();

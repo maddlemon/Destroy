@@ -31,7 +31,7 @@ public class CryingMobEffect extends DestroyMobEffect {
 
     @Override
     @SuppressWarnings({"null"})
-    public void applyEffectTick(LivingEntity livingEntity, int amplifier) {
+    public boolean applyEffectTick(LivingEntity livingEntity, int amplifier) {
         RandomSource rand = livingEntity.getRandom();
         if (livingEntity.level().isClientSide() && rand.nextFloat() > 0.8f) {
             Vec3 pos = livingEntity.getEyePosition();
@@ -43,11 +43,11 @@ public class CryingMobEffect extends DestroyMobEffect {
                 livingEntity.getDeltaMovement().z + Mth.sin(Mth.PI * (livingEntity.getYHeadRot() + 90 - 15 + rand.nextFloat() * 30) / 180) * 0.15d
             );
         };
-        super.applyEffectTick(livingEntity, amplifier);
+        return super.applyEffectTick(livingEntity, amplifier);
     };
 
     @Override
-    public boolean isDurationEffectTick(int pDuration, int pAmplifier) {
+    public boolean shouldApplyEffectTickThisTick(int pDuration, int pAmplifier) {
         return true;
     };
     

@@ -13,6 +13,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
 
 import java.util.function.Consumer;
+import dev.engine_room.flywheel.api.visual.DynamicVisual;
 
 public class TreeTapVisual extends ShaftVisual<TreeTapBlockEntity> implements SimpleDynamicVisual {
 
@@ -28,7 +29,7 @@ public class TreeTapVisual extends ShaftVisual<TreeTapBlockEntity> implements Si
     }
 
     @Override
-    public void beginFrame(Context ctx) {
+    public void beginFrame(DynamicVisual.Context ctx) {
         updateAnimation();
     }
 

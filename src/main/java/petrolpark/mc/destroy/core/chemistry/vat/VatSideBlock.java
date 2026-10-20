@@ -25,6 +25,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -54,6 +55,8 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import petrolpark.mc.destroy.Destroy;
+import petrolpark.mc.destroy.util.BlockUseHelper;
+import net.minecraft.resources.ResourceKey;
 
 public class VatSideBlock extends CopycatBlock implements SpecialBlockItemRequirement, ISpecialMixtureContainerBlock {
 
@@ -68,6 +71,13 @@ public class VatSideBlock extends CopycatBlock implements SpecialBlockItemRequir
     };
 
     @Override
+    protected ItemInteractionResult useItemOn(ItemStack heldItem, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+        return BlockUseHelper.asItemInteractionResult(use(state, level, pos, player, hand, hit));
+    };
+
+    /**
+     * 1.20.1's {@code Block#use}, unchanged (see {@link BlockUseHelper#asItemInteractionResult}).
+     */
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         if (AllItems.WRENCH.isIn(player.getItemInHand(hand)) || IMixtureStorageItem.isHolding(player, hand)) return InteractionResult.PASS;
         return onBlockEntityUse(level, pos, be -> {
@@ -168,10 +178,10 @@ public class VatSideBlock extends CopycatBlock implements SpecialBlockItemRequir
     public List<ItemStack> getDrops(BlockState state, Builder paramsBuilder) {
         BlockEntity be = paramsBuilder.getOptionalParameter(LootContextParams.BLOCK_ENTITY);
         if ((be instanceof VatSideBlockEntity vatSide)) {
-            ResourceLocation lootResourceLocation = vatSide.getMaterial().getBlock().getLootTable();
-            if (lootResourceLocation != BuiltInLootTables.EMPTY) {
+            ResourceKey<LootTable> lootKey = vatSide.getMaterial().getBlock().getLootTable();
+            if (lootKey != BuiltInLootTables.EMPTY) {
                 LootParams params = paramsBuilder.withParameter(LootContextParams.BLOCK_STATE, vatSide.getMaterial()).create(LootContextParamSets.BLOCK);
-                LootTable lootTable = params.getLevel().getServer().getLootData().getLootTable(lootResourceLocation);
+                LootTable lootTable = params.getLevel().getServer().reloadableRegistries().getLootTable(lootKey);
                 return lootTable.getRandomItems(params); // Return loot table of wrapped Block so Glass does not drop without Silk Touch etc.
             };
         };
@@ -198,12 +208,7 @@ public class VatSideBlock extends CopycatBlock implements SpecialBlockItemRequir
     };
 
     @Override
-    public ItemStack getCloneItemStack(BlockGetter pLevel, BlockPos pPos, BlockState pState) {
-        return getPickBlockItemStack(pLevel, pPos);
-    };
-
-    @Override
-    public ItemStack getCloneItemStack(BlockState state, HitResult target, BlockGetter level, BlockPos pos, Player player) {
+    public ItemStack getCloneItemStack(BlockState state, HitResult target, LevelReader level, BlockPos pos, Player player) {
         return getPickBlockItemStack(level, pos);
     };
 
@@ -215,7 +220,7 @@ public class VatSideBlock extends CopycatBlock implements SpecialBlockItemRequir
     @Override
     @SuppressWarnings("deprecation")
     public boolean hidesNeighborFace(BlockGetter level, BlockPos pos, BlockState state, BlockState neighborState, Direction dir) {
-        return getMaterial(level, pos).getBlock().skipRendering(state, neighborState, dir);
+        return getMaterial(level, pos).skipRendering(neighborState, dir);
     };
 
     @Override

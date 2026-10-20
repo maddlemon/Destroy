@@ -13,7 +13,7 @@ import net.minecraft.world.level.Level;
 public class HazmatSuitArmorItem extends BaseArmorItem {
 
     public HazmatSuitArmorItem(Type type, Properties properties) {
-        super(DestroyArmorMaterials.HAZMAT, type, properties, Destroy.asResource("hazmat"));
+        super(DestroyArmorMaterials.HAZMAT, type, properties.durability(DestroyArmorMaterials.getHazmatDurability(type)), Destroy.asResource("hazmat"));
     };
 
     @Override

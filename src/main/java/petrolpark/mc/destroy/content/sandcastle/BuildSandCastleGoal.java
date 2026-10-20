@@ -24,8 +24,9 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
-import net.minecraft.world.level.chunk.ChunkStatus;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.level.chunk.status.ChunkStatus;
 
 public class BuildSandCastleGoal extends MoveToBlockGoal {
 
@@ -102,7 +103,7 @@ public class BuildSandCastleGoal extends MoveToBlockGoal {
                         SimpleContainer inv = villager.getInventory();
                         for (int i = 0; i < inv.getContainerSize(); i++) {
                             ItemStack stack = inv.getItem(i);
-                            if (DestroyItems.BUCKET_AND_SPADE.isIn(stack)) stack.hurtAndBreak(1, villager, p -> p.broadcastBreakEvent(InteractionHand.MAIN_HAND));
+                            if (DestroyItems.BUCKET_AND_SPADE.isIn(stack)) stack.hurtAndBreak(1, villager, EquipmentSlot.MAINHAND);
                         };
                     };
                 };

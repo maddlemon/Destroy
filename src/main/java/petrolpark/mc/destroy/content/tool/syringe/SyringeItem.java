@@ -110,7 +110,7 @@ public class SyringeItem extends Item implements CustomUseEffectsItem {
     };
 
     @Override
-    public int getUseDuration(ItemStack stack) {
+    public int getUseDuration(ItemStack stack, LivingEntity entity) {
         return 32;
     };
 

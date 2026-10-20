@@ -108,8 +108,8 @@ public class StackedTextBox extends AbstractStackedTextBox {
     };
 
     @Override
-    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
-        super.render(guiGraphics, mouseX, mouseY, partialTicks);
+    protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+        super.renderWidget(guiGraphics, mouseX, mouseY, partialTicks);
 
         // Don't render if the mouse isn't in the right place
         if (!isActive()) return;

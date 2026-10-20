@@ -2,7 +2,6 @@ package petrolpark.mc.destroy.content.processing.discstamping;
 
 import java.util.List;
 
-import javax.annotation.Nullable;
 
 import petrolpark.mc.destroy.DestroyDataComponentTypes;
 import petrolpark.mc.destroy.DestroyItems;
@@ -11,11 +10,12 @@ import com.tterrag.registrate.util.nullness.NonnullType;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.JukeboxSong;
 import net.minecraft.world.item.RecordItem;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.ItemContainerContents;
-import net.minecraft.world.level.Level;
 
 public class DiscStamperItem extends WithSecondaryItem {
 
@@ -33,19 +33,10 @@ public class DiscStamperItem extends WithSecondaryItem {
         return stack;
     };
 
-    @Nullable
-    public static RecordItem getDiscItem(ItemStack stamper) {
-        ItemStack stack = getDisc(stamper);
-        if (stack.getItem() instanceof RecordItem record) return record;
-        return null;
-    };
-
     @Override
-    public void appendHoverText(ItemStack stack, Level level, List<Component> tooltip, TooltipFlag isAdvanced) {
-        RecordItem item = getDiscItem(stack);
-        if (item != null) {
-            tooltip.add(Component.translatable(item.getDescriptionId() + ".desc").withStyle(ChatFormatting.GRAY));
-        };
+    public void appendHoverText(ItemStack stack, Item.TooltipContext tooltipContext, List<Component> tooltip, TooltipFlag isAdvanced) {
+        // The disc's track title (1.20.1 used the RecordItem's description)
+        JukeboxSong.fromStack(tooltipContext.registries(), getDisc(stack)).ifPresent(song -> tooltip.add(song.value().description().copy().withStyle(ChatFormatting.GRAY)));
     };
 
     @Override

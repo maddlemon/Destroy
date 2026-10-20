@@ -3,6 +3,7 @@ package petrolpark.mc.destroy.content.processing.moltenblock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction.Axis;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -16,6 +17,7 @@ import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition.Builder;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.item.enchantment.Enchantments;
 
 public class FastCoolingMoltenPillarBlock extends RotatedPillarBlock {
 
@@ -34,7 +36,7 @@ public class FastCoolingMoltenPillarBlock extends RotatedPillarBlock {
 
     @Override
     public void stepOn(Level level, BlockPos pos, BlockState state, Entity entity) {
-        if (state.getValue(MOLTEN) && entity instanceof LivingEntity livingEntity && !EnchantmentHelper.hasFrostWalker(livingEntity)) entity.hurt(level.damageSources().hotFloor(), 1.0f);
+        if (state.getValue(MOLTEN) && entity instanceof LivingEntity livingEntity && EnchantmentHelper.getEnchantmentLevel(level.registryAccess().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.FROST_WALKER), livingEntity) == 0) entity.hurt(level.damageSources().hotFloor(), 1.0f);
         super.stepOn(level, pos, state, entity);
     };
 

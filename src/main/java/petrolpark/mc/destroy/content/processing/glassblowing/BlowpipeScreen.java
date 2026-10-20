@@ -58,8 +58,8 @@ public class BlowpipeScreen extends AbstractSimiScreen {
     };
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
-        if (!super.mouseScrolled(mouseX, mouseY, delta)) {
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double delta) {
+        if (!super.mouseScrolled(mouseX, mouseY, scrollX, delta)) {
             if (recipes.size() <= 3) return false;
             scroll = Mth.clamp((int)(scroll - delta), 0, recipes.size() - 3);
             refreshRecipeButtons();

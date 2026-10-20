@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.content.processing.trypolithography.keypunch;
 
+import petrolpark.mc.destroy.util.BlockUseHelper;
 import petrolpark.mc.library.compat.create.core.world.block.entity.behaviour.AbstractRememberPlacerBehaviour;
 import petrolpark.mc.destroy.Destroy;
 import petrolpark.mc.destroy.DestroyBlockEntityTypes;
@@ -16,6 +17,7 @@ import net.minecraft.core.Direction.Axis;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -49,6 +51,13 @@ public class KeypunchBlock extends HorizontalKineticBlock implements IBE<Keypunc
     };
 
     @Override
+    protected ItemInteractionResult useItemOn(ItemStack heldItem, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+        return BlockUseHelper.asItemInteractionResult(use(state, level, pos, player, hand, hit));
+    };
+
+    /**
+     * 1.20.1's {@code Block#use}, unchanged (see {@link BlockUseHelper#asItemInteractionResult}).
+     */
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         if (AllItems.WRENCH.isIn(player.getItemInHand(hand))) return InteractionResult.PASS;
 
@@ -64,7 +73,7 @@ public class KeypunchBlock extends HorizontalKineticBlock implements IBE<Keypunc
     };
 
     @Override
-	public boolean isPathfindable(BlockState state, BlockGetter reader, BlockPos pos, PathComputationType type) {
+	public boolean isPathfindable(BlockState state, PathComputationType type) {
 		return false;
 	};
 

@@ -9,6 +9,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.component.DataComponents;
 
 public class MixedExplosiveBlockItemRenderer extends CustomRenderedItemModelRenderer {
 
@@ -16,7 +17,7 @@ public class MixedExplosiveBlockItemRenderer extends CustomRenderedItemModelRend
     protected void render(ItemStack stack, CustomRenderedItemModel model, PartialItemModelRenderer renderer, ItemDisplayContext transformType, PoseStack ms, MultiBufferSource buffer, int light, int overlay) {
         Minecraft mc = Minecraft.getInstance();
         mc.getItemRenderer().render(stack, ItemDisplayContext.NONE, false, ms, buffer, light, overlay, model.getOriginalModel());
-        if (!stack.hasCustomHoverName()) return;
+        if (!stack.has(DataComponents.CUSTOM_NAME)) return;
         ms.popPose();
         MixedExplosiveBlockEntityRenderer.renderTruncated(ms, buffer, d -> light, stack.getHoverName().getString());
         ms.pushPose();

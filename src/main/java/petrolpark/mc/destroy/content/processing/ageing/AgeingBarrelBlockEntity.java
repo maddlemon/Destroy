@@ -139,7 +139,7 @@ public class AgeingBarrelBlockEntity extends SmartBlockEntity implements IHaveGo
     public int getLuminosity() {
         if (getBlockState().getValue(AgingBarrelBlock.IS_OPEN) && !getTank().isEmpty()) { // If Barrel is open
             FluidStack fluidStack = getTank().getFluid();
-            return fluidStack.getRawFluid().getFluidType().getLightLevel(fluidStack);
+            return fluidStack.getFluid().getFluidType().getLightLevel(fluidStack);
         } else {
             return 0;
         }

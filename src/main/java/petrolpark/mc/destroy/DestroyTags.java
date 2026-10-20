@@ -16,6 +16,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.Fluid;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
+import net.minecraft.core.Holder;
 
 public class DestroyTags {
 
@@ -73,7 +74,7 @@ public class DestroyTags {
 
         @SuppressWarnings("deprecation") // Create does it therefore so can I
         public boolean matches(Item item) {
-            return item.builtInRegistryHolder().containsTag(tag);
+            return item.builtInRegistryHolder().is(tag);
         };
 
         public boolean matches(ItemStack item) {
@@ -103,7 +104,7 @@ public class DestroyTags {
 
         @SuppressWarnings("deprecation") // Create does it therefore so can I
         public boolean matches(Block block) {
-            return block.builtInRegistryHolder().containsTag(tag);
+            return block.builtInRegistryHolder().is(tag);
         };
     };
 
@@ -155,8 +156,8 @@ public class DestroyTags {
             return matches(effect.getEffect());
         };
 
-        public boolean matches(MobEffect effect) {
-            return effect.builtInRegistryHolder().is(tag);
+        public boolean matches(Holder<MobEffect> effect) {
+            return effect.is(tag);
         };
     };
 

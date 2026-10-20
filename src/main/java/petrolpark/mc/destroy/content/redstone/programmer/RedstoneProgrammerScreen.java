@@ -313,7 +313,7 @@ public class RedstoneProgrammerScreen extends AbstractSimiContainerScreen<Redsto
     };
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double delta) {
         int mX = (int)mouseX - getGuiLeft();
         int mY = (int)mouseY - getGuiTop();
         if (ITEM_AREA.contains(mX, mY)) {
@@ -367,7 +367,7 @@ public class RedstoneProgrammerScreen extends AbstractSimiContainerScreen<Redsto
             // Scrolling horizontally
             clampHorizontalScroll(horizontalScroll.getChaseTarget() + delta * 5, 10d);
         };
-        return super.mouseScrolled(mouseX, mouseY, delta);
+        return super.mouseScrolled(mouseX, mouseY, scrollX, delta);
     };
 
     @Override

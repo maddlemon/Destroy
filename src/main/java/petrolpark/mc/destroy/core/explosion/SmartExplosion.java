@@ -38,7 +38,6 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.enchantment.ProtectionEnchantment;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.ExplosionDamageCalculator;
 import net.minecraft.world.level.Level;
@@ -58,6 +57,7 @@ import net.neoforged.neoforge.event.EventHooks;
 import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 
 @EventBusSubscriber
 public class SmartExplosion extends Explosion {
@@ -117,7 +117,7 @@ public class SmartExplosion extends Explosion {
      * @param irregularity How uniform this explosion is ({@code 1f} is spherical)
      */
     public SmartExplosion(Level level, @Nullable Entity source, @Nullable DamageSource damageSource, @Nullable ExplosionDamageCalculator damageCalculator, Vec3 position, float radius, float irregularity) {
-        super(level, source, damageSource, damageCalculator, position.x, position.y, position.z, radius, false, Explosion.BlockInteraction.KEEP);
+        super(level, source, damageSource, damageCalculator, position.x, position.y, position.z, radius, false, Explosion.BlockInteraction.KEEP, ParticleTypes.EXPLOSION, ParticleTypes.EXPLOSION_EMITTER, SoundEvents.GENERIC_EXPLODE);
         this.position = position;
         this.irregularity = irregularity > 1f ? 1f : irregularity;
         if (damageSource == null) this.damageSource = DestroyDamageSources.smartExplosion(level, this);
@@ -205,7 +205,7 @@ public class SmartExplosion extends Explosion {
                         while (momentum > 0f) {
 
                             // If there's an Entity in the way...
-                            EntityHitResult hitResult = ProjectileUtil.getEntityHitResult(level, null, position, positionToExplode, new AABB(position, positionToExplode), entity -> !entity.ignoreExplosion());
+                            EntityHitResult hitResult = ProjectileUtil.getEntityHitResult(level, null, position, positionToExplode, new AABB(position, positionToExplode), entity -> !entity.ignoreExplosion(this));
                             if (hitResult != null) {
                                 Entity entity = hitResult.getEntity();
                                 // ...update the Entity to experience the maximum strength it could experience from this Explosion...
@@ -213,7 +213,7 @@ public class SmartExplosion extends Explosion {
                                 // ...and decrease the momentum of the explosion in this direction
                                 if (entity instanceof LivingEntity livingEntity) {
                                     momentum -= 0.1f + (0.125f
-                                        * (1d - ProtectionEnchantment.getExplosionKnockbackAfterDampener(livingEntity, momentum)) // Increase the momentum loss if the Entity has Blast Resistance
+                                        * (1d - momentum * (1.0 - livingEntity.getAttributeValue(Attributes.EXPLOSION_KNOCKBACK_RESISTANCE))) // Increase the momentum loss if the Entity has Blast Resistance
                                         * (livingEntity.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE))); // Increase the momentum loss if the Entity has knockback resistance
                                 } else {
                                     momentum -= 0.1f;
@@ -295,8 +295,8 @@ public class SmartExplosion extends Explosion {
     public void explodeEntity(Entity entity, float strength) {
         Vec3 knockback = entity.position().subtract(position).normalize().scale(strength * 5f); // Knock back the Entity away from the center of the Explosion
         if (entity instanceof LivingEntity livingEntity) {
-            double damageReduction = ProtectionEnchantment.getExplosionKnockbackAfterDampener(livingEntity, 1d);
-            livingEntity.hurt(getDamageSource(), radius * strength * (float)damageReduction * 5f);
+            double damageReduction = 1d - livingEntity.getAttributeValue(Attributes.EXPLOSION_KNOCKBACK_RESISTANCE);
+            livingEntity.hurt(damageSource, radius * strength * (float)damageReduction * 5f);
             // If the Entity is a Player special client/server syncronisation needs to be done
             if (entity instanceof Player player) {
                 if (!player.isSpectator() && (!player.isCreative() || !player.getAbilities().flying)) {
@@ -316,7 +316,7 @@ public class SmartExplosion extends Explosion {
     public void effects(boolean clientSide) {
         // Sounds
         if (level.isClientSide()) {
-            level.playLocalSound(position.x(), position.y(), position.z(), SoundEvents.GENERIC_EXPLODE, SoundSource.BLOCKS, 4.0f, (1.0f + (random.nextFloat() * 0.4f)) * 0.7f, false);
+            level.playLocalSound(position.x(), position.y(), position.z(), SoundEvents.GENERIC_EXPLODE.value(), SoundSource.BLOCKS, 4.0f, (1.0f + (random.nextFloat() * 0.4f)) * 0.7f, false);
         };
 
         // Particles
@@ -355,7 +355,7 @@ public class SmartExplosion extends Explosion {
     public static void onMobDrops(LivingDropsEvent event) {
         if (event.getEntity().wasExperienceConsumed() || !(event.getEntity().level() instanceof ServerLevel)) return;
         if (!(event.getSource() instanceof SmartExplosionDamageSource ds && ds.explosion.shouldAlwaysDropExperienceFromMobs())) return;
-        ExperienceOrb.award((ServerLevel) event.getEntity().level(), event.getEntity().position(), EventHooks.getExperienceDrop(event.getEntity(), event.getSource().getEntity() instanceof Player player ? player : null, event.getEntity().getExperienceReward()));
+        ExperienceOrb.award((ServerLevel) event.getEntity().level(), event.getEntity().position(), EventHooks.getExperienceDrop(event.getEntity(), event.getSource().getEntity() instanceof Player player ? player : null, event.getEntity().getExperienceReward((ServerLevel) event.getEntity().level(), null)));
     };
 
     public float getRadius() {
@@ -374,7 +374,7 @@ public class SmartExplosion extends Explosion {
     };
 
     public void write(FriendlyByteBuf buffer) {
-        new ClientboundExplodePacket(center().x(), center().y(), center().z(), getRadius(), getToBlow(), null).write(buffer);
+        ClientboundExplodePacket.STREAM_CODEC.encode((RegistryFriendlyByteBuf) buffer, new ClientboundExplodePacket(center().x(), center().y(), center().z(), getRadius(), getToBlow(), Vec3.ZERO, getBlockInteraction(), getSmallExplosionParticles(), getLargeExplosionParticles(), getExplosionSound()));
         buffer.writeFloat(irregularity);
     };
 
@@ -389,7 +389,7 @@ public class SmartExplosion extends Explosion {
         @OnlyIn(Dist.CLIENT)
         public SmartExplosion read(FriendlyByteBuf buffer) {
             Minecraft mc = Minecraft.getInstance();
-            ClientboundExplodePacket packet = new ClientboundExplodePacket(buffer);
+            ClientboundExplodePacket packet = ClientboundExplodePacket.STREAM_CODEC.decode((RegistryFriendlyByteBuf) buffer);
             float smoothness = buffer.readFloat();
             SmartExplosion explosion = new SmartExplosion(mc.level, null, null, null, new Vec3(packet.getX(), packet.getY(), packet.getZ()), packet.getPower(), smoothness);
             explosion.toBlow.addAll(packet.getToBlow());

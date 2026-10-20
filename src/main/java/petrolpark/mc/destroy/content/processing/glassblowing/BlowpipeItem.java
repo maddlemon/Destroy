@@ -182,7 +182,7 @@ public class BlowpipeItem extends BlockItem implements CustomArmPoseItem {
         FluidTank tank = new FluidTank(1000);
         readTank(tank, tag.getCompound("Tank"));
         if (!tank.isEmpty() && (float)ItemStackNBT.read(stack).getInt("Progress") / (float)BlowpipeBlockEntity.BLOWING_DURATION < BlowpipeBlockEntity.BLOWING_TIME_PROPORTION) {
-            entity.setSecondsOnFire(3);
+            entity.igniteForSeconds(3);
         };
         return false;
     };
@@ -245,7 +245,7 @@ public class BlowpipeItem extends BlockItem implements CustomArmPoseItem {
     };
 
     @Override
-    public int getUseDuration(ItemStack stack) {
+    public int getUseDuration(ItemStack stack, LivingEntity entity) {
         return BlowpipeBlockEntity.BLOWING_DURATION + TIME_TO_MOVE_TO_MOUTH - ItemStackNBT.read(stack).getInt("Progress");
     };
 

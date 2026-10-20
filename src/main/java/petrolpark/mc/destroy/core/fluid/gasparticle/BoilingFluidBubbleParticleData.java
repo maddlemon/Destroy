@@ -1,22 +1,18 @@
 package petrolpark.mc.destroy.core.fluid.gasparticle;
 
-import com.mojang.brigadier.StringReader;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import petrolpark.mc.destroy.client.DestroyParticleTypes;
 import com.simibubi.create.foundation.particle.ICustomParticleDataWithSprite;
 import net.minecraft.client.particle.ParticleEngine;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.level.material.Fluids;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.fluids.FluidStack;
 import org.jetbrains.annotations.NotNull;
-
-import static net.createmod.catnip.platform.CatnipServices.REGISTRIES;
 
 public class BoilingFluidBubbleParticleData implements ParticleOptions, ICustomParticleDataWithSprite<BoilingFluidBubbleParticleData> {
 
@@ -50,51 +46,26 @@ public class BoilingFluidBubbleParticleData implements ParticleOptions, ICustomP
         this(DestroyParticleTypes.BOILING_FLUID_BUBBLE.get(), fluid);
     };
 
-    public static final Codec<BoilingFluidBubbleParticleData> CODEC = RecordCodecBuilder.create(i -> i
+    public static final MapCodec<BoilingFluidBubbleParticleData> CODEC = RecordCodecBuilder.mapCodec(i -> i
             .group(FluidStack.CODEC.fieldOf("fluid").forGetter(p -> p.fluid)).apply(i, fs -> new BoilingFluidBubbleParticleData(DestroyParticleTypes.BOILING_FLUID_BUBBLE.get(), fs))
     );
 
-    @SuppressWarnings("deprecation") // Deserializer is deprecated
-    public static final ParticleOptions.Deserializer<BoilingFluidBubbleParticleData> DESERIALIZER =
-            new ParticleOptions.Deserializer<BoilingFluidBubbleParticleData>() {
-
-                // Currently no command capability exists for fluid-based particles, so just make it water
-                @Override
-                public BoilingFluidBubbleParticleData fromCommand(ParticleType<BoilingFluidBubbleParticleData> particleTypeIn, StringReader reader) throws CommandSyntaxException {
-                    return new BoilingFluidBubbleParticleData(particleTypeIn, new FluidStack(Fluids.WATER, 1));
-                };
-
-                @Override
-                public BoilingFluidBubbleParticleData fromNetwork(ParticleType<BoilingFluidBubbleParticleData> particleTypeIn, FriendlyByteBuf buffer) {
-                    return new BoilingFluidBubbleParticleData(particleTypeIn, buffer.readFluidStack());
-                };
-            };
+    public static final StreamCodec<RegistryFriendlyByteBuf, BoilingFluidBubbleParticleData> STREAM_CODEC = FluidStack.STREAM_CODEC
+            .map(fs -> new BoilingFluidBubbleParticleData(DestroyParticleTypes.BOILING_FLUID_BUBBLE.get(), fs), p -> p.fluid);
 
     @Override
-    public Codec<BoilingFluidBubbleParticleData> getCodec(ParticleType<BoilingFluidBubbleParticleData> type) {
+    public MapCodec<BoilingFluidBubbleParticleData> getCodec(ParticleType<BoilingFluidBubbleParticleData> type) {
         return CODEC;
     };
 
     @Override
-    @SuppressWarnings("deprecation") // Deserializer is deprecated
-    public Deserializer<BoilingFluidBubbleParticleData> getDeserializer() {
-        return DESERIALIZER;
+    public StreamCodec<? super RegistryFriendlyByteBuf, BoilingFluidBubbleParticleData> getStreamCodec() {
+        return STREAM_CODEC;
     };
-
 
     @Override
     public ParticleType<BoilingFluidBubbleParticleData> getType() {
         return type;
-    };
-
-    @Override
-    public void writeToNetwork(FriendlyByteBuf buffer) {
-        buffer.writeFluidStack(fluid);
-    };
-
-    @Override
-    public @NotNull String writeToString() {
-        return REGISTRIES.getKeyOrThrow(type) + " " + REGISTRIES.getKeyOrThrow(fluid.getFluid());
     };
 
     @Override

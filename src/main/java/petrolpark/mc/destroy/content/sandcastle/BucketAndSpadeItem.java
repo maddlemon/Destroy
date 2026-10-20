@@ -17,7 +17,10 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.DispenserBlock;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.server.level.ServerLevel;
 
 public class BucketAndSpadeItem extends Item {
 
@@ -34,7 +37,7 @@ public class BucketAndSpadeItem extends Item {
         BlockState blockUnderneath = context.getLevel().getBlockState(context.getClickedPos());
         BlockPos posAbove = context.getClickedPos().above();
         if (buildSandcastle(null, posAbove, blockUnderneath, context.getItemInHand())) {
-            context.getItemInHand().hurtAndBreak(1, context.getPlayer(), p -> p.broadcastBreakEvent(context.getHand()));
+            context.getItemInHand().hurtAndBreak(1, context.getPlayer(), context.getHand() == InteractionHand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND);
             return InteractionResult.SUCCESS;
         };
         return super.useOn(context);
@@ -88,7 +91,7 @@ public class BucketAndSpadeItem extends Item {
         protected ItemStack execute(BlockSource source, ItemStack stack) {
             BlockPos posAbove = source.pos().relative(source.state().getValue(DispenserBlock.FACING));
             if (buildSandcastle(source.level(), posAbove, source.level().getBlockState(posAbove.relative(Direction.DOWN)), stack)) {
-                if (stack.hurt(1, source.level().getRandom(), null)) stack.shrink(1);
+                stack.hurtAndBreak(1, (ServerLevel) source.level(), null, item -> {});
                 setSuccess(true);
             } else {
                 setSuccess(false);

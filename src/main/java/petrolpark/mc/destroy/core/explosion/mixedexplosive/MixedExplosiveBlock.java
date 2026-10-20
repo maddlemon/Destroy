@@ -8,6 +8,7 @@ import petrolpark.mc.destroy.DestroyBlocks;
 import petrolpark.mc.destroy.DestroyEntityTypes;
 import petrolpark.mc.destroy.core.explosion.PrimeableBombBlock;
 import petrolpark.mc.destroy.core.explosion.SmartExplosion;
+import petrolpark.mc.destroy.util.BlockUseHelper;
 import com.simibubi.create.foundation.block.IBE;
 
 import net.minecraft.core.BlockPos;
@@ -17,6 +18,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -24,6 +26,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -98,11 +101,18 @@ public class MixedExplosiveBlock extends PrimeableBombBlock<MixedExplosiveEntity
     };
 
     @Override
+    protected ItemInteractionResult useItemOn(ItemStack heldItem, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult pHit) {
+        return BlockUseHelper.asItemInteractionResult(use(state, level, pos, player, hand, pHit));
+    };
+
+    /**
+     * 1.20.1's {@code Block#use}, unchanged (see {@link BlockUseHelper#asItemInteractionResult}).
+     */
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult pHit) {
         ItemStack stack = player.getItemInHand(hand);
         boolean lighter = stack.is(Items.FLINT_AND_STEEL) || stack.is(Items.FIRE_CHARGE);
         InteractionResult result = onBlockEntityUse(level, pos, be -> {
-            if (lighter && be.getExplosiveInventory().getExplosiveProperties().fulfils(ExplosiveProperties.CAN_EXPLODE)) return super.use(state, level, pos, player, hand, pHit);
+            if (lighter && be.getExplosiveInventory().getExplosiveProperties().fulfils(ExplosiveProperties.CAN_EXPLODE)) return super.useItemOn(player.getItemInHand(hand), state, level, pos, player, hand, pHit).result();
             return be.tryDye(stack, pHit, level, pos, player);
         });
         if (result != InteractionResult.PASS) return result;
@@ -126,7 +136,7 @@ public class MixedExplosiveBlock extends PrimeableBombBlock<MixedExplosiveEntity
     };
 
     @Override
-    public ItemStack getCloneItemStack(BlockState state, HitResult target, BlockGetter level, BlockPos pos, Player player) {
+    public ItemStack getCloneItemStack(BlockState state, HitResult target, LevelReader level, BlockPos pos, Player player) {
         return getCloneItemStack(level, pos);
     };
 

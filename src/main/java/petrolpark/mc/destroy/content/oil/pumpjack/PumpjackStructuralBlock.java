@@ -65,9 +65,9 @@ public class PumpjackStructuralBlock extends DirectionalBlock implements IPumpja
 	};
 
 	@Override
-	public void playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
+	public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
 		IPumpjackStructuralBlock.playerWillDestroy(level, pos, state, player);
-		super.playerWillDestroy(level, pos, state, player);
+		return super.playerWillDestroy(level, pos, state, player);
 	}
 
     @Override

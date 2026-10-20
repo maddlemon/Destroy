@@ -8,7 +8,6 @@ import com.tterrag.registrate.util.nullness.NonNullUnaryOperator;
 import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
 import it.unimi.dsi.fastutil.objects.Object2DoubleOpenHashMap;
 import net.createmod.catnip.config.ConfigBase;
-import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.common.ModConfigSpec;
@@ -17,6 +16,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.DoubleSupplier;
+import net.minecraft.core.registries.BuiltInRegistries;
 
 public class DestroyStressConfigs extends ConfigBase {
 
@@ -52,14 +52,14 @@ public class DestroyStressConfigs extends ConfigBase {
 
     @Nullable
     public DoubleSupplier getImpact(Block block) {
-        ResourceLocation id = CatnipServices.REGISTRIES.getKeyOrThrow(block);
+        ResourceLocation id = BuiltInRegistries.BLOCK.getKey(block);
         ModConfigSpec.ConfigValue<Double> value = this.impacts.get(id);
         return value == null ? null : value::get;
     }
 
     @Nullable
     public DoubleSupplier getCapacity(Block block) {
-        ResourceLocation id = CatnipServices.REGISTRIES.getKeyOrThrow(block);
+        ResourceLocation id = BuiltInRegistries.BLOCK.getKey(block);
         ModConfigSpec.ConfigValue<Double> value = this.capacities.get(id);
         return value == null ? null : value::get;
     }

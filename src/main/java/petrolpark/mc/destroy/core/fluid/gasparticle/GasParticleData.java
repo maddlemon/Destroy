@@ -1,21 +1,18 @@
 package petrolpark.mc.destroy.core.fluid.gasparticle;
 
-import com.mojang.brigadier.StringReader;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import petrolpark.mc.destroy.client.DestroyParticleTypes;
 import com.simibubi.create.foundation.particle.ICustomParticleDataWithSprite;
 
-import net.createmod.catnip.platform.ForgeRegisteredObjectsHelper;
-import net.createmod.catnip.platform.services.RegisteredObjectsHelper;
 import net.minecraft.client.particle.ParticleEngine.SpriteParticleRegistration;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.level.material.Fluids;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.registries.IForgeRegistry;
 
 public class GasParticleData implements ParticleOptions, ICustomParticleDataWithSprite<GasParticleData> {
 
@@ -59,47 +56,39 @@ public class GasParticleData implements ParticleOptions, ICustomParticleDataWith
         this.blockHeight = blockHeight;
     };
 
-    public static final Codec<GasParticleData> DISTILLATION_CODEC = RecordCodecBuilder.create(i -> i
+    public static final MapCodec<GasParticleData> DISTILLATION_CODEC = RecordCodecBuilder.mapCodec(i -> i
 		.group(
             FluidStack.CODEC.fieldOf("fluid").forGetter(p -> p.fluid),
             Codec.FLOAT.fieldOf("blockHeight").forGetter(p -> p.blockHeight)
         ).apply(i, (fluidStack, blockHeight) -> new GasParticleData(DestroyParticleTypes.DISTILLATION.get(), fluidStack, blockHeight))
     );
 
-    public static final Codec<GasParticleData> EVAPORATION_CODEC = RecordCodecBuilder.create(i -> i
+    public static final MapCodec<GasParticleData> EVAPORATION_CODEC = RecordCodecBuilder.mapCodec(i -> i
         .group(
             FluidStack.CODEC.fieldOf("fluid").forGetter(p -> p.fluid)
         ).apply(i, (fluidStack) -> new GasParticleData(DestroyParticleTypes.EVAPORATION.get(), fluidStack, 0))
     );
 
-    @SuppressWarnings("deprecation") // Deserializer is deprecated
-    public static final ParticleOptions.Deserializer<GasParticleData> DESERIALIZER =
-		new ParticleOptions.Deserializer<GasParticleData>() {
+    public static final StreamCodec<RegistryFriendlyByteBuf, GasParticleData> DISTILLATION_STREAM_CODEC = StreamCodec.composite(
+        FluidStack.STREAM_CODEC, p -> p.fluid,
+        ByteBufCodecs.FLOAT, p -> p.blockHeight,
+        (fluidStack, blockHeight) -> new GasParticleData(DestroyParticleTypes.DISTILLATION.get(), fluidStack, blockHeight)
+    );
 
-            // Currently no command capability exists for fluid-based particles, so just make it water
-            @Override
-			public GasParticleData fromCommand(ParticleType<GasParticleData> particleTypeIn, StringReader reader) throws CommandSyntaxException {
-				return new GasParticleData(particleTypeIn, new FluidStack(Fluids.WATER, 1), 5);
-			};
-
-            @Override
-			public GasParticleData fromNetwork(ParticleType<GasParticleData> particleTypeIn, FriendlyByteBuf buffer) {
-				return new GasParticleData(particleTypeIn, buffer.readFluidStack(), buffer.readInt());
-			};
-		};
+    public static final StreamCodec<RegistryFriendlyByteBuf, GasParticleData> EVAPORATION_STREAM_CODEC = FluidStack.STREAM_CODEC
+        .map(fluidStack -> new GasParticleData(DestroyParticleTypes.EVAPORATION.get(), fluidStack), p -> p.fluid);
 
     @Override
-    public Codec<GasParticleData> getCodec(ParticleType<GasParticleData> type) {
+    public MapCodec<GasParticleData> getCodec(ParticleType<GasParticleData> type) {
         if (type == DestroyParticleTypes.DISTILLATION.get()) return DISTILLATION_CODEC;
         return EVAPORATION_CODEC;
     };
 
     @Override
-    @SuppressWarnings("deprecation") // Deserializer is deprecated
-    public Deserializer<GasParticleData> getDeserializer() {
-        return DESERIALIZER;
+    public StreamCodec<? super RegistryFriendlyByteBuf, GasParticleData> getStreamCodec() {
+        if (type == DestroyParticleTypes.DISTILLATION.get()) return DISTILLATION_STREAM_CODEC;
+        return EVAPORATION_STREAM_CODEC;
     };
-
 
     @Override
     public ParticleType<GasParticleData> getType() {
@@ -107,20 +96,30 @@ public class GasParticleData implements ParticleOptions, ICustomParticleDataWith
     };
 
     @Override
-    public void writeToNetwork(FriendlyByteBuf buffer) {
-        buffer.writeFluidStack(fluid);
-        buffer.writeFloat(blockHeight);
-    };
-
-    @Override
-    @SuppressWarnings("rawtypes")
-    public String writeToString() {
-        RegisteredObjectsHelper<IForgeRegistry> o = new ForgeRegisteredObjectsHelper();
-        return o.getKeyOrThrow(type) + " " + o.getKeyOrThrow(fluid.getFluid());
-    };
-
-    @Override
     public SpriteParticleRegistration<GasParticleData> getMetaFactory() {
         return GasParticle.Provider::new;
+    };
+
+    /**
+     * Overridden so the ParticleType's stream codec dispatches on the ParticleType itself, not on this
+     * registration instance's {@code type} field (which is unset on the instance used at registration).
+     * The two gas particle types have different network shapes, and decoded data must carry the correct
+     * type as the {@link net.minecraft.client.particle.ParticleEngine ParticleEngine} looks up providers
+     * by {@code data.getType()}.
+     */
+    @Override
+    public ParticleType<GasParticleData> createType() {
+        return new ParticleType<GasParticleData>(false) {
+            @Override
+            public MapCodec<GasParticleData> codec() {
+                return getCodec(this);
+            };
+
+            @Override
+            public StreamCodec<? super RegistryFriendlyByteBuf, GasParticleData> streamCodec() {
+                if (this == DestroyParticleTypes.DISTILLATION.get()) return DISTILLATION_STREAM_CODEC;
+                return EVAPORATION_STREAM_CODEC;
+            };
+        };
     };
 };

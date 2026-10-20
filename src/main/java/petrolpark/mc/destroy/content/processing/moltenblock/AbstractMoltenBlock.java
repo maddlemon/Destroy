@@ -34,6 +34,8 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.EntityCollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import javax.annotation.Nullable;
+import net.minecraft.world.entity.player.Player;
 
 public abstract class AbstractMoltenBlock extends Block implements BucketPickup {
 
@@ -69,7 +71,7 @@ public abstract class AbstractMoltenBlock extends Block implements BucketPickup 
     };
 
     @Override
-    public ItemStack pickupBlock(LevelAccessor level, BlockPos pos, BlockState state) {
+    public ItemStack pickupBlock(@Nullable Player player, LevelAccessor level, BlockPos pos, BlockState state) {
         level.setBlock(pos, Blocks.AIR.defaultBlockState(), 11);
         if (!level.isClientSide()) level.levelEvent(2001, pos, Block.getId(state));
         return new ItemStack(asItem());
@@ -77,8 +79,8 @@ public abstract class AbstractMoltenBlock extends Block implements BucketPickup 
 
     @Override
     public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
-        if (entity.getFeetBlockState().is(this)) entity.makeStuckInBlock(state, new Vec3(0.9d, 1.5d, 0.9d));
-        entity.setSecondsOnFire(3);
+        if (entity.getInBlockState().is(this)) entity.makeStuckInBlock(state, new Vec3(0.9d, 1.5d, 0.9d));
+        entity.igniteForSeconds(3);
     };
 
     @Override

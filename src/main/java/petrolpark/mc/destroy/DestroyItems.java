@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy;
 
+import petrolpark.mc.destroy.core.item.CombustibleItem;
 import static petrolpark.mc.destroy.Destroy.REGISTRATE;
 import static com.simibubi.create.AllTags.commonItemTag;
 
@@ -47,9 +48,9 @@ import com.simibubi.create.AllItems;
 import com.simibubi.create.AllTags.AllItemTags;
 import com.simibubi.create.content.processing.sequenced.SequencedAssemblyItem;
 import com.simibubi.create.foundation.data.CreateRegistrate;
-import com.simibubi.create.foundation.item.CombustibleItem;
 import com.tterrag.registrate.util.entry.ItemEntry;
 
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -59,8 +60,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemNameBlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.RecordItem;
-import net.minecraft.world.item.SimpleFoiledItem;
 import net.minecraft.world.item.SolidBucketItem;
 import net.minecraft.world.item.Tiers;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -455,12 +454,14 @@ public class DestroyItems {
         .tag(DestroyTags.Items.SPRAY_BOTTLES.tag)
         .register();
 
-    public static final ItemEntry<SimpleFoiledItem>
+    public static final ItemEntry<Item>
 
-    MAGIC_OXIDANT = REGISTRATE.item("magic_oxidant", SimpleFoiledItem::new)
+    MAGIC_OXIDANT = REGISTRATE.item("magic_oxidant", Item::new)
+        .properties(p -> p.component(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true)) // Was SimpleFoiledItem
         .tag(DestroyTags.Items.LIABLE_TO_CHANGE.tag)
         .register(),
-    MAGIC_REDUCTANT = REGISTRATE.item("magic_reductant", SimpleFoiledItem::new)
+    MAGIC_REDUCTANT = REGISTRATE.item("magic_reductant", Item::new)
+        .properties(p -> p.component(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true)) // Was SimpleFoiledItem
         .tag(DestroyTags.Items.LIABLE_TO_CHANGE.tag)
         .register();
 
@@ -800,9 +801,10 @@ public class DestroyItems {
         .tag(Tags.Items.MUSIC_DISCS)
         .register();
 
-    public static final ItemEntry<RecordItem> MUSIC_DISC_SPECTRUM = REGISTRATE.item("music_disc_spectrum", p -> new RecordItem(9, () -> DestroySoundEvents.MUSIC_DISC_SPECTRUM.getMainEvent(), p, 3720))
+    public static final ItemEntry<Item> MUSIC_DISC_SPECTRUM = REGISTRATE.item("music_disc_spectrum", Item::new)
         .properties(p -> p
             .stacksTo(1)
+            .jukeboxPlayable(DestroyJukeboxSongs.SPECTRUM) // Was a RecordItem
         ).tag(Tags.Items.MUSIC_DISCS)
         .register();
 

@@ -2,11 +2,13 @@ package petrolpark.mc.destroy;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.trading.ItemCost;
 import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraft.world.entity.npc.VillagerTrades;
 
@@ -24,16 +26,14 @@ public class DestroyTrades {
 
         INNKEEPER_NOVICE_TRADES.addAll(List.of(
             (trader, rand) -> new MerchantOffer(
-                new ItemStack(Items.GLASS_BOTTLE, 1),
-                ItemStack.EMPTY,
+                new ItemCost(Items.GLASS_BOTTLE, 1),
                 PotionContents.createItemStack(Items.POTION, Potions.WATER),
                 24,
                 2,
                 0.05f
             ), 
             (trader, rand) -> new MerchantOffer(
-                new ItemStack(Items.EMERALD, 1),
-                ItemStack.EMPTY,
+                new ItemCost(Items.EMERALD, 1),
                 new ItemStack(DestroyItems.APPLE_JUICE_CARTON.get(), 1),
                 16,
                 2,
@@ -43,15 +43,13 @@ public class DestroyTrades {
 
         INNKEEPER_APPRENTICE_TRADES.addAll(List.of(
             (trader, rand) -> new MerchantOffer(
-                new ItemStack(Items.EMERALD, 2),
-                ItemStack.EMPTY,
+                new ItemCost(Items.EMERALD, 2),
                 new ItemStack(DestroyItems.UNDISTILLED_MOONSHINE_BOTTLE.get(), 1),
                 16,
                 1,
                 0.05f
             ), (trader, rand) -> new MerchantOffer(
-                new ItemStack(Items.EMERALD, 10),
-                ItemStack.EMPTY,
+                new ItemCost(Items.EMERALD, 10),
                 new ItemStack(DestroyItems.YEAST.get(), 1),
                 12,
                 5,
@@ -61,15 +59,13 @@ public class DestroyTrades {
 
         INNKEEPER_JOURNEYMAN_TRADES.addAll(List.of(
             (trader, rand) -> new MerchantOffer(
-                new ItemStack(Items.EMERALD, 6),
-                ItemStack.EMPTY,
+                new ItemCost(Items.EMERALD, 6),
                 new ItemStack(DestroyItems.MOONSHINE_BOTTLE.get(), 1),
                 16,
                 10,
                 0.05f
             ), (trader, rand) -> new MerchantOffer(
-                new ItemStack(Items.EMERALD, 3),
-                ItemStack.EMPTY,
+                new ItemCost(Items.EMERALD, 3),
                 new ItemStack(AllItems.BUILDERS_TEA.get(), 1),
                 16,
                 10,
@@ -79,113 +75,97 @@ public class DestroyTrades {
 
         INNKEEPER_EXPERT_TRADES.addAll(List.of(
             (trader, rand) -> new MerchantOffer(
-                new ItemStack(Items.EMERALD, 2),
-                ItemStack.EMPTY,
+                new ItemCost(Items.EMERALD, 2),
                 new ItemStack(Items.BLUE_BED, 1),
                 12,
                 15,
                 0.05f
             ), (trader, rand) -> new MerchantOffer(
-                new ItemStack(Items.EMERALD, 2),
-                ItemStack.EMPTY,
+                new ItemCost(Items.EMERALD, 2),
                 new ItemStack(Items.CYAN_BED, 1),
                 12,
                 15,
                 0.05f
             ), (trader, rand) -> new MerchantOffer(
-                new ItemStack(Items.EMERALD, 2),
-                ItemStack.EMPTY,
+                new ItemCost(Items.EMERALD, 2),
                 new ItemStack(Items.GRAY_BED, 1),
                 12,
                 15,
                 0.05f
             ), (trader, rand) -> new MerchantOffer(
-                new ItemStack(Items.EMERALD, 2),
-                ItemStack.EMPTY,
+                new ItemCost(Items.EMERALD, 2),
                 new ItemStack(Items.LIME_BED, 1),
                 12,
                 15,
                 0.05f
             ), (trader, rand) -> new MerchantOffer(
-                new ItemStack(Items.EMERALD, 2),
-                ItemStack.EMPTY,
+                new ItemCost(Items.EMERALD, 2),
                 new ItemStack(Items.PINK_BED, 1),
                 12,
                 15,
                 0.05f
             ), (trader, rand) -> new MerchantOffer(
-                new ItemStack(Items.EMERALD, 2),
-                ItemStack.EMPTY,
+                new ItemCost(Items.EMERALD, 2),
                 new ItemStack(Items.BLACK_BED, 1),
                 12,
                 15,
                 0.05f
             ), (trader, rand) -> new MerchantOffer(
-                new ItemStack(Items.EMERALD, 2),
-                ItemStack.EMPTY,
+                new ItemCost(Items.EMERALD, 2),
                 new ItemStack(Items.BROWN_BED, 1),
                 12,
                 15,
                 0.05f
             ), (trader, rand) -> new MerchantOffer(
-                new ItemStack(Items.EMERALD, 2),
-                ItemStack.EMPTY,
+                new ItemCost(Items.EMERALD, 2),
                 new ItemStack(Items.GREEN_BED, 1),
                 12,
                 15,
                 0.05f
             ), (trader, rand) -> new MerchantOffer(
-                new ItemStack(Items.EMERALD, 2),
-                ItemStack.EMPTY,
+                new ItemCost(Items.EMERALD, 2),
                 new ItemStack(Items.WHITE_BED, 1),
                 12,
                 15,
                 0.05f
             ), (trader, rand) -> new MerchantOffer(
-                new ItemStack(Items.EMERALD, 2),
-                ItemStack.EMPTY,
+                new ItemCost(Items.EMERALD, 2),
                 new ItemStack(Items.ORANGE_BED, 1),
                 12,
                 15,
                 0.05f
             ), (trader, rand) -> new MerchantOffer(
-                new ItemStack(Items.EMERALD, 2),
-                ItemStack.EMPTY,
+                new ItemCost(Items.EMERALD, 2),
                 new ItemStack(Items.PURPLE_BED, 1),
                 12,
                 15,
                 0.05f
             ), (trader, rand) -> new MerchantOffer(
-                new ItemStack(Items.EMERALD, 2),
-                ItemStack.EMPTY,
+                new ItemCost(Items.EMERALD, 2),
                 new ItemStack(Items.YELLOW_BED, 1),
                 12,
                 15,
                 0.05f
             ), (trader, rand) -> new MerchantOffer(
-                new ItemStack(Items.EMERALD, 2),
-                ItemStack.EMPTY,
+                new ItemCost(Items.EMERALD, 2),
                 new ItemStack(Items.MAGENTA_BED, 1),
                 12,
                 15,
                 0.05f
             ), (trader, rand) -> new MerchantOffer(
-                new ItemStack(Items.EMERALD, 2),
-                ItemStack.EMPTY,
+                new ItemCost(Items.EMERALD, 2),
                 new ItemStack(Items.LIGHT_BLUE_BED, 1),
                 12,
                 15,
                 0.05f
             ), (trader, rand) -> new MerchantOffer(
-                new ItemStack(Items.EMERALD, 2),
-                ItemStack.EMPTY,
+                new ItemCost(Items.EMERALD, 2),
                 new ItemStack(Items.LIGHT_GRAY_BED, 1),
                 12,
                 15,
                 0.05f
             ), (trader, rand) -> new MerchantOffer(
-                new ItemStack(Items.EMERALD, 2),
-                ItemStack.EMPTY,
+                new ItemCost(Items.EMERALD, 2),
                 new ItemStack(Items.RED_BED, 1),
                 12,
                 15,
@@ -195,22 +175,20 @@ public class DestroyTrades {
 
         INNKEEPER_MASTER_TRADES.addAll(List.of(
             (trader, rand) -> new MerchantOffer(
-                new ItemStack(Items.EMERALD, 15),
-                new ItemStack(Items.CHORUS_FRUIT, 2),
+                new ItemCost(Items.EMERALD, 15),
+                Optional.of(new ItemCost(Items.CHORUS_FRUIT, 2)),
                 new ItemStack(DestroyItems.CHORUS_WINE_BOTTLE.get(), 1),
                 8,
                 30,
                 0.10f
             ), (trader, rand) -> new MerchantOffer(
-                new ItemStack(Items.EMERALD, 11),
-                ItemStack.EMPTY,
+                new ItemCost(Items.EMERALD, 11),
                 new ItemStack(DestroyItems.BANGERS_AND_MASH.get(), 1),
                 12,
                 30,
                 0.10f
             ), (trader, rand) -> new MerchantOffer(
-                new ItemStack(Items.EMERALD, 25),
-                ItemStack.EMPTY,
+                new ItemCost(Items.EMERALD, 25),
                 new ItemStack(DestroyBlocks.AGING_BARREL.get(), 1),
                 1,
                 30,

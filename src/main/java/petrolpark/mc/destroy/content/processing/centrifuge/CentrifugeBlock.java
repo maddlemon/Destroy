@@ -108,7 +108,7 @@ public class CentrifugeBlock extends KineticBlock implements IBE<CentrifugeBlock
     };
 
     @Override
-    public boolean isPathfindable(BlockState state, BlockGetter reader, BlockPos pos, PathComputationType type) {
+    public boolean isPathfindable(BlockState state, PathComputationType type) {
         return false;
     };
     

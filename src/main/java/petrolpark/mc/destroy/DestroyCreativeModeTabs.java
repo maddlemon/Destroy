@@ -1,5 +1,9 @@
 package petrolpark.mc.destroy;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.function.IntConsumer;
 import java.util.function.Supplier;
 
 import petrolpark.mc.library.core.world.item.creativeModeTab.CustomTab;
@@ -11,9 +15,11 @@ import com.simibubi.create.AllCreativeModeTabs;
 import com.simibubi.create.AllItems;
 import com.tterrag.registrate.util.entry.ItemProviderEntry;
 
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.CreativeModeTab.ItemDisplayParameters;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -21,7 +27,6 @@ import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.neoforge.registries.DeferredHolder;
 
 public class DestroyCreativeModeTabs {
@@ -103,32 +108,70 @@ public class DestroyCreativeModeTabs {
 		return ITabEntry.LINE_BREAK;
 	};
 
-	private static final ITabEntry.Item i(ItemProviderEntry<?, ?> item) {
-		return new ITabEntry.Item(item::asStack);
+	private static final ITabEntry.SingleItem i(ItemProviderEntry<?, ?> item) {
+		return new ITabEntry.SingleItem(item::asStack);
 	};
 
-	public static final ITabEntry.Item i(Supplier<ItemStack> item) {
-		return new ITabEntry.Item(item);
+	public static final ITabEntry.SingleItem i(Supplier<ItemStack> item) {
+		return new ITabEntry.SingleItem(item);
 	};
 
-	public static final ITabEntry.Item i(ResourceLocation itemId) {
-		return new ITabEntry.ConditionalItem(() -> new ItemStack(NeoForgeRegistries.ITEMS.getDelegate(itemId).get().value()), () -> Mods.BIG_CANNONS.isLoaded() && NeoForgeRegistries.ITEMS.containsKey(itemId));
+	public static final ITabEntry.SingleItem i(ResourceLocation itemId) {
+		return new ConditionalItem(() -> new ItemStack(BuiltInRegistries.ITEM.get(itemId)), () -> Mods.BIG_CANNONS.isLoaded() && BuiltInRegistries.ITEM.containsKey(itemId));
 	};
 
-	public static final ITabEntry.ConditionalItem c(ItemProviderEntry<?, ?> item, Supplier<Boolean> condition) {
-		return new ITabEntry.ConditionalItem(item::asStack, condition);
+	public static final ConditionalItem c(ItemProviderEntry<?, ?> item, Supplier<Boolean> condition) {
+		return new ConditionalItem(item::asStack, condition);
 	};
 
-	private static final ITabEntry.DuplicateItem r(ItemProviderEntry<?, ?> item) {
-		return new ITabEntry.DuplicateItem(item::asStack);
+	private static final DuplicateItem r(ItemProviderEntry<?, ?> item) {
+		return new DuplicateItem(item::asStack);
 	};
 
-	private static final ITabEntry.DuplicateItem d(ItemProviderEntry<?, ?> item) {
-		return new ITabEntry.DuplicateItem(item::asStack);
+	private static final DuplicateItem d(ItemProviderEntry<?, ?> item) {
+		return new DuplicateItem(item::asStack);
 	};
 
-	private static final ITabEntry.DuplicateItem d(ItemLike item) {
-		return new ITabEntry.DuplicateItem(() -> new ItemStack(item));
+	private static final DuplicateItem d(ItemLike item) {
+		return new DuplicateItem(() -> new ItemStack(item));
+	};
+
+	/**
+	 * An Item only shown when the condition is met (the 1.20.1 library's {@code ITabEntry.ConditionalItem}, which the library no longer has).
+	 */
+	public static class ConditionalItem extends ITabEntry.SingleItem {
+
+		public final Supplier<Boolean> condition;
+
+		public ConditionalItem(Supplier<ItemStack> stack, Supplier<Boolean> condition) {
+			super(stack);
+			this.condition = condition;
+		};
+
+		@Override
+		public void addItems(List<ItemStack> stacks, ItemDisplayParameters parameters, IntConsumer specialRenderLocation) {
+			if (condition.get()) super.addItems(stacks, parameters, specialRenderLocation);
+		};
+
+		@Override
+		public Collection<ItemStack> getItemsToAddToSearch(ItemDisplayParameters parameters) {
+			return !condition.get() ? Collections.emptySet() : super.getItemsToAddToSearch(parameters);
+		};
+	};
+
+	/**
+	 * An Item shown in the tab but not added to search, as it is already there (the 1.20.1 library's {@code ITabEntry.DuplicateItem}).
+	 */
+	public static class DuplicateItem extends ITabEntry.SingleItem {
+
+		public DuplicateItem(Supplier<ItemStack> stack) {
+			super(stack);
+		};
+
+		@Override
+		public Collection<ItemStack> getItemsToAddToSearch(ItemDisplayParameters parameters) {
+			return Collections.emptyList();
+		};
 	};
 
 	private static final ITabEntry.Subheading s(String translationKey) {

@@ -26,7 +26,7 @@ public class InebriationMobEffect extends UncurableMobEffect {
     };
 
     @SuppressWarnings("null")
-    public void applyEffectTick(LivingEntity livingEntity, int amplifier) {
+    public boolean applyEffectTick(LivingEntity livingEntity, int amplifier) {
         int pDuration = livingEntity.getEffect(DestroyMobEffects.INEBRIATION).getDuration(); // This is the bit it says is null
         if (!livingEntity.level().isClientSide()) {
             if (amplifier >= 3) {
@@ -44,11 +44,11 @@ public class InebriationMobEffect extends UncurableMobEffect {
                 };
             };
         };
-        super.applyEffectTick(livingEntity, amplifier);
+        return super.applyEffectTick(livingEntity, amplifier);
     };
 
     @Override
-    public boolean isDurationEffectTick(int duration, int amplifier) {
+    public boolean shouldApplyEffectTickThisTick(int duration, int amplifier) {
         return true;
     };
 

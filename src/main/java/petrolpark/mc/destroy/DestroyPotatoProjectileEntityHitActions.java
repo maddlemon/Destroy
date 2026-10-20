@@ -1,7 +1,7 @@
 package petrolpark.mc.destroy;
 
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.simibubi.create.api.equipment.potatoCannon.PotatoProjectileEntityHitAction;
 import com.simibubi.create.api.registry.CreateBuiltInRegistries;
@@ -22,16 +22,16 @@ public class DestroyPotatoProjectileEntityHitActions {
     public static void init() {
     }
 
-    private static void register(String name, Codec<? extends PotatoProjectileEntityHitAction> codec) {
+    private static void register(String name, MapCodec<? extends PotatoProjectileEntityHitAction> codec) {
         Registry.register(CreateBuiltInRegistries.POTATO_PROJECTILE_ENTITY_HIT_ACTION, Destroy.asResource(name), codec);
     }
 
     private record ExplodeEntity(float radius, boolean causesFire, Level.ExplosionInteraction mode) implements PotatoProjectileEntityHitAction {
 
-        public static final Codec<ExplodeEntity> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+        public static final MapCodec<ExplodeEntity> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
                 ExtraCodecs.POSITIVE_FLOAT.fieldOf("radius").forGetter(ExplodeEntity::radius),
-                Codec.BOOL.fieldOf("causesFire").forGetter(ExplodeEntity::causesFire),
-                Codec.of(Codec.STRING.comap(Enum::name), Codec.STRING.map((value) -> Enum.valueOf(Level.ExplosionInteraction.class, value)))
+                com.mojang.serialization.Codec.BOOL.fieldOf("causesFire").forGetter(ExplodeEntity::causesFire),
+                com.mojang.serialization.Codec.of(com.mojang.serialization.Codec.STRING.comap(Enum::name), com.mojang.serialization.Codec.STRING.map((value) -> Enum.valueOf(Level.ExplosionInteraction.class, value)))
                                 .fieldOf("mode").forGetter(ExplodeEntity::mode)).apply(instance, ExplodeEntity::new));
         @Override
         public boolean execute(ItemStack projectile, EntityHitResult ray, Type type) {
@@ -41,7 +41,7 @@ public class DestroyPotatoProjectileEntityHitActions {
         }
 
         @Override
-        public Codec<? extends PotatoProjectileEntityHitAction> codec() {
+        public MapCodec<? extends PotatoProjectileEntityHitAction> codec() {
             return CODEC;
         }
     };

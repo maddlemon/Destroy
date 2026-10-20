@@ -32,8 +32,9 @@ import net.minecraft.world.level.gameevent.PositionSource;
 import net.minecraft.world.level.gameevent.vibrations.VibrationSystem;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.items.IItemHandler;
+import net.minecraft.core.Holder;
 
-public abstract class SimpleDyeableNameableMixedExplosiveBlockEntity extends SmartBlockEntity implements IDyeableMixedExplosiveBlockEntity, GameEventListener.Holder<VibrationSystem.Listener>, VibrationSystem {
+public abstract class SimpleDyeableNameableMixedExplosiveBlockEntity extends SmartBlockEntity implements IDyeableMixedExplosiveBlockEntity, GameEventListener.Provider<VibrationSystem.Listener>, VibrationSystem {
 
 
     protected MixedExplosiveInventory inv;
@@ -191,12 +192,12 @@ public abstract class SimpleDyeableNameableMixedExplosiveBlockEntity extends Sma
         };
 
         @Override
-        public boolean canReceiveVibration(ServerLevel level, BlockPos pos, GameEvent gameEvent, GameEvent.Context context) {
+        public boolean canReceiveVibration(ServerLevel level, BlockPos pos, Holder<GameEvent> gameEvent, GameEvent.Context context) {
             return inv.getExplosiveProperties().fulfils(ExplosiveProperties.SOUND_ACTIVATED) && !pos.equals(getBlockPos()) && gameEvent.is(GameEventTags.VIBRATIONS) && !gameEvent.is(GameEventTags.IGNORE_VIBRATIONS_SNEAKING);
         };
 
         @Override
-        public void onReceiveVibration(ServerLevel level, BlockPos pos, GameEvent gameEvent, Entity entity, Entity playerEntity, float distance) {
+        public void onReceiveVibration(ServerLevel level, BlockPos pos, Holder<GameEvent> gameEvent, Entity entity, Entity playerEntity, float distance) {
             explode(entity instanceof Player p ? p : null);
         };
 

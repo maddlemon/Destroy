@@ -43,7 +43,7 @@ public class SyringeItemRenderer extends CustomRenderedItemModelRenderer {
         if (isFirstPersonAnimation && ItemStackNBT.read(stack).contains("Injecting")) {
 
             float time = (float) player.getUseItemRemainingTicks() - partialTicks + 1.0F;
-            float progress = (stack.getUseDuration() - time) / stack.getUseDuration();
+            float progress = (stack.getUseDuration(player) - time) / stack.getUseDuration(player);
             
             if (progress < MOVE_TO_CENTRE_TIME) { //gradually move to center of screen
 

@@ -44,16 +44,15 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.neoforged.neoforge.common.IShearable;
-import net.neoforged.neoforge.common.TierSortingRegistry;
-import net.neoforged.neoforge.common.ToolAction;
-import net.neoforged.neoforge.common.ToolActions;
+import net.neoforged.neoforge.common.ItemAbilities;
+import net.neoforged.neoforge.common.ItemAbility;
 
 public class SwissArmyKnifeItem extends DiggerItem {
 
     private static int timeUntilToolPutAway = 20;
 
     public SwissArmyKnifeItem(float attackDamageModifier, float attackSpeedModifier, Tier tier, Properties properties) {
-        super(attackDamageModifier, attackSpeedModifier, tier, BlockTags.MINEABLE_WITH_PICKAXE, properties); // The tag supplied here is ignored
+        super(tier, BlockTags.MINEABLE_WITH_PICKAXE, properties.attributes(DiggerItem.createAttributes(tier, attackDamageModifier, attackSpeedModifier))); // The tag supplied here is ignored
     };
 
     @OnlyIn(Dist.CLIENT)
@@ -117,23 +116,24 @@ public class SwissArmyKnifeItem extends DiggerItem {
         return super.interactLivingEntity(stack, playerIn, entity, hand);
     };
 
+    /**
+     * As 1.20.1: every Block is mined at the Tier's speed.
+     */
     @Override
     public float getDestroySpeed(ItemStack stack, BlockState state) {
-        return speed;
+        return getTier().getSpeed();
     };
 
-    @Override
-    public boolean isCorrectToolForDrops(BlockState state) {
-        return TierSortingRegistry.isCorrectTierForDrops(getTier(), state);
-    };
-
+    /**
+     * As 1.20.1 ({@code TierSortingRegistry.isCorrectTierForDrops}): any Block the Tier is high enough for drops, whatever tool it is meant for.
+     */
     @Override
     public boolean isCorrectToolForDrops(ItemStack stack, BlockState state) {
-        return TierSortingRegistry.isCorrectTierForDrops(getTier(), state);
+        return !state.is(getTier().getIncorrectBlocksForDrops());
     };
 
     @Override
-    public boolean canPerformAction(ItemStack stack, ToolAction toolAction) {
+    public boolean canPerformAction(ItemStack stack, ItemAbility toolAction) {
         Tool tool = getTool(stack);
         return (tool != null && tool.actions.contains(toolAction));
     };
@@ -242,21 +242,21 @@ public class SwissArmyKnifeItem extends DiggerItem {
     };
 
     public static enum Tool {
-        PICKAXE(ToolActions.DEFAULT_PICKAXE_ACTIONS, () -> new ItemStack(Items.IRON_PICKAXE)),
-        AXE(ToolActions.DEFAULT_AXE_ACTIONS,() -> new ItemStack(Items.IRON_AXE)),
-        SHOVEL(ToolActions.DEFAULT_SHOVEL_ACTIONS, () -> new ItemStack(Items.IRON_SHOVEL)),
-        HOE(ToolActions.DEFAULT_HOE_ACTIONS,() -> new ItemStack(Items.IRON_HOE)),
-        SHEARS(ToolActions.DEFAULT_SHEARS_ACTIONS, () -> new ItemStack(Items.IRON_PICKAXE));
+        PICKAXE(ItemAbilities.DEFAULT_PICKAXE_ACTIONS, () -> new ItemStack(Items.IRON_PICKAXE)),
+        AXE(ItemAbilities.DEFAULT_AXE_ACTIONS,() -> new ItemStack(Items.IRON_AXE)),
+        SHOVEL(ItemAbilities.DEFAULT_SHOVEL_ACTIONS, () -> new ItemStack(Items.IRON_SHOVEL)),
+        HOE(ItemAbilities.DEFAULT_HOE_ACTIONS,() -> new ItemStack(Items.IRON_HOE)),
+        SHEARS(ItemAbilities.DEFAULT_SHEARS_ACTIONS, () -> new ItemStack(Items.IRON_PICKAXE));
 
         public static final Map<Tool, LerpedFloat> ALL_RETRACTED = new EnumMap<>(Tool.class);
         static {
             for (Tool tool : values()) ALL_RETRACTED.put(tool, LerpedFloat.angular().chase(0d, 0.4d, LerpedFloat.Chaser.EXP));
         };
 
-        public final Set<ToolAction> actions;
+        public final Set<ItemAbility> actions;
         public final Supplier<ItemStack> exampleTool;
 
-        Tool(Set<ToolAction> toolActions, Supplier<ItemStack> exampleTool) {
+        Tool(Set<ItemAbility> toolActions, Supplier<ItemStack> exampleTool) {
             actions = toolActions;
             this.exampleTool = exampleTool;
         };

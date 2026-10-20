@@ -93,7 +93,7 @@ public class GeniusFluidTankBehaviour extends SmartFluidTankBehaviour {
             FluidStack stack = super.drain(maxDrain, action);
             // Replace the held fluid with an empty fluid stack if we completely emptied this tank
             // This clears mixture data and allows empty containers of the same type to stack
-            if(fluid.isEmpty() && fluid.getRawFluid() != Fluids.EMPTY)
+            if(fluid.isEmpty() && fluid.getFluid() != Fluids.EMPTY)
                 setFluid(FluidStack.EMPTY);
             return stack;
         }

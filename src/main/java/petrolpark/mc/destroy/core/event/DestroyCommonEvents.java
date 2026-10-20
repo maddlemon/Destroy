@@ -97,7 +97,6 @@ import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
 import net.neoforged.neoforge.event.village.VillagerTradesEvent;
 import net.neoforged.bus.api.Event;
-import net.neoforged.bus.api.Event.Result;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 
@@ -162,10 +161,10 @@ public class DestroyCommonEvents {
             });
         } else if (!event.isWasDeath() || DestroyAllConfigs.SERVER.substances.keepCreatineExtraInventorySizeOnDeath.get() || keepInv) {
             // Copy Extra Inventory due to Creatine
-            @Nullable AttributeModifier extraInventoryModifier = event.getOriginal().getAttribute(DestroyAttributes.EXTRA_INVENTORY_SIZE.get()).getModifier(CreatineItem.EXTRA_INVENTORY_ATTRIBUTE_MODIFIER);
-            if (extraInventoryModifier != null) event.getEntity().getAttribute(DestroyAttributes.EXTRA_INVENTORY_SIZE.get()).addPermanentModifier(extraInventoryModifier);
-            @Nullable AttributeModifier extraHotbarModifier = event.getOriginal().getAttribute(DestroyAttributes.EXTRA_HOTBAR_SLOTS.get()).getModifier(CreatineItem.EXTRA_HOTBAR_ATTRIBUTE_MODIFIER);
-            if (extraHotbarModifier != null) event.getEntity().getAttribute(DestroyAttributes.EXTRA_HOTBAR_SLOTS.get()).addPermanentModifier(extraHotbarModifier);
+            @Nullable AttributeModifier extraInventoryModifier = event.getOriginal().getAttribute(DestroyAttributes.EXTRA_INVENTORY_SIZE).getModifier(CreatineItem.EXTRA_INVENTORY_ATTRIBUTE_MODIFIER);
+            if (extraInventoryModifier != null) event.getEntity().getAttribute(DestroyAttributes.EXTRA_INVENTORY_SIZE).addPermanentModifier(extraInventoryModifier);
+            @Nullable AttributeModifier extraHotbarModifier = event.getOriginal().getAttribute(DestroyAttributes.EXTRA_HOTBAR_SLOTS).getModifier(CreatineItem.EXTRA_HOTBAR_ATTRIBUTE_MODIFIER);
+            if (extraHotbarModifier != null) event.getEntity().getAttribute(DestroyAttributes.EXTRA_HOTBAR_SLOTS).addPermanentModifier(extraHotbarModifier);
             ExtendedInventory.get(event.getEntity()).updateSize();
             if (keepInv) event.getEntity().getInventory().replaceWith(event.getOriginal().getInventory()); // Do this again as this Event is fired after it occurs
         };
@@ -267,8 +266,7 @@ public class DestroyCommonEvents {
 
             DestroyAdvancementTrigger.CAPTURE_STRAY.award(event.getLevel(), player);
 
-            event.setResult(Result.DENY);
-            return;
+            return; // (1.20.1 also set the event's result to DENY, which Forge ignored for this event)
         };
 
         // Collecting Tears
@@ -292,7 +290,7 @@ public class DestroyCommonEvents {
 
         DestroyAdvancementTrigger.COLLECT_TEARS.award(player.level(), player);
 
-        event.setResult(Result.DENY);
+        // (1.20.1 also set the event's result to DENY, which Forge ignored for these events)
     };
 
     /**
@@ -312,7 +310,6 @@ public class DestroyCommonEvents {
         if (state.getBlock() instanceof MeasuringCylinderBlock) {
             InteractionResult result = MeasuringCylinderBlockItem.tryOpenTransferScreen(world, pos, state, event.getFace(), player, event.getHand(), stack, true);
             if (result != InteractionResult.PASS) {
-                event.setCancellationResult(result);
                 event.setCanceled(true);
                 return;
             };
@@ -322,7 +319,6 @@ public class DestroyCommonEvents {
         if (stack.getItem() instanceof IMixtureStorageItem mixtureItem) {
             InteractionResult result = mixtureItem.attack(world, pos, state, event.getFace(), player, event.getHand(), stack);
             if (result != InteractionResult.PASS) {
-                event.setCancellationResult(result);
                 event.setCanceled(true);
                 return;
             };
@@ -334,7 +330,6 @@ public class DestroyCommonEvents {
                 ItemStack cloneItemStack = state.getCloneItemStack(new BlockHitResult(Vec3.ZERO, event.getFace(), event.getPos(), false), world, pos, player);
                 world.destroyBlock(pos, false);
                 if (world.getBlockState(pos) != state && !world.isClientSide()) player.getInventory().placeItemBackInInventory(cloneItemStack);
-                event.setCancellationResult(InteractionResult.SUCCESS);
                 event.setCanceled(true);
                 return;
             };
@@ -343,7 +338,6 @@ public class DestroyCommonEvents {
         // Blowpipes
         if (event.getItemStack().getItem() instanceof BlowpipeItem blowpipe) {
             if (blowpipe.finishBlowing(stack, world, player)) {
-                event.setCancellationResult(InteractionResult.SUCCESS);
                 event.setCanceled(true);
                 return;
             };
@@ -390,7 +384,7 @@ public class DestroyCommonEvents {
         // Fireproof Flint and Steel
         if (stack.getItem() == Items.FLINT_AND_STEEL && FireproofingHelper.isFireproof(player.level().registryAccess(), stack)) {
             DestroyAdvancementTrigger.FIREPROOF_FLINT_AND_STEEL.award(player.level(), player);
-            stack.hurtAndBreak(1, player, p -> p.broadcastBreakEvent(event.getHand()));
+            stack.hurtAndBreak(1, player, LivingEntity.getSlotForHand(event.getHand()));
             event.setCanceled(true);
             event.setCancellationResult(InteractionResult.SUCCESS);
         };

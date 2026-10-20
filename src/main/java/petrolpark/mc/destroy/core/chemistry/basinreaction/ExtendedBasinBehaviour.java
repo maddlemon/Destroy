@@ -8,6 +8,7 @@ import petrolpark.mc.destroy.Destroy;
 import petrolpark.mc.destroy.chemistry.legacy.LegacyReaction;
 import petrolpark.mc.destroy.chemistry.legacy.ReactionResult;
 import petrolpark.mc.destroy.core.pollution.PollutionHelper;
+import com.simibubi.create.AllBlockEntityTypes;
 import com.simibubi.create.api.event.BlockEntityBehaviourEvent;
 import com.simibubi.create.content.kinetics.mixer.MechanicalMixerBlockEntity;
 import com.simibubi.create.content.processing.basin.BasinBlockEntity;
@@ -118,8 +119,8 @@ public class ExtendedBasinBehaviour extends BlockEntityBehaviour {
 	};
 
     @SubscribeEvent
-    public static void onAttachBasinBehaviours(BlockEntityBehaviourEvent<BasinBlockEntity> event) {
-        event.attach(new ExtendedBasinBehaviour(event.getBlockEntity()));
+    public static void onAttachBasinBehaviours(BlockEntityBehaviourEvent event) {
+        event.forType(AllBlockEntityTypes.BASIN.get(), be -> event.attach(new ExtendedBasinBehaviour(be)));
     };
     
 };

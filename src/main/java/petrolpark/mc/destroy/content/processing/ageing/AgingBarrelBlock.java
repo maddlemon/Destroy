@@ -5,6 +5,7 @@ import petrolpark.mc.destroy.DestroyBlockEntityTypes;
 import petrolpark.mc.destroy.DestroyBlocks;
 import petrolpark.mc.destroy.DestroyVoxelShapes;
 import petrolpark.mc.destroy.DestroySoundEvents;
+import petrolpark.mc.destroy.util.BlockUseHelper;
 import com.simibubi.create.api.contraption.transformable.TransformableBlock;
 import com.simibubi.create.content.contraptions.StructureTransform;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
@@ -20,6 +21,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
@@ -59,6 +61,13 @@ public class AgingBarrelBlock extends HorizontalDirectionalBlock implements IBE<
     };
 
     @Override
+    protected ItemInteractionResult useItemOn(ItemStack heldItem, BlockState blockstate, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+        return BlockUseHelper.asItemInteractionResult(use(blockstate, level, pos, player, hand, hit));
+    };
+
+    /**
+     * 1.20.1's {@code Block#use}, unchanged (see {@link BlockUseHelper#asItemInteractionResult}).
+     */
     public InteractionResult use(BlockState blockstate, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         ItemStack heldItem = player.getItemInHand(hand);
         return onBlockEntityUse(level, pos, be -> {
@@ -81,7 +90,7 @@ public class AgingBarrelBlock extends HorizontalDirectionalBlock implements IBE<
                     return InteractionResult.SUCCESS;
                 };
 			} else { // Try picking up an Item from the Barrel
-                IItemHandlerModifiable inv = be.itemCapability.orElse(new ItemStackHandler(1));
+                IItemHandlerModifiable inv = be.itemCapability == null ? new ItemStackHandler(1) : be.itemCapability;
                 boolean success = false;
                 for (int slot = 0; slot < inv.getSlots(); slot++) {
                     ItemStack stackInSlot = inv.getStackInSlot(slot);

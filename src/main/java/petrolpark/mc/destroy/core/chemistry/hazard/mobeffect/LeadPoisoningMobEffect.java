@@ -17,7 +17,7 @@ public class LeadPoisoningMobEffect extends UncurableMobEffect {
     };
 
     @Override
-    public void applyEffectTick(LivingEntity livingEntity, int amplifier) {
+    public boolean applyEffectTick(LivingEntity livingEntity, int amplifier) {
         super.applyEffectTick(livingEntity, amplifier);
         if (!livingEntity.level().isClientSide() && livingEntity instanceof Player player) {
             player.giveExperiencePoints(-1);
@@ -29,10 +29,11 @@ public class LeadPoisoningMobEffect extends UncurableMobEffect {
                 };
             }; 
         };
+        return true;
     };
 
     @Override
-    public boolean isDurationEffectTick(int duration, int amplifier) {
+    public boolean shouldApplyEffectTickThisTick(int duration, int amplifier) {
         return duration % Math.max(1, (int)(500f / (float)(1 + amplifier))) == 0;
     };
     

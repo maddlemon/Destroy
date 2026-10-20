@@ -35,6 +35,7 @@ import net.neoforged.neoforge.event.entity.player.PlayerContainerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.minecraft.core.component.DataComponents;
 
 @EventBusSubscriber(modid = Destroy.MOD_ID)
 public class ExtendedInventory extends Inventory {
@@ -62,8 +63,8 @@ public class ExtendedInventory extends Inventory {
     public void updateSize(boolean forceSync) {
         int sizeBefore = extraItems.size();
         int hotbarBefore = extraHotbarSlots;
-        if (player.getAttributes().hasAttribute(DestroyAttributes.EXTRA_HOTBAR_SLOTS.get())) setExtraHotbarSlots((int)player.getAttributeValue(DestroyAttributes.EXTRA_HOTBAR_SLOTS.get()));
-        if (player.getAttributes().hasAttribute(DestroyAttributes.EXTRA_INVENTORY_SIZE.get())) setExtraInventorySize((int)player.getAttributeValue(DestroyAttributes.EXTRA_INVENTORY_SIZE.get()));
+        if (player.getAttributes().hasAttribute(DestroyAttributes.EXTRA_HOTBAR_SLOTS)) setExtraHotbarSlots((int)player.getAttributeValue(DestroyAttributes.EXTRA_HOTBAR_SLOTS));
+        if (player.getAttributes().hasAttribute(DestroyAttributes.EXTRA_INVENTORY_SIZE)) setExtraInventorySize((int)player.getAttributeValue(DestroyAttributes.EXTRA_INVENTORY_SIZE));
         if ((forceSync || sizeBefore != extraItems.size() || hotbarBefore != extraHotbarSlots) && !player.level().isClientSide() && player instanceof ServerPlayer sp && sp.connection != null) {
             CatnipServices.NETWORK.sendToClient(sp, new ExtraInventorySizeChangeS2CPacket(extraItems.size(), extraHotbarSlots, false));
         };
@@ -271,7 +272,7 @@ public class ExtendedInventory extends Inventory {
 
     @Override
     public int findSlotMatchingUnusedItem(ItemStack stack) {
-        return findSlot(s -> !s.isEmpty() && ItemStack.isSameItemSameComponents(s, stack) && !s.isDamaged() && !s.isEnchanted() && !s.hasCustomHoverName());
+        return findSlot(s -> !s.isEmpty() && ItemStack.isSameItemSameComponents(s, stack) && !s.isDamaged() && !s.isEnchanted() && !s.has(DataComponents.CUSTOM_NAME));
     };
 
     /**
@@ -379,7 +380,7 @@ public class ExtendedInventory extends Inventory {
             } catch (Throwable throwable) {
                 CrashReport crashreport = CrashReport.forThrowable(throwable, "Adding item to inventory");
                 CrashReportCategory crashreportcategory = crashreport.addCategory("Item being added");
-                crashreportcategory.setDetail("Registry Name", () -> String.valueOf(net.neoforged.neoforge.registries.NeoForgeRegistries.ITEMS.getKey(stack.getItem())));
+                crashreportcategory.setDetail("Registry Name", () -> String.valueOf(net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(stack.getItem())));
                 crashreportcategory.setDetail("Item Class", () -> stack.getItem().getClass().getName());
                 crashreportcategory.setDetail("Item ID", Item.getId(stack.getItem()));
                 crashreportcategory.setDetail("Item data", stack.getDamageValue());
