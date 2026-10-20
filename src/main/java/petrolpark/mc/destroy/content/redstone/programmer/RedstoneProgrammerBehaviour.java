@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.content.redstone.programmer;
 
+import net.minecraft.core.HolderLookup;
 import java.util.function.BooleanSupplier;
 
 import com.simibubi.create.content.equipment.clipboard.ClipboardCloneable;
@@ -55,8 +56,8 @@ public class RedstoneProgrammerBehaviour extends BlockEntityBehaviour implements
     };
 
     @Override
-    public void read(CompoundTag nbt, boolean clientPacket) {
-        super.read(nbt, clientPacket);
+    public void read(CompoundTag nbt, HolderLookup.Provider registries, boolean clientPacket) {
+        super.read(nbt, registries, clientPacket);
         setProgram(nbt.getCompound("Program"));
     };
 
@@ -65,8 +66,8 @@ public class RedstoneProgrammerBehaviour extends BlockEntityBehaviour implements
     };
 
     @Override
-    public void write(CompoundTag nbt, boolean clientPacket) {
-        super.write(nbt, clientPacket);
+    public void write(CompoundTag nbt, HolderLookup.Provider registries, boolean clientPacket) {
+        super.write(nbt, registries, clientPacket);
         nbt.put("Program", program.write());
     };
 

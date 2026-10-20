@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.core.chemistry.vat;
 
+import net.minecraft.core.HolderLookup;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -143,15 +144,15 @@ public class VatFluidTankBehaviour extends GeniusFluidTankBehaviour {
     };
 
     @Override
-	public void write(CompoundTag nbt, boolean clientPacket) {
-		super.write(nbt, clientPacket);
+	public void write(CompoundTag nbt, HolderLookup.Provider registries, boolean clientPacket) {
+		super.write(nbt, registries, clientPacket);
         if (clientPacket) return;
 		nbt.putBoolean("Full", liquidFull);
 	};
 
 	@Override
-	public void read(CompoundTag nbt, boolean clientPacket) {
-		super.read(nbt, clientPacket);
+	public void read(CompoundTag nbt, HolderLookup.Provider registries, boolean clientPacket) {
+		super.read(nbt, registries, clientPacket);
         if (clientPacket) return;
         liquidFull = nbt.getBoolean("Full");
         vatCapacity = getLiquidHandler().getCapacity();

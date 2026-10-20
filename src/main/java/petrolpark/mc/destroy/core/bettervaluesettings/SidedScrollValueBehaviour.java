@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.core.bettervaluesettings;
 
+import net.minecraft.core.HolderLookup;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -60,15 +61,15 @@ public class SidedScrollValueBehaviour extends BlockEntityBehaviour implements B
 	};
 
 	@Override
-	public void write(CompoundTag nbt, boolean clientPacket) {
+	public void write(CompoundTag nbt, HolderLookup.Provider registries, boolean clientPacket) {
 		nbt.putIntArray("Values", values);
-		super.write(nbt, clientPacket);
+		super.write(nbt, registries, clientPacket);
 	};
 
 	@Override
-	public void read(CompoundTag nbt, boolean clientPacket) {
+	public void read(CompoundTag nbt, HolderLookup.Provider registries, boolean clientPacket) {
 		values = nbt.getIntArray("Values");
-		super.read(nbt, clientPacket);
+		super.read(nbt, registries, clientPacket);
 	};
 
 	public SidedScrollValueBehaviour withCallback(BiConsumer<Direction, Integer> valueCallback) {

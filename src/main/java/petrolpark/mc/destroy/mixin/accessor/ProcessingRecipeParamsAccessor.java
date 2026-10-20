@@ -9,7 +9,7 @@ import com.simibubi.create.foundation.fluid.FluidIngredient;
 import net.minecraft.core.NonNullList;
 import net.neoforged.neoforge.fluids.FluidStack;
 
-@Mixin(ProcessingRecipeBuilder.ProcessingRecipeParams.class)
+@Mixin(ProcessingRecipeParams.class)
 public interface ProcessingRecipeParamsAccessor {
 
     @Accessor(

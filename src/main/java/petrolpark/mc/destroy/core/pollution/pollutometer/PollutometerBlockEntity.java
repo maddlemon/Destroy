@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.core.pollution.pollutometer;
 
+import net.minecraft.core.HolderLookup;
 import java.util.List;
 
 import petrolpark.mc.destroy.util.DestroyLang;
@@ -40,17 +41,17 @@ public class PollutometerBlockEntity extends SmartBlockEntity {
     };
 
     @Override
-    protected void read(CompoundTag tag, boolean clientPacket) {
+    protected void read(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
         int pollutionTypeIndex = tag.getInt("PollutionType");
         setPollutionType(pollutionTypeIndex);
         pollutionTypeDisplay.value = pollutionTypeIndex;
-        super.read(tag, clientPacket);
+        super.read(tag, registries, clientPacket);
     };
 
     @Override
-    protected void write(CompoundTag tag, boolean clientPacket) {
+    protected void write(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
         tag.putInt("PollutionType", pollutionType.ordinal());
-        super.write(tag, clientPacket);
+        super.write(tag, registries, clientPacket);
     };
 
     public PollutionType getPollutionType() {

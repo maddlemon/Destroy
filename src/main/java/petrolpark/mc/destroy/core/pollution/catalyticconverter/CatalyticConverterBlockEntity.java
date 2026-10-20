@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.core.pollution.catalyticconverter;
 
+import net.minecraft.core.HolderLookup;
 import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
@@ -50,14 +51,14 @@ public class CatalyticConverterBlockEntity extends SmartBlockEntity {
     };
 
     @Override
-    protected void read(CompoundTag tag, boolean clientPacket) {
-        super.read(tag, clientPacket);
+    protected void read(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
+        super.read(tag, registries, clientPacket);
         ticksToFlush = tag.getInt("TicksToFlush");
     };
 
     @Override
-    protected void write(CompoundTag tag, boolean clientPacket) {
-        super.write(tag, clientPacket);
+    protected void write(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
+        super.write(tag, registries, clientPacket);
         tag.putInt("TicksToFlush", ticksToFlush);
     };
 

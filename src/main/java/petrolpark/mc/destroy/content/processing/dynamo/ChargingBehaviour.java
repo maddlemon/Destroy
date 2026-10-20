@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.content.processing.dynamo;
 
+import net.minecraft.core.HolderLookup;
 import java.util.List;
 import java.util.Optional;
 
@@ -65,7 +66,7 @@ public class ChargingBehaviour extends BeltProcessingBehaviour {
     };
 
     @Override
-    public void read(CompoundTag tag, boolean clientPacket) {
+    public void read(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
         running = tag.getBoolean("Running");
         mode = Mode.values()[tag.getInt("Mode")];
         finished = tag.getBoolean("Finished");
@@ -73,11 +74,11 @@ public class ChargingBehaviour extends BeltProcessingBehaviour {
         if (clientPacket) {
             targetPosition = VecHelper.readNBT(tag.getList("Target", Tag.TAG_DOUBLE));
         };
-        super.read(tag, clientPacket);
+        super.read(tag, registries, clientPacket);
     };
 
     @Override
-    public void write(CompoundTag tag, boolean clientPacket) {
+    public void write(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
         tag.putBoolean("Running", running);
         tag.putInt("Mode", mode.ordinal());
         tag.putBoolean("Finished", finished);
@@ -85,7 +86,7 @@ public class ChargingBehaviour extends BeltProcessingBehaviour {
         if (clientPacket) {
             tag.put("Target", VecHelper.writeNBT(targetPosition));
         };
-        super.write(tag, clientPacket);
+        super.write(tag, registries, clientPacket);
     }
 
     public void start(Mode mode, Vec3 targetPosition, int duration) {

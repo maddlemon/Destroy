@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.content.logistics.siphon;
 
+import net.minecraft.core.HolderLookup;
 import java.text.DecimalFormat;
 import java.util.List;
 
@@ -66,14 +67,14 @@ public class SiphonBlockEntity extends SmartBlockEntity implements IHaveLabGoggl
     };
 
     @Override
-    protected void read(CompoundTag tag, boolean clientPacket) {
-        super.read(tag, clientPacket);
+    protected void read(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
+        super.read(tag, registries, clientPacket);
         leftToDrain = tag.getInt("LeftToDrain");
     };
 
     @Override
-    protected void write(CompoundTag tag, boolean clientPacket) {
-        super.write(tag, clientPacket);
+    protected void write(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
+        super.write(tag, registries, clientPacket);
         tag.putInt("LeftToDrain", leftToDrain);
     };
 

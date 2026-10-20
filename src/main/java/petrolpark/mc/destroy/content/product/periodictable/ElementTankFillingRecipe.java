@@ -3,7 +3,7 @@ package petrolpark.mc.destroy.content.product.periodictable;
 import com.google.gson.JsonSyntaxException;
 import petrolpark.mc.destroy.DestroyRecipeTypes;
 import petrolpark.mc.destroy.core.recipe.SingleFluidRecipe;
-import com.simibubi.create.content.processing.recipe.ProcessingRecipeBuilder.ProcessingRecipeParams;
+import com.simibubi.create.content.processing.recipe.ProcessingRecipeParams;
 
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;

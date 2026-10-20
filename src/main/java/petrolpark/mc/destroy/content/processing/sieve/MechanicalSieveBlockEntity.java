@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.content.processing.sieve;
 
+import net.minecraft.core.HolderLookup;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -70,8 +71,8 @@ public class MechanicalSieveBlockEntity extends KineticBlockEntity {
     };
 
     @Override
-    protected void read(CompoundTag compound, boolean clientPacket) {
-        super.read(compound, clientPacket);
+    protected void read(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket) {
+        super.read(compound, registries, clientPacket);
         compound.put("Items", NBTHelper.writeCompoundList(items, item -> {
             CompoundTag tag = new CompoundTag();
             tag.putUUID("Entity", item.item.getUUID());
@@ -81,8 +82,8 @@ public class MechanicalSieveBlockEntity extends KineticBlockEntity {
     };
 
     @Override
-    protected void write(CompoundTag compound, boolean clientPacket) {
-        super.write(compound, clientPacket);
+    protected void write(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket) {
+        super.write(compound, registries, clientPacket);
         items.addAll(NBTHelper.readCompoundList(compound.getList("Items", Tag.TAG_COMPOUND), this::processItem));
     };
 

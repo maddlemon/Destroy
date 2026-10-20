@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.content.processing.glassblowing;
 
+import net.minecraft.core.HolderLookup;
 import java.util.List;
 
 import petrolpark.mc.destroy.DestroyAdvancementTrigger;
@@ -79,9 +80,9 @@ public class BlowpipeBlockEntity extends SmartBlockEntity {
     };
 
     @Override
-    protected void read(CompoundTag tag, boolean clientPacket) {
-        super.read(tag, clientPacket);
-        readBlowing(tag);
+    protected void read(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
+        super.read(tag, registries, clientPacket);
+        readBlowing(tag, registries);
         int oldLuminosity = luminosity;
         luminosity = tag.getInt("Luminosity");
         if (oldLuminosity != luminosity) {
@@ -91,8 +92,8 @@ public class BlowpipeBlockEntity extends SmartBlockEntity {
         };
     };
 
-    public void readBlowing(CompoundTag tag) {
-        tank.readFromNBT(tag.getCompound("Tank"));
+    public void readBlowing(CompoundTag tag, HolderLookup.Provider registries) {
+        tank.readFromNBT(registries, tag.getCompound("Tank"));
         recipeId = ResourceLocation.parse(tag.getString("Recipe"));
         progress = tag.getInt("Progress");
         progressLastTick = tag.getInt("LastProgress");
@@ -107,15 +108,15 @@ public class BlowpipeBlockEntity extends SmartBlockEntity {
     };
 
     @Override
-    protected void write(CompoundTag tag, boolean clientPacket) {
-        super.write(tag, clientPacket);
-        writeBlowing(tag, false);
+    protected void write(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
+        super.write(tag, registries, clientPacket);
+        writeBlowing(tag, registries, false);
         tag.putInt("Luminosity", luminosity);
     };
 
-    public void writeBlowing(CompoundTag tag, boolean forItem) {
+    public void writeBlowing(CompoundTag tag, HolderLookup.Provider registries, boolean forItem) {
         if (recipeId != null) tag.putString("Recipe", recipeId.toString());
-        tag.put("Tank", tank.writeToNBT(new CompoundTag()));
+        tag.put("Tank", tank.writeToNBT(registries, new CompoundTag()));
         tag.putInt("Progress", progress);
         tag.putInt("LastProgress", progressLastTick);
         if (forItem && getRecipe() != null) tag.putString("RequiredFluid", getRecipe().getFluidIngredients().get(0).serialize().toString());

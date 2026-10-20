@@ -4,7 +4,7 @@ import petrolpark.mc.destroy.Destroy;
 import petrolpark.mc.destroy.DestroyFluids;
 import petrolpark.mc.destroy.DestroyRecipeTypes;
 import petrolpark.mc.destroy.core.recipe.SingleFluidRecipe;
-import com.simibubi.create.content.processing.recipe.ProcessingRecipeBuilder.ProcessingRecipeParams;
+import com.simibubi.create.content.processing.recipe.ProcessingRecipeParams;
 
 import net.neoforged.neoforge.fluids.FluidStack;
 

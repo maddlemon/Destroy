@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.core.explosion;
 
+import net.minecraft.core.HolderLookup;
 import static petrolpark.mc.library.compat.create.PetrolparkCreateClient.OUTLINER;
 
 import java.util.Arrays;
@@ -66,15 +67,15 @@ public class DynamiteBlockEntity extends SmartBlockEntity implements ISpecialWhe
     };
 
     @Override
-    protected void read(CompoundTag tag, boolean clientPacket) {
-        super.read(tag, clientPacket);
+    protected void read(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
+        super.read(tag, registries, clientPacket);
         excavationAreaUpperCorner = NbtUtils.readBlockPos(tag.getCompound("UpperCorner"));
         excavationAreaLowerCorner = NbtUtils.readBlockPos(tag.getCompound("LowerCorner"));
     };
 
     @Override
-    protected void write(CompoundTag tag, boolean clientPacket) {
-        super.write(tag, clientPacket);
+    protected void write(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
+        super.write(tag, registries, clientPacket);
         tag.put("UpperCorner", NbtUtils.writeBlockPos(excavationAreaUpperCorner));
         tag.put("LowerCorner", NbtUtils.writeBlockPos(excavationAreaLowerCorner));
     };

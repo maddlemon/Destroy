@@ -7,7 +7,7 @@ import com.ibm.icu.impl.locale.XCldrStub.ImmutableSet;
 import petrolpark.mc.destroy.DestroyRecipeTypes;
 import petrolpark.mc.destroy.core.recipe.SingleFluidRecipe;
 import petrolpark.mc.library.core.data.recipe.IBiomeSpecificRecipe;
-import com.simibubi.create.content.processing.recipe.ProcessingRecipeBuilder.ProcessingRecipeParams;
+import com.simibubi.create.content.processing.recipe.ProcessingRecipeParams;
 
 import net.neoforged.neoforge.fluids.FluidStack;
 

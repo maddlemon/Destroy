@@ -7,7 +7,7 @@ import com.google.common.collect.ImmutableSet;
 import petrolpark.mc.destroy.DestroyRecipeTypes;
 import petrolpark.mc.destroy.core.recipe.SingleFluidRecipe;
 import petrolpark.mc.library.core.data.recipe.IBiomeSpecificRecipe;
-import com.simibubi.create.content.processing.recipe.ProcessingRecipeBuilder.ProcessingRecipeParams;
+import com.simibubi.create.content.processing.recipe.ProcessingRecipeParams;
 
 public class DistillationRecipe extends SingleFluidRecipe implements IBiomeSpecificProcessingRecipe {
 

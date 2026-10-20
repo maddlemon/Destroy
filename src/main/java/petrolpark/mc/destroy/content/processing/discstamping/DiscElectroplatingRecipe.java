@@ -4,7 +4,7 @@ import petrolpark.mc.destroy.Destroy;
 import petrolpark.mc.destroy.DestroyRecipeTypes;
 import com.simibubi.create.content.processing.basin.BasinRecipe;
 import com.simibubi.create.content.processing.recipe.ProcessingRecipeBuilder;
-import com.simibubi.create.content.processing.recipe.ProcessingRecipeBuilder.ProcessingRecipeParams;
+import com.simibubi.create.content.processing.recipe.ProcessingRecipeParams;
 
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;

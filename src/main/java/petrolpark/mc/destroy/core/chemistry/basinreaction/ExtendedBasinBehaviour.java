@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.core.chemistry.basinreaction;
 
+import net.minecraft.core.HolderLookup;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -86,7 +87,7 @@ public class ExtendedBasinBehaviour extends BlockEntityBehaviour {
     };
 
     @Override
-    public void read(CompoundTag nbt, boolean clientPacket) {
+    public void read(CompoundTag nbt, HolderLookup.Provider registries, boolean clientPacket) {
         tooFullToReact = nbt.getBoolean("TooFullToReact");
 
         reactionResults = new HashMap<>();
@@ -99,11 +100,11 @@ public class ExtendedBasinBehaviour extends BlockEntityBehaviour {
             reactionResults.put(result, number);
         });
 
-        evaporatedFluid = FluidStack.loadFluidStackFromNBT(nbt.getCompound("EvaporatedFluidStack"));
+        evaporatedFluid = FluidStack.parseOptional(registries, nbt.getCompound("EvaporatedFluidStack"));
 	};
 
     @Override
-	public void write(CompoundTag nbt, boolean clientPacket) {
+	public void write(CompoundTag nbt, HolderLookup.Provider registries, boolean clientPacket) {
         nbt.putBoolean("TooFullToReact", tooFullToReact);
 
         nbt.put("Results", NBTHelper.writeCompoundList(reactionResults.entrySet().stream().filter(entry -> entry.getKey().getReaction().isPresent()).toList(), entry -> {
@@ -113,9 +114,7 @@ public class ExtendedBasinBehaviour extends BlockEntityBehaviour {
             return resultTag;
         }));
 
-        CompoundTag fluidTag = new CompoundTag();
-        evaporatedFluid.writeToNBT(fluidTag);
-        nbt.put("EvaporatedFluid", fluidTag);
+        nbt.put("EvaporatedFluid", evaporatedFluid.saveOptional(registries));
 	};
 
     @SubscribeEvent

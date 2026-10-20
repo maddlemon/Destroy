@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.content.logistics.creativepump;
 
+import net.minecraft.core.HolderLookup;
 import java.util.List;
 
 import com.google.common.collect.ImmutableList;
@@ -63,15 +64,15 @@ public class CreativePumpBlockEntity extends PumpBlockEntity {
     };
 
     @Override
-    protected void read(CompoundTag compound, boolean clientPacket) {
-        super.read(compound, clientPacket);
+    protected void read(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket) {
+        super.read(compound, registries, clientPacket);
         simulatedSpeed = compound.getInt("SimulatedSpeed");
         pumpSpeedBehaviour.setValue(simulatedSpeed);
     };
 
     @Override
-    protected void write(CompoundTag compound, boolean clientPacket) {
-        super.write(compound, clientPacket);
+    protected void write(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket) {
+        super.write(compound, registries, clientPacket);
         compound.putInt("SimulatedSpeed", simulatedSpeed);
     };
 

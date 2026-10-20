@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.core.chemistry.vat;
 
+import net.minecraft.core.HolderLookup;
 import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Optional;
@@ -224,8 +225,8 @@ public class VatSideBlockEntity extends CopycatBlockEntity implements IHaveLabGo
     };
 
     @Override
-    protected void read(CompoundTag tag, boolean clientPacket) {
-        super.read(tag, clientPacket);
+    protected void read(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
+        super.read(tag, registries, clientPacket);
         if (tag.contains("Side")) {
             direction = Direction.values()[tag.getInt("Side")];
         } else {
@@ -238,7 +239,7 @@ public class VatSideBlockEntity extends CopycatBlockEntity implements IHaveLabGo
         if (tag.contains("InitializationTicks", Tag.TAG_INT)) initializationTicks = tag.getInt("InitializationTicks"); else initializationTicks = 0;
         if (clientPacket) {
             spoutingTicks = tag.getInt("SpoutingTicks");
-            spoutingFluid = FluidStack.loadFluidStackFromNBT(tag.getCompound("SpoutingFluid"));
+            spoutingFluid = FluidStack.parseOptional(registries, tag.getCompound("SpoutingFluid"));
             ventOpenness.chase(displayType == DisplayType.OPEN_VENT ? 1f : 0f, 0.3f, LerpedFloat.Chaser.EXP);
         };
 
@@ -252,8 +253,8 @@ public class VatSideBlockEntity extends CopycatBlockEntity implements IHaveLabGo
     };
 
     @Override
-    protected void write(CompoundTag tag, boolean clientPacket) {
-        super.write(tag, clientPacket);
+    protected void write(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
+        super.write(tag, registries, clientPacket);
         if (direction != null) tag.putInt("Side", direction.ordinal());
         if (controllerPosition != null) tag.put("ControllerPosition", NbtUtils.writeBlockPos(controllerPosition.subtract(getBlockPos())));
         tag.putInt("DisplayType", displayType.ordinal());
@@ -262,7 +263,7 @@ public class VatSideBlockEntity extends CopycatBlockEntity implements IHaveLabGo
         if (initializationTicks > 0) tag.putInt("InitializationTicks", initializationTicks);
         if (clientPacket) {
             tag.putInt("SpoutingTicks", spoutingTicks);
-            if (!spoutingFluid.isEmpty()) tag.put("SpoutingFluid", spoutingFluid.writeToNBT(new CompoundTag()));
+            if (!spoutingFluid.isEmpty()) tag.put("SpoutingFluid", spoutingFluid.saveOptional(registries));
         };
     };
 

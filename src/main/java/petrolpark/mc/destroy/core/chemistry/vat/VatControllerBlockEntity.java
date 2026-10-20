@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.core.chemistry.vat;
 
+import net.minecraft.core.HolderLookup;
 import static petrolpark.mc.library.compat.create.PetrolparkCreateClient.OUTLINER;
 
 import java.util.ArrayList;
@@ -281,8 +282,8 @@ public class VatControllerBlockEntity extends SmartBlockEntity implements IHaveL
     };
 
     @Override
-    protected void read(CompoundTag tag, boolean clientPacket) {
-        super.read(tag, clientPacket);
+    protected void read(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
+        super.read(tag, registries, clientPacket);
 
         heatingPower = tag.getFloat("HeatingPower");
         UVPower = tag.getFloat("UVPower");
@@ -313,8 +314,8 @@ public class VatControllerBlockEntity extends SmartBlockEntity implements IHaveL
 
     @Override
     @SuppressWarnings("null")
-    protected void write(CompoundTag tag, boolean clientPacket) {
-        super.write(tag, clientPacket);
+    protected void write(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
+        super.write(tag, registries, clientPacket);
 
         tag.putFloat("HeatingPower", heatingPower);
         tag.putFloat("UVPower", UVPower);

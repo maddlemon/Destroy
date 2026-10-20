@@ -12,6 +12,10 @@ GitHub release on this fork and add the mod + Petrolpark's Library to the pack.
 
 ## Build
 
+On Windows (Maddie's machine): JDK 21 is `JAVA_HOME`; from Git Bash run
+`./gradlew compileJava --console=plain > compile.log 2>&1` and read the `N errors` line.
+NFRT artifacts were already cached, so the first compile took ~1.5 min.
+
 Working dir is `/var/home/azziee/Documents/Azziecraft/build/destroy` — do **not**
 use `/tmp` for anything that must survive.
 
@@ -57,43 +61,33 @@ JAVA_HOME=$JDK ./gradlew compileJava --console=plain    # log to a file, run det
 | `29815ce4` | `DestroyTagDatagen` syntax fix; `-Xmaxerrs 10000` on JavaCompile |
 | `f7a0c130` | Phase B batch 1 (mechanical): `DestroyLang` import fixes (`client.`→`util.`, incl. `TemperatureUnit`), `ForgeCatnipServices`→`CatnipServices`, static `AllTags` import fixes, `DistExecutor.unsafeRunWhenOn(Dist.CLIENT, …)`→`Destroy.unsafeRunClient(…)`, `RegistryObject`→`DeferredHolder` fields (`DestroyParticleTypes`, `DestroyRecipeTypes`), nested `Pollution.PollutionType` / `SeismographItem.Seismograph(.Mark)` import fixes, `saturationMod(`→`saturationModifier(` |
 
-Latest compile (after batch 1): **2301 error lines**. Mix: cannot-find-symbol 1205,
+| `(this commit)` | AT fix (above); Create 6 `ProcessingRecipeParams` import; `HolderLookup.Provider registries` added to all `SmartBlockEntity`/`BlockEntityBehaviour` `read`/`write`/`writeSafe` overrides + super/behaviour/`FluidTank` NBT calls inside them (28 files); `FluidStack.loadFluidStackFromNBT`/`writeToNBT` -> `parseOptional`/`saveOptional` in block entities; Blowpipe `readBlowing`/`writeBlowing` take a provider. Done from Maddie's Windows machine. |
+
+Latest compile (after this commit): **2,050 errors** (javac count; gradle prints each twice).
+Before: 2,178 (after batch 1, javac count). Remaining big buckets: `LazyOptional`/`Capability`
+(batch 3), `getOrCreateTag` (batch 3), packets (batch 3), Create `FluidIngredient` (batch 2).
+
+Upstream bug spotted (left as-is): `ExtendedBasinBehaviour` writes `"EvaporatedFluid"` but
+reads `"EvaporatedFluidStack"`, so the evaporated fluid never survives a reload.
+
+Previous count (after batch 1): **2301 error lines**. Mix: cannot-find-symbol 1205,
 no-override 333, incompatible-types 185, bad-args 133, package-missing 99,
 private-access 85, ambiguous 59, no-suitable 53, not-abstract 43, static-ref 9,
 inaccessible 5, final-class 2, name-clash 2.
 
-## Open blocker: project access transformers are not applied at compile time
+## Resolved: project access transformers were not applied
 
-Symptom: compile errors like `level has private access in Explosion` for members
-listed in `src/main/resources/META-INF/accesstransformer.cfg` (`Entity.position`,
-`Explosion.level/radius/toBlow/source/damageSource`, `Villager.gossips`, …).
-
-Found so far:
-
-- The old build.gradle used `accessTransformers { files('…') }`. `DataFileCollection`
-  (the MDG 2.0.74 type behind `accessTransformers`) has no `files()` method, so the
-  closure fell through to `Project.files()` and the AT file was **silently never
-  registered**. Fixed to `accessTransformers { from('src/main/resources/META-INF/accesstransformer.cfg') }`
-  — verified via an init script that `neoForge.accessTransformers.files` now contains
-  the file.
-- BUT after the fix + a full `./gradlew compileJava --rerun-tasks` (artifacts rebuilt
-  from scratch, `recompile` step re-ran in ~182 s), BOTH `build/moddev/artifacts/neoforge-21.1.262.jar`
-  and `neoforge-21.1.262-merged.jar` still have those members `private`, while
-  NeoForge's own ATs (e.g. `PrimedTnt.explode()` → `protected`) ARE applied.
-  `ModDevArtifactsWorkflow` bytecode does wire the extension's AT files into NFRT's
-  `CreateMinecraftArtifacts.getAccessTransformers()`, so the file reaches NFRT but the
-  recompiled output doesn't reflect it.
-- Not yet determined: whether NFRT skips invalid entries silently (several AT entries
-  target members that changed in 1.21.1 — e.g. `ShapedRecipe.matches(CraftingContainer,…)`),
-  whether `validateAccessTransformers` defaults to false, or whether the AT application
-  lives in an NFRT step that didn't re-run.
-
-Next steps to try: check `validateAccessTransformers`; prune AT entries whose members
-no longer exist in 1.21.1 (javap the merged jar to confirm each); look at the NFRT step
-list in the compile log for an AT-application step; as a fallback, refactor code to not
-need AT'd members (e.g. `SmartExplosion` can keep its own `level`/`radius` copies from
-its constructor instead of reading the private superclass fields). Note the AT file must
-still ship in the mod jar (`META-INF/accesstransformer.cfg`) for runtime application.
+Root cause: every entry in `META-INF/accesstransformer.cfg` used **SRG names**
+(`f_46012_`, `m_280585_(...)`). Since 1.20.5 NeoForge runs on Mojang names in dev *and*
+prod, so SRG entries match nothing and NFRT skips them silently. Fixed by rewriting each
+entry to the Mojang name from its `#` comment, then checking every entry with `javap`
+against `build/moddev/artifacts/neoforge-21.1.262-merged.jar`. Stale entries fixed:
+`Gui.renderSlot` (float -> `DeltaTracker`), `SpriteSources.register` (`Codec` -> `MapCodec`),
+`PotionBrewing.POTION_MIXES/CONTAINER_MIXES` -> instance fields `potionMixes/containerMixes`
+(callers must now go through `level.potionBrewing()`, not static access), and the 4
+`ShapedRecipe` entries removed (pattern logic moved to `ShapedRecipePattern` in 1.21).
+`validateAccessTransformers = true` is now on in build.gradle, so a bad entry fails the
+build instead of being ignored. The `files()` -> `from()` fix was also needed.
 
 ## Remaining work (Phase B)
 
@@ -104,10 +98,12 @@ Quick mechanical first:
 
 Batch 2 — API fixes (verified against the jars):
 
-- Create 6 recipe API: `ProcessingRecipeParams` is now a **top-level** class
+- Create 6 recipe API (imports DONE): `ProcessingRecipeParams` is now a **top-level** class
   `com.simibubi.create.content.processing.recipe.ProcessingRecipeParams` (was
   nested in `ProcessingRecipeBuilder`); the recipe factory is
-  `ProcessingRecipe$Factory<P,R>` (was `ProcessingRecipeBuilder.ProcessingRecipeFactory`).
+  `ProcessingRecipe$Factory<P,R>` (was `ProcessingRecipeBuilder.ProcessingRecipeFactory`). Still TODO: `Factory` takes **two**
+  type params now, so `DestroyRecipeTypes` and `CircuitDeployerApplicationRecipe.Serializer`
+  need real rework; `new ProcessingRecipeBuilder(...)` (abstract now) at ~10 sites.
 - Fluid ingredients are NeoForge `net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient`
   (recipes take `SizedFluidIngredient`, not the old Create `FluidIngredient`); Create 6
   keeps a deprecated `com.simibubi.create.foundation.fluid.FluidIngredientOld`. Destroy's
@@ -118,7 +114,8 @@ Batch 2 — API fixes (verified against the jars):
 - `Explosion.center()` returns `Vec3` (no `getPosition()`); `Explosion.level` is
   private — an AT entry `protected net.minecraft.world.level.Explosion f_46012_ # level`
   exists but compile still reports private: investigate AT application.
-- `FluidTank.writeToNBT(HolderLookup.Provider, CompoundTag)` — needs the provider arg.
+- `FluidTank.writeToNBT(HolderLookup.Provider, CompoundTag)` — DONE inside block-entity
+  read/write; remaining sites are outside those methods (item tanks, capabilities).
 - `MobEffectInstance.getEffect()` → `Holder<MobEffect>`.
 
 Batch 3 — structural:

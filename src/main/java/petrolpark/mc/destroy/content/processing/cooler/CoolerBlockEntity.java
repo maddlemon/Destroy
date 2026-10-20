@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.content.processing.cooler;
 
+import net.minecraft.core.HolderLookup;
 import java.util.List;
 
 import com.simibubi.create.api.equipment.goggles.IHaveGoggleInformation;
@@ -157,14 +158,14 @@ public class CoolerBlockEntity extends SmartBlockEntity implements IHaveGoggleIn
     };
 
     @Override
-    protected void read(CompoundTag tag, boolean clientPacket) {
-        super.read(tag, clientPacket);
+    protected void read(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
+        super.read(tag, registries, clientPacket);
         coolingTicks = tag.getInt("Timer");
     };
 
     @Override
-    protected void write(CompoundTag tag, boolean clientPacket) {
-        super.write(tag, clientPacket);
+    protected void write(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
+        super.write(tag, registries, clientPacket);
         tag.putInt("Timer", coolingTicks);
     };
 

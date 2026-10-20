@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.core.chemistry.vat.observation.colorimeter;
 
+import net.minecraft.core.HolderLookup;
 import java.text.DecimalFormat;
 import java.util.Collections;
 import java.util.List;
@@ -80,8 +81,8 @@ public class ColorimeterBlockEntity extends SmartBlockEntity {
     };
 
     @Override
-    protected void read(CompoundTag tag, boolean clientPacket) {
-        super.read(tag, clientPacket);
+    protected void read(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
+        super.read(tag, registries, clientPacket);
 
         if(clientPacket && (Minecraft.getInstance().screen instanceof ColorimeterScreen cs) && cs.colorimeter == this)
             return;
@@ -90,8 +91,8 @@ public class ColorimeterBlockEntity extends SmartBlockEntity {
     };
 
     @Override
-    protected void write(CompoundTag tag, boolean clientPacket) {
-        super.write(tag, clientPacket);
+    protected void write(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
+        super.write(tag, registries, clientPacket);
         if (molecule != null) tag.putString("Molecule", molecule.getFullID());
         if (observingGas) tag.putBoolean("ObservingGas", true);
     };

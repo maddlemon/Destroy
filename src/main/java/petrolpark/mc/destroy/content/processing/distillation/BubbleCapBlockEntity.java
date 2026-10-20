@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.content.processing.distillation;
 
+import net.minecraft.core.HolderLookup;
 import java.text.DecimalFormat;
 import java.util.List;
 
@@ -117,8 +118,8 @@ public class BubbleCapBlockEntity extends SmartBlockEntity implements IHaveLabGo
 
     @Override
     @SuppressWarnings("null")
-    protected void read(CompoundTag compound, boolean clientPacket) {
-        super.read(compound, clientPacket);
+    protected void read(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket) {
+        super.read(compound, registries, clientPacket);
         if (!hasLevel()) return;
         fraction = compound.getInt("Fraction");
         int[] controllerPosArray = compound.getIntArray("DistillationTowerControllerPosition");
@@ -140,7 +141,7 @@ public class BubbleCapBlockEntity extends SmartBlockEntity implements IHaveLabGo
         };
 
         if (clientPacket) { // If we need to tell the client to start rendering particles
-            particleFluid = FluidStack.loadFluidStackFromNBT(compound.getCompound("ParticleFluid"));
+            particleFluid = FluidStack.parseOptional(registries, compound.getCompound("ParticleFluid"));
         };
 
         ticksToFill = compound.getInt("TicksToFill");
@@ -148,8 +149,8 @@ public class BubbleCapBlockEntity extends SmartBlockEntity implements IHaveLabGo
     };
 
     @Override
-    protected void write(CompoundTag compound, boolean clientPacket) {
-        super.write(compound, clientPacket);
+    protected void write(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket) {
+        super.write(compound, registries, clientPacket);
         compound.putInt("Fraction", fraction);
         compound.putIntArray("DistillationTowerControllerPosition", List.of(towerControllerPos.getX(), towerControllerPos.getY(), towerControllerPos.getZ()));
         if (isController) {
@@ -157,7 +158,7 @@ public class BubbleCapBlockEntity extends SmartBlockEntity implements IHaveLabGo
         };
         compound.putInt("TicksToFill", ticksToFill);
         if (clientPacket) {
-            compound.put("ParticleFluid", particleFluid.writeToNBT(new CompoundTag()));
+            compound.put("ParticleFluid", particleFluid.saveOptional(registries));
         };
         compound.putInt("InitializationTicks", initializationTicks);
     };

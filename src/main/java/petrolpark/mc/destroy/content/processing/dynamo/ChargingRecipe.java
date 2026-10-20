@@ -9,7 +9,7 @@ import petrolpark.mc.destroy.DestroyRecipeTypes;
 import petrolpark.mc.destroy.util.DestroyLang;
 import com.simibubi.create.compat.jei.category.sequencedAssembly.SequencedAssemblySubCategory;
 import com.simibubi.create.content.processing.recipe.ProcessingRecipe;
-import com.simibubi.create.content.processing.recipe.ProcessingRecipeBuilder.ProcessingRecipeParams;
+import com.simibubi.create.content.processing.recipe.ProcessingRecipeParams;
 import com.simibubi.create.content.processing.sequenced.IAssemblyRecipe;
 
 import net.minecraft.network.chat.Component;

@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.content.processing.centrifuge;
 
+import net.minecraft.core.HolderLookup;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -192,22 +193,22 @@ public class CentrifugeBlockEntity extends KineticBlockEntity implements IDirect
     };
 
     @Override
-    protected void read(CompoundTag compound, boolean clientPacket) {
+    protected void read(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket) {
         timer = compound.getInt("Timer");
-        getInputTank().readFromNBT(compound.getCompound("InputTank"));
-        getDenseOutputTank().readFromNBT(compound.getCompound("DenseOutputTank"));
-        getLightOutputTank().readFromNBT(compound.getCompound("LightOutputTank"));
+        getInputTank().readFromNBT(registries, compound.getCompound("InputTank"));
+        getDenseOutputTank().readFromNBT(registries, compound.getCompound("DenseOutputTank"));
+        getLightOutputTank().readFromNBT(registries, compound.getCompound("LightOutputTank"));
         denseOutputTankFace = getBlockState().getValue(CentrifugeBlock.DENSE_OUTPUT_FACE);
-        super.read(compound, clientPacket);
+        super.read(compound, registries, clientPacket);
     };
 
     @Override
-    protected void write(CompoundTag compound, boolean clientPacket) {
+    protected void write(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket) {
         compound.putInt("Timer", timer);
-        compound.put("InputTank", getInputTank().writeToNBT(new CompoundTag()));
-        compound.put("DenseOutputTank", getDenseOutputTank().writeToNBT(new CompoundTag()));
-        compound.put("LightOutputTank", getLightOutputTank().writeToNBT(new CompoundTag()));
-        super.write(compound, clientPacket);
+        compound.put("InputTank", getInputTank().writeToNBT(registries, new CompoundTag()));
+        compound.put("DenseOutputTank", getDenseOutputTank().writeToNBT(registries, new CompoundTag()));
+        compound.put("LightOutputTank", getLightOutputTank().writeToNBT(registries, new CompoundTag()));
+        super.write(compound, registries, clientPacket);
     };
 
     public int getProcessingSpeed() {

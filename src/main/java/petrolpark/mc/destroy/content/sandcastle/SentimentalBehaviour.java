@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.content.sandcastle;
 
+import net.minecraft.core.HolderLookup;
 import javax.annotation.Nullable;
 
 import petrolpark.mc.destroy.DestroyAdvancementTrigger;
@@ -58,19 +59,19 @@ public class SentimentalBehaviour extends BlockEntityBehaviour {
     };
 
     @Override
-    public void read(CompoundTag tag, boolean clientPacket) {
+    public void read(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
         if (!clientPacket && getWorld() instanceof ServerLevel server) {
             server.getEntity(tag.getUUID("BabyOwner"));
         };
-        super.read(tag, clientPacket);
+        super.read(tag, registries, clientPacket);
     };
 
     @Override
-    public void write(CompoundTag tag, boolean clientPacket) {
+    public void write(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
         if (hasOwner() && !clientPacket) {
             tag.putUUID("BabyOwner", owner.getUUID());
         };
-        super.write(tag, clientPacket);
+        super.write(tag, registries, clientPacket);
     };
 
     private boolean hasOwner() {

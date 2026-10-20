@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.content.processing.trypolithography.keypunch;
 
+import net.minecraft.core.HolderLookup;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -88,7 +89,7 @@ public class CircuitPunchingBehaviour extends BeltProcessingBehaviour {
     };
 
     @Override
-    public void read(CompoundTag tag, boolean clientPacket) {
+    public void read(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
         running = tag.getBoolean("Running");
         finished = tag.getBoolean("Finished");
         runningTicks = prevRunningTicks = tag.getInt("Ticks");
@@ -96,16 +97,16 @@ public class CircuitPunchingBehaviour extends BeltProcessingBehaviour {
             particleItem = ItemStack.of(tag.getCompound("ParticleItem"));
             spawnParticles();
         };
-        super.read(tag, clientPacket);
+        super.read(tag, registries, clientPacket);
     };
 
     @Override
-    public void write(CompoundTag tag, boolean clientPacket) {
+    public void write(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
         tag.putBoolean("Running", running);
         tag.putBoolean("Finished", finished);
         tag.putInt("Ticks", runningTicks);
         if (clientPacket && !particleItem.isEmpty()) tag.put("ParticleItem", particleItem.serializeNBT());
-        super.write(tag, clientPacket);
+        super.write(tag, registries, clientPacket);
     };
 
     public void start() {

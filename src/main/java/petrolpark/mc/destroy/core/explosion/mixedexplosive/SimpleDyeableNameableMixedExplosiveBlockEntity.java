@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.core.explosion.mixedexplosive;
 
+import net.minecraft.core.HolderLookup;
 import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
@@ -85,8 +86,8 @@ public abstract class SimpleDyeableNameableMixedExplosiveBlockEntity extends Sma
     };
 
     @Override
-    protected void read(CompoundTag tag, boolean clientPacket) {
-        super.read(tag, clientPacket);
+    protected void read(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
+        super.read(tag, registries, clientPacket);
         setColor(tag.getInt("Color"));
         if (tag.contains("CustomName", Tag.TAG_STRING)) name = Component.Serializer.fromJson(tag.getString("CustomName"));
         inv = createInv();
@@ -95,8 +96,8 @@ public abstract class SimpleDyeableNameableMixedExplosiveBlockEntity extends Sma
     };
 
     @Override
-    protected void write(CompoundTag tag, boolean clientPacket) {
-        super.write(tag, clientPacket);
+    protected void write(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
+        super.write(tag, registries, clientPacket);
         tag.putInt("Color", color);
         if (name != null) tag.putString("CustomName", Component.Serializer.toJson(name));
         tag.put("ExplosiveMix", inv.serializeNBT());

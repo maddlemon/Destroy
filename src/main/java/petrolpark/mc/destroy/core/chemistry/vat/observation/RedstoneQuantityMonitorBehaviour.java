@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.core.chemistry.vat.observation;
 
+import net.minecraft.core.HolderLookup;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.IntConsumer;
@@ -80,16 +81,16 @@ public class RedstoneQuantityMonitorBehaviour extends BlockEntityBehaviour {
     };
 
     @Override
-    public void read(CompoundTag nbt, boolean clientPacket) {
-        super.read(nbt, clientPacket);
+    public void read(CompoundTag nbt, HolderLookup.Provider registries, boolean clientPacket) {
+        super.read(nbt, registries, clientPacket);
         oldStrength = nbt.getInt("OldRedstoneStrength");
         lowerThreshold = nbt.getFloat("LowerObservedQuantityThreshold");
         upperThreshold = nbt.getFloat("UpperObservedQuantityThreshold");
     };
 
     @Override
-    public void write(CompoundTag nbt, boolean clientPacket) {
-        super.write(nbt, clientPacket);
+    public void write(CompoundTag nbt, HolderLookup.Provider registries, boolean clientPacket) {
+        super.write(nbt, registries, clientPacket);
         nbt.putInt("OldRedstoneStrength", oldStrength);
         nbt.putFloat("LowerObservedQuantityThreshold", lowerThreshold);
         nbt.putFloat("UpperObservedQuantityThreshold", upperThreshold);

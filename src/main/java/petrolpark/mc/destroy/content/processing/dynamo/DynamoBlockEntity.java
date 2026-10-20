@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.content.processing.dynamo;
 
+import net.minecraft.core.HolderLookup;
 import java.util.List;
 import java.util.Optional;
 
@@ -98,16 +99,16 @@ public class DynamoBlockEntity extends BasinOperatingBlockEntity implements Char
     };
 
     @Override
-    protected void read(CompoundTag compound, boolean clientPacket) {
-        super.read(compound, clientPacket);
+    protected void read(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket) {
+        super.read(compound, registries, clientPacket);
         soundDuration = compound.getInt("SoundDuration");
         CompoundTag stateTag = compound.getCompound("ArcFurnaceBlock");
         if (compound.contains("ArcFurnaceBlock", Tag.TAG_COMPOUND)) arcFurnaceBlock = Lazy.of(() -> NbtUtils.readBlockState(getLevel().holderLookup(Registries.BLOCK), stateTag));
     };
 
     @Override
-    protected void write(CompoundTag compound, boolean clientPacket) {
-        super.write(compound, clientPacket);
+    protected void write(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket) {
+        super.write(compound, registries, clientPacket);
         compound.putInt("SoundDuration", soundDuration);
         if (!arcFurnaceBlock.get().isAir()) compound.put("ArcFurnaceBlock", NbtUtils.writeBlockState(arcFurnaceBlock.get()));
     };
