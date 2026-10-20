@@ -21,6 +21,7 @@ import petrolpark.mc.destroy.chemistry.minecraft.MixtureFluid;
 import petrolpark.mc.destroy.core.chemistry.recipe.MixtureConversionRecipe;
 import petrolpark.mc.destroy.core.chemistry.vat.IVatHeaterBlock;
 import petrolpark.mc.destroy.core.pollution.Pollution;
+import petrolpark.mc.destroy.util.DestroyFluidIngredientHelper;
 import petrolpark.mc.library.util.BigItemStack;
 import com.simibubi.create.content.processing.basin.BasinBlockEntity;
 import com.simibubi.create.content.processing.basin.BasinRecipe;
@@ -133,7 +134,7 @@ public class ReactionInBasinRecipe extends BasinRecipe {
             });
 
             // Add all the given Fluid Stacks as "required ingredients"
-            availableFluids.stream().map(FluidIngredient::fromFluidStack).forEach(builder::require);
+            availableFluids.stream().map(DestroyFluidIngredientHelper::fromFluidStack).forEach(builder::require);
             // Add all the given Item Stacks as "required ingredients"
             availableItems.stream().forEach(stack -> {
                 if (stack.isEmpty()) return;

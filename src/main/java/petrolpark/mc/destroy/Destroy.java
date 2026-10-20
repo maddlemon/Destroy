@@ -1,5 +1,7 @@
 package petrolpark.mc.destroy;
 
+import petrolpark.mc.destroy.core.chemistry.vat.material.SingleBlockIngredient;
+import petrolpark.mc.library.core.data.recipe.ingredient.BlockIngredient;
 import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
@@ -121,6 +123,7 @@ public class Destroy {
         event.enqueueWork(() -> {
             Chemistry.initiate(new ForgeChemistryEventFirer(), Destroy.LOGGER::info);
             DestroyCompostables.register();
+            BlockIngredient.registerType(SingleBlockIngredient.TYPE);
         });
         DestroyStats.register();
         VatMaterial.registerDestroyVatMaterials();

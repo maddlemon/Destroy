@@ -119,7 +119,7 @@ public class BlowpipeBlockEntity extends SmartBlockEntity {
         tag.put("Tank", tank.writeToNBT(registries, new CompoundTag()));
         tag.putInt("Progress", progress);
         tag.putInt("LastProgress", progressLastTick);
-        if (forItem && getRecipe() != null) tag.putString("RequiredFluid", getRecipe().getFluidIngredients().get(0).serialize().toString());
+        if (forItem && getRecipe() != null) BlowpipeItem.putFluidIngredient(tag, getRecipe().getFluidIngredients().get(0));
     };
 
     @Override

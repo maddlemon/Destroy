@@ -26,6 +26,7 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
@@ -35,7 +36,7 @@ import net.neoforged.neoforge.items.wrapper.RecipeWrapper;
 
 public class MechanicalSieveBlockEntity extends KineticBlockEntity {
 
-    protected FirstTimeLuckyRecipesBehaviour luckyBehaviour;
+    protected FTLRecipesBehaviour luckyBehaviour;
     protected DestroyAdvancementBehaviour advancementBehaviour;
 
     protected SievingRecipe lastRecipe;
@@ -52,7 +53,7 @@ public class MechanicalSieveBlockEntity extends KineticBlockEntity {
     public void addBehaviours(List<BlockEntityBehaviour> behaviours) {
         super.addBehaviours(behaviours);
 
-        luckyBehaviour = new FirstTimeLuckyRecipesBehaviour(this, DestroyRecipeTypes.SIEVING::is);
+        luckyBehaviour = new FTLRecipesBehaviour(this, rh -> DestroyRecipeTypes.SIEVING.is(rh.value()));
         behaviours.add(luckyBehaviour);
 
         advancementBehaviour = new DestroyAdvancementBehaviour(this, DestroyAdvancementTrigger.MECHANICAL_SIEVE);
@@ -117,7 +118,7 @@ public class MechanicalSieveBlockEntity extends KineticBlockEntity {
             if (item.processingTime < 0) {
                 ItemEntity entity = item.item;
                 entity.kill();
-                for (ItemStack stack : RecipeHelper.rollResults(item.getRecipe(), luckyBehaviour.getPlayer(), entity.getItem().getCount())) {
+                for (ItemStack stack : RecipeHelper.rollResults(level.random, item.getRecipe(), luckyBehaviour.getPlayer(), entity.getItem().getCount())) {
                     getLevel().addFreshEntity(new ItemEntity(getLevel(), entity.getX() - 0.125d + level.random.nextDouble() * 0.25d, getBlockPos().getY(), entity.getZ() - 0.125d + level.random.nextDouble() * 0.25d, stack, 0d, 0d, 0d));
                 };
                 iterator.remove();
@@ -151,7 +152,7 @@ public class MechanicalSieveBlockEntity extends KineticBlockEntity {
         if (lastRecipe != null && lastRecipe.matches(wrapper, getLevel())) {
             recipe = lastRecipe;
         } else {
-            Optional<SievingRecipe> recipeOp = DestroyRecipeTypes.SIEVING.find(wrapper, getLevel());
+            Optional<SievingRecipe> recipeOp = DestroyRecipeTypes.SIEVING.<RecipeWrapper, SievingRecipe>find(wrapper, getLevel()).map(RecipeHolder::value);
             if (recipeOp.isEmpty()) return null;
             recipe = recipeOp.get();
         };

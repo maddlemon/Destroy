@@ -11,7 +11,6 @@ import com.google.gson.JsonSyntaxException;
 import petrolpark.mc.destroy.DestroyMessages;
 import petrolpark.mc.library.core.data.recipe.ingredient.BlockIngredient;
 import petrolpark.mc.library.core.data.recipe.ingredient.BlockIngredient.BlockTagIngredient;
-import petrolpark.mc.library.core.data.recipe.ingredient.BlockIngredient.SingleBlockIngredient;
 
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;

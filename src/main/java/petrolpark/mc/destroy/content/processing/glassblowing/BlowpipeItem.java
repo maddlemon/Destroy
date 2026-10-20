@@ -5,6 +5,8 @@ import petrolpark.mc.destroy.DestroyCapabilities;
 import java.util.List;
 import java.util.function.Consumer;
 
+import com.mojang.serialization.JsonOps;
+
 import net.createmod.catnip.data.Iterate;
 import net.createmod.catnip.gui.ScreenOpener;
 import org.jetbrains.annotations.NotNull;
@@ -102,7 +104,15 @@ public class BlowpipeItem extends BlockItem implements CustomArmPoseItem {
 
     public static SizedFluidIngredient getFluidIngredient(CompoundTag tag) {
         if (!tag.contains("RequiredFluid", Tag.TAG_STRING)) return null;
-        return FluidIngredient.deserialize(GsonHelper.parse(tag.getString("RequiredFluid"), true));  
+        return SizedFluidIngredient.FLAT_CODEC.parse(JsonOps.INSTANCE, GsonHelper.parse(tag.getString("RequiredFluid"), true)).result().orElse(null);
+    };
+
+    /**
+     * Stored as a JSON string like in 1.20.1 (now NeoForge's {@link SizedFluidIngredient#FLAT_CODEC} format rather than Create's {@code FluidIngredient} one).
+     * No registry context is needed (or available, in the Item's Fluid handler).
+     */
+    public static void putFluidIngredient(CompoundTag tag, SizedFluidIngredient ingredient) {
+        tag.putString("RequiredFluid", SizedFluidIngredient.FLAT_CODEC.encodeStart(JsonOps.INSTANCE, ingredient).getOrThrow().toString());
     };
 
     @Override
@@ -149,7 +159,7 @@ public class BlowpipeItem extends BlockItem implements CustomArmPoseItem {
         tag.putInt("LastProgress", 0);
         ItemStackNBT.set(stack, tag);
         GlassblowingRecipe recipe = BlowpipeBlockEntity.readRecipe(level, tag);
-        List<ItemStack> results = recipe.rollResults();
+        List<ItemStack> results = recipe.rollResults(level.random);
         level.playSound(null, player.getOnPos(), SoundEvents.GLASS_BREAK, SoundSource.PLAYERS);
         results.forEach(s -> player.getInventory().placeItemBackInInventory(s)); // Grant recipe results
         return true;

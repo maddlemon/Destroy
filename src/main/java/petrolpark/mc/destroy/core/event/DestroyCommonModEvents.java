@@ -3,7 +3,6 @@ package petrolpark.mc.destroy.core.event;
 import petrolpark.mc.destroy.Destroy;
 import petrolpark.mc.destroy.DestroyAttributes;
 import petrolpark.mc.destroy.content.processing.trypolithography.RegenerateCircuitPatternCommand.CircuitPatternIdArgument;
-import petrolpark.mc.destroy.content.processing.trypolithography.recipe.CircuitDeployerApplicationRecipe;
 
 import com.simibubi.create.foundation.pack.ModFilePackResources;
 import net.minecraft.commands.synchronization.ArgumentTypeInfos;
@@ -14,7 +13,6 @@ import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.repository.PackSource;
 import net.minecraft.world.entity.EntityType;
-import net.neoforged.neoforge.common.crafting.CraftingHelper;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeModificationEvent;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -22,7 +20,6 @@ import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.forgespi.language.IModFileInfo;
 import net.neoforged.forgespi.locating.IModFile;
-import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.neoforge.registries.RegisterEvent;
 
 @EventBusSubscriber(modid = Destroy.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
@@ -59,14 +56,6 @@ public class DestroyCommonModEvents {
                 Pack pack = Pack.readMetaAndCreate(Destroy.asResource("tfmg_compat").toString(), Component.literal("Destroy Compat With Create: TFMG"), false, id -> new ModFilePackResources(id, modFile, "datapacks/tfmg_compat"), PackType.SERVER_DATA, Pack.Position.TOP, PackSource.DEFAULT);
                 if (pack != null) consumer.accept(pack);
             });
-        };
-    };
-
-    @SubscribeEvent
-    public static final void registerIngredientTypes(RegisterEvent event) {
-        if (event.getRegistryKey().equals(NeoForgeRegistries.Keys.RECIPE_SERIALIZERS)) {
-            // Ingredient types
-            CraftingHelper.register(Destroy.asResource("example_circuit_mask"), CircuitDeployerApplicationRecipe.ExampleMaskIngredient.SERIALIZER); // Should never actually appear in a JSON recipe
         };
     };
 

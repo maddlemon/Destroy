@@ -30,13 +30,13 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
-import net.minecraft.tags.ItemTags;
 import net.minecraft.util.Mth;
-import net.minecraft.world.Container;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.AbstractCookingRecipe;
 import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.RecipeInput;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -44,10 +44,10 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.util.Lazy;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.items.ItemHandlerHelper;
 import net.neoforged.neoforge.items.ItemStackHandler;
 import net.neoforged.neoforge.items.wrapper.RecipeWrapper;
 
@@ -134,7 +134,7 @@ public class DynamoBlockEntity extends BasinOperatingBlockEntity implements Char
         if (getBlockState().getValue(DynamoBlock.ARC_FURNACE)) return Optional.empty();
         Optional<ChargingRecipe> recipe = getChargingRecipe(input.stack);
 		if (!recipe.isPresent() || simulate) return recipe;
-		List<ItemStack> outputs = RecipeApplier.applyRecipeOn(getLevel(), canProcessInBulk() ? input.stack : ItemHandlerHelper.copyStackWithSize(input.stack, 1), recipe.get());
+		List<ItemStack> outputs = RecipeApplier.applyRecipeOn(getLevel(), canProcessInBulk() ? input.stack : input.stack.copyWithCount(1), recipe.get(), false);
 
 		for (ItemStack createdItemStack : outputs) {
 			if (!createdItemStack.isEmpty()) {
@@ -171,10 +171,10 @@ public class DynamoBlockEntity extends BasinOperatingBlockEntity implements Char
         
         ItemStack itemStackCreated = ItemStack.EMPTY;
 		if (canProcessInBulk() || itemStack.getCount() == 1) { // If this is the last or all Items in the Stack
-			RecipeApplier.applyRecipeOn(itemEntity, recipe.get()); // Apply the charging Recipe
+			RecipeApplier.applyRecipeOn(itemEntity, recipe.get(), false); // Apply the charging Recipe
 			itemStackCreated = itemEntity.getItem().copy();
 		} else {
-			for (ItemStack result : RecipeApplier.applyRecipeOn(getLevel(), ItemHandlerHelper.copyStackWithSize(itemStack, 1), recipe.get())) { // Apply the Charging Recipe
+			for (ItemStack result : RecipeApplier.applyRecipeOn(getLevel(), itemStack.copyWithCount(1), recipe.get(), false)) { // Apply the Charging Recipe
 				if (itemStackCreated.isEmpty()) {
 					itemStackCreated = result.copy();
                 };
@@ -220,13 +220,14 @@ public class DynamoBlockEntity extends BasinOperatingBlockEntity implements Char
         }).orElse(0f), 0f), getRecipeDuration(currentRecipe)); // Get the Fluid level of the basin
 	};
 
-    private static final RecipeWrapper recipeInventory = new RecipeWrapper(new ItemStackHandler(1));
+    private static final ItemStackHandler recipeInventoryHandler = new ItemStackHandler(1);
+    private static final RecipeWrapper recipeInventory = new RecipeWrapper(recipeInventoryHandler);
 
     public Optional<ChargingRecipe> getChargingRecipe(ItemStack itemStack) {
-		Optional<ChargingRecipe> assemblyRecipe = SequencedAssemblyRecipe.getRecipe(getLevel(), itemStack, DestroyRecipeTypes.CHARGING.getType(), ChargingRecipe.class);
+		Optional<ChargingRecipe> assemblyRecipe = SequencedAssemblyRecipe.getRecipe(getLevel(), itemStack, DestroyRecipeTypes.CHARGING.<RecipeWrapper, ChargingRecipe>getType(), ChargingRecipe.class).map(RecipeHolder::value);
 		if (assemblyRecipe.isPresent()) return assemblyRecipe;
-		recipeInventory.setItem(0, itemStack);
-		return DestroyRecipeTypes.CHARGING.find(recipeInventory, getLevel());
+		recipeInventoryHandler.setStackInSlot(0, itemStack);
+		return DestroyRecipeTypes.CHARGING.<RecipeWrapper, ChargingRecipe>find(recipeInventory, getLevel()).map(RecipeHolder::value);
 	};
 
     @Override
@@ -279,7 +280,7 @@ public class DynamoBlockEntity extends BasinOperatingBlockEntity implements Char
             if (availableItems != null) {
                 for (int slot = 0; slot < availableItems.getSlots(); slot++) {
                     ItemStack stack = availableItems.getStackInSlot(slot);
-                    if (stack.is(ItemTags.MUSIC_DISCS)) RecipeFinder.get(discElectroplatingRecipeKey, level, r -> r.value().getType() == DestroyRecipeTypes.DISC_ELECTROPLATING.getType() && r.value() instanceof DiscElectroplatingRecipe recipe && recipe.original).forEach(r -> {
+                    if (stack.is(Tags.Items.MUSIC_DISCS)) RecipeFinder.get(discElectroplatingRecipeKey, level, r -> r.value().getType() == DestroyRecipeTypes.DISC_ELECTROPLATING.getType() && r.value() instanceof DiscElectroplatingRecipe recipe && recipe.original).forEach(r -> {
                         if (r.value() instanceof DiscElectroplatingRecipe recipe) recipes.add(recipe.copyWithDisc(stack)); // This cast check should never fail
                     });
                 };
@@ -290,7 +291,8 @@ public class DynamoBlockEntity extends BasinOperatingBlockEntity implements Char
     };
 
     @Override
-    protected <C extends Container> boolean matchStaticFilters(Recipe<C> recipe) {
+    protected boolean matchStaticFilters(RecipeHolder<? extends Recipe<?>> recipeHolder) {
+        Recipe<?> recipe = recipeHolder.value();
         return (recipe.getType() == DestroyRecipeTypes.ELECTROLYSIS.getType())
         || (recipe.getType() == DestroyRecipeTypes.ARC_FURNACE.getType())
         || (recipe.getType() == RecipeType.SMELTING && DestroyAllConfigs.SERVER.blocks.arcFurnaceAllowsSmelting.get())
@@ -298,7 +300,7 @@ public class DynamoBlockEntity extends BasinOperatingBlockEntity implements Char
     };
 
     @Override
-    protected <C extends Container> boolean matchBasinRecipe(Recipe<C> recipe) {
+    protected <I extends RecipeInput> boolean matchBasinRecipe(Recipe<I> recipe) {
         if (recipe == null) return false;
         if ((recipe.getType() == DestroyRecipeTypes.ELECTROLYSIS.getType()) == getBlockState().getValue(DynamoBlock.ARC_FURNACE)) return false;
         return super.matchBasinRecipe(recipe);

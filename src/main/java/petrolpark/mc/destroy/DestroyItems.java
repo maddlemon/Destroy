@@ -797,13 +797,13 @@ public class DestroyItems {
         ).register();
 
     public static final ItemEntry<BlankRecordItem> BLANK_MUSIC_DISC = REGISTRATE.item("blank_music_disc", BlankRecordItem::new)
-        .tag(ItemTags.MUSIC_DISCS)
+        .tag(Tags.Items.MUSIC_DISCS)
         .register();
 
     public static final ItemEntry<RecordItem> MUSIC_DISC_SPECTRUM = REGISTRATE.item("music_disc_spectrum", p -> new RecordItem(9, () -> DestroySoundEvents.MUSIC_DISC_SPECTRUM.getMainEvent(), p, 3720))
         .properties(p -> p
             .stacksTo(1)
-        ).tag(ItemTags.MUSIC_DISCS)
+        ).tag(Tags.Items.MUSIC_DISCS)
         .register();
 
     public static void register() {};

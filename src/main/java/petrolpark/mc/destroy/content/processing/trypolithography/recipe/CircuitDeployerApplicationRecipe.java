@@ -7,34 +7,40 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSyntaxException;
+import com.mojang.serialization.MapCodec;
 import petrolpark.mc.destroy.Destroy;
+import petrolpark.mc.destroy.DestroyIngredientTypes;
 import petrolpark.mc.destroy.DestroyRecipeTypes;
 import petrolpark.mc.destroy.content.processing.trypolithography.CircuitPatternItem;
 import petrolpark.mc.destroy.mixin.accessor.ProcessingRecipeAccessor;
 import com.simibubi.create.content.kinetics.deployer.DeployerApplicationRecipe;
 import com.simibubi.create.content.kinetics.deployer.DeployerRecipeSearchEvent;
+import com.simibubi.create.content.kinetics.deployer.ItemApplicationRecipeParams;
 import com.simibubi.create.content.processing.recipe.ProcessingOutput;
-import com.simibubi.create.content.processing.recipe.ProcessingRecipeSerializer;
-import com.simibubi.create.content.processing.recipe.ProcessingRecipeBuilder.ProcessingRecipeFactory;
-import com.simibubi.create.content.processing.recipe.ProcessingRecipeParams;
 import com.simibubi.create.content.processing.sequenced.SequencedAssemblyItem;
 import com.simibubi.create.content.processing.sequenced.SequencedAssemblyRecipe;
 
 import net.minecraft.core.NonNullList;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
-import net.neoforged.neoforge.common.crafting.IIngredientSerializer;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.neoforged.neoforge.common.crafting.ICustomIngredient;
+import net.neoforged.neoforge.common.crafting.IngredientType;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.items.wrapper.RecipeWrapper;
 
+/**
+ * Uses Create's Item Application serializer: 1.20.1 had a {@code Serializer} here that validated the deployed Item, but it was never registered
+ * ({@code CIRCUIT_DEPLOYING} used the library's generic serializer), so it is not ported.
+ */
 @EventBusSubscriber(modid = Destroy.MOD_ID)
 public class CircuitDeployerApplicationRecipe extends DeployerApplicationRecipe implements IConfersCircuitPatternRecipe {
 
@@ -44,12 +50,18 @@ public class CircuitDeployerApplicationRecipe extends DeployerApplicationRecipe 
 
     private int recipeId = 0;
 
-    public static class ExampleMaskIngredient extends Ingredient {
-        public static final Serializer SERIALIZER = new Serializer();
+    /**
+     * Shows the parent Ingredient's Items with {@link CircuitDeployerApplicationRecipe#EXAMPLE_PATTERN}. Should never actually appear in a JSON recipe
+     * (JSON: {@code {"type": "destroy:example_circuit_mask", "ingredient": ...}}).
+     */
+    public static class ExampleMaskIngredient implements ICustomIngredient {
+
+        public static final MapCodec<ExampleMaskIngredient> CODEC = Ingredient.CODEC_NONEMPTY.fieldOf("ingredient").xmap(ExampleMaskIngredient::new, i -> i.parent);
+        public static final StreamCodec<RegistryFriendlyByteBuf, ExampleMaskIngredient> STREAM_CODEC = Ingredient.CONTENTS_STREAM_CODEC.map(ExampleMaskIngredient::new, i -> i.parent);
+
         private final Ingredient parent;
 
         public ExampleMaskIngredient(Ingredient parent) {
-            super(Stream.of());
             this.parent = parent;
         };
 
@@ -59,44 +71,41 @@ public class CircuitDeployerApplicationRecipe extends DeployerApplicationRecipe 
         };
 
         @Override
-        public ItemStack[] getItems() {
+        public Stream<ItemStack> getItems() {
             return Stream.of(parent.getItems()).map(stack -> {
                 stack = stack.copy();
                 ItemStackNBT.update(stack, customTag -> customTag.putBoolean("HideContaminants", true));
                 CircuitPatternItem.putPattern(stack, EXAMPLE_PATTERN);
                 return stack;
-            }).toArray(i -> new ItemStack[i]);
+            });
         };
 
         @Override
-        public IIngredientSerializer<? extends Ingredient> getSerializer() {
-            return SERIALIZER;
+        public boolean isSimple() {
+            return false;
         };
 
-        public static class Serializer implements IIngredientSerializer<ExampleMaskIngredient> {
+        @Override
+        public IngredientType<?> getType() {
+            return DestroyIngredientTypes.EXAMPLE_CIRCUIT_MASK.get();
+        };
 
-            @Override
-            public ExampleMaskIngredient parse(FriendlyByteBuf buffer) {
-                return new ExampleMaskIngredient(Ingredient.fromNetwork(buffer));
-            };
+        @Override
+        public boolean equals(Object obj) {
+            return obj instanceof ExampleMaskIngredient other && other.parent.equals(parent);
+        };
 
-            @Override
-            public ExampleMaskIngredient parse(JsonObject json) {
-                return new ExampleMaskIngredient(Ingredient.fromJson(json));
-            };
-
-            @Override
-            public void write(FriendlyByteBuf buffer, ExampleMaskIngredient ingredient) {
-                ingredient.parent.toNetwork(buffer);
-            };
+        @Override
+        public int hashCode() {
+            return parent.hashCode();
         };
     };
 
-    public CircuitDeployerApplicationRecipe(ProcessingRecipeParams params) {
+    public CircuitDeployerApplicationRecipe(ItemApplicationRecipeParams params) {
         this(params, true);
     };
 
-    private CircuitDeployerApplicationRecipe(ProcessingRecipeParams params, boolean example) {
+    private CircuitDeployerApplicationRecipe(ItemApplicationRecipeParams params, boolean example) {
         super(params);
         this.example = example;
     };
@@ -104,13 +113,13 @@ public class CircuitDeployerApplicationRecipe extends DeployerApplicationRecipe 
     @Override
     public NonNullList<Ingredient> getIngredients() {
         NonNullList<Ingredient> exampleIngredients = NonNullList.of(Ingredient.EMPTY, ingredients.toArray(new Ingredient[ingredients.size()]));
-        exampleIngredients.set(1, new ExampleMaskIngredient(ingredients.get(1)));
+        exampleIngredients.set(1, new ExampleMaskIngredient(ingredients.get(1)).toVanilla());
         return exampleIngredients;
     };
 
     @Override
     public Ingredient getRequiredHeldItem() {
-        return new ExampleMaskIngredient(ingredients.get(1));
+        return new ExampleMaskIngredient(ingredients.get(1)).toVanilla();
     };
 
     @Override
@@ -124,8 +133,12 @@ public class CircuitDeployerApplicationRecipe extends DeployerApplicationRecipe 
         }).toList();
     };
 
-    public DeployerApplicationRecipe specify(RecipeWrapper inv) {
-        DeployerApplicationRecipe recipe = new ItemApplicationRecipe.Builder<>(params -> new SpecificCircuitDeployerApplicationRecipe(params, inv), ResourceLocation.fromNamespaceAndPath(getId().getNamespace(), getId().getPath() + recipeId++))
+    /**
+     * @param id The ID of this recipe's holder (1.20.1 recipes knew their own ID)
+     */
+    public RecipeHolder<DeployerApplicationRecipe> specify(ResourceLocation id, RecipeWrapper inv) {
+        ResourceLocation specificId = ResourceLocation.fromNamespaceAndPath(id.getNamespace(), id.getPath() + recipeId++);
+        DeployerApplicationRecipe recipe = new ItemApplicationRecipe.Builder<>(params -> new SpecificCircuitDeployerApplicationRecipe(params, inv), specificId)
             .withItemIngredients(ingredients)
             .withItemOutputs(results)
             .build();
@@ -135,27 +148,12 @@ public class CircuitDeployerApplicationRecipe extends DeployerApplicationRecipe 
             int pattern = CircuitPatternItem.getPattern(inv.getItem(1));
             recipe.enforceNextResult(() -> SpecificCircuitDeployerApplicationRecipe.transform(result.get(), pattern));
         };
-        return recipe;
-    };
-
-    public static class Serializer extends ProcessingRecipeSerializer<CircuitDeployerApplicationRecipe> {
-
-        public Serializer(ProcessingRecipeFactory<CircuitDeployerApplicationRecipe> factory) {
-            super(factory);
-        };
-
-        @Override
-        protected CircuitDeployerApplicationRecipe readFromJson(ResourceLocation recipeId, JsonObject json) {
-            CircuitDeployerApplicationRecipe recipe = super.readFromJson(recipeId, json);
-            if (Stream.of(recipe.ingredients.get(1).getItems()).allMatch(stack -> stack.getItem() instanceof CircuitPatternItem)) throw new JsonSyntaxException("The item deployed must be able to support Circuit Patterns");
-            return recipe;
-        };
-
+        return new RecipeHolder<>(specificId, recipe);
     };
 
     protected class SpecificCircuitDeployerApplicationRecipe extends CircuitDeployerApplicationRecipe {
 
-        public SpecificCircuitDeployerApplicationRecipe(ProcessingRecipeParams params, RecipeWrapper inv) {
+        public SpecificCircuitDeployerApplicationRecipe(ItemApplicationRecipeParams params, RecipeWrapper inv) {
             super(params, false);
             int pattern = CircuitPatternItem.getPattern(inv.getItem(1));
             List<ProcessingOutput> specificOutputs = new ArrayList<>(results.size());
@@ -184,12 +182,15 @@ public class CircuitDeployerApplicationRecipe extends DeployerApplicationRecipe 
         RecipeWrapper inv = event.getInventory();
 
         // Circuit deployer application
-        if (inv.hasAnyMatching(stack -> stack.getItem() instanceof CircuitPatternItem)) {
-            Recipe<?> recipe = event.getRecipe() instanceof CircuitDeployerApplicationRecipe ? event.getRecipe() : null;
+        if (IntStream.range(0, inv.size()).mapToObj(inv::getItem).anyMatch(stack -> stack.getItem() instanceof CircuitPatternItem)) { // Was Container.hasAnyMatching
+            RecipeHolder<? extends Recipe<?>> recipe = event.getRecipe() != null && event.getRecipe().value() instanceof CircuitDeployerApplicationRecipe ? event.getRecipe() : null;
             if (recipe == null) recipe = DestroyRecipeTypes.CIRCUIT_DEPLOYING.find(event.getInventory(), event.getBlockEntity().getLevel()).orElse(null);
-            if (recipe == null) recipe = SequencedAssemblyRecipe.getRecipe(event.getBlockEntity().getLevel(), event.getInventory(), DestroyRecipeTypes.CIRCUIT_DEPLOYING.getType(), CircuitDeployerApplicationRecipe.class).orElse(null);
-            if (recipe != null && recipe instanceof CircuitDeployerApplicationRecipe circuitRecipe) event.addRecipe(() -> Optional.of(circuitRecipe.specify(inv)), 150);
+            if (recipe == null) recipe = SequencedAssemblyRecipe.getRecipe(event.getBlockEntity().getLevel(), event.getInventory(), DestroyRecipeTypes.CIRCUIT_DEPLOYING.<RecipeWrapper, CircuitDeployerApplicationRecipe>getType(), CircuitDeployerApplicationRecipe.class).orElse(null);
+            if (recipe != null && recipe.value() instanceof CircuitDeployerApplicationRecipe circuitRecipe) {
+                ResourceLocation id = recipe.id();
+                event.addRecipe(() -> Optional.of(circuitRecipe.specify(id, inv)), 150);
+            };
         };
     };
-    
+
 };

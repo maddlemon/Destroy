@@ -62,7 +62,7 @@ public class SelectGlassblowingRecipeC2SPacket extends C2SPacket {
                 tag.putInt("LastProgress", 0);
             };
             tag.putString("Recipe", recipeId.toString());
-            tag.putString("RequiredFluid", recipe.getFluidIngredients().get(0).serialize().toString());
+            BlowpipeItem.putFluidIngredient(tag, recipe.getFluidIngredients().get(0));
         });
         return true;
     };

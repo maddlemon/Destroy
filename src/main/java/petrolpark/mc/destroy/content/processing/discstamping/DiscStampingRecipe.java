@@ -9,12 +9,14 @@ import petrolpark.mc.destroy.Destroy;
 import petrolpark.mc.destroy.DestroyItems;
 import com.simibubi.create.content.kinetics.deployer.DeployerApplicationRecipe;
 import com.simibubi.create.content.kinetics.deployer.DeployerRecipeSearchEvent;
-import com.simibubi.create.content.processing.recipe.ProcessingRecipeParams;
+import com.simibubi.create.content.kinetics.deployer.ItemApplicationRecipeParams;
 
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.neoforged.neoforge.common.crafting.StrictNBTIngredient;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.neoforged.neoforge.common.crafting.DataComponentIngredient;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.items.wrapper.RecipeWrapper;
@@ -22,21 +24,23 @@ import net.neoforged.neoforge.items.wrapper.RecipeWrapper;
 @EventBusSubscriber(modid = Destroy.MOD_ID)
 public class DiscStampingRecipe extends DeployerApplicationRecipe {
 
-    public DiscStampingRecipe(ProcessingRecipeParams params) {
+    public DiscStampingRecipe(ItemApplicationRecipeParams params) {
         super(params);
     };
 
     @Nullable
-    public static DeployerApplicationRecipe create(ItemStack discStamper) {
+    public static RecipeHolder<DeployerApplicationRecipe> create(ItemStack discStamper) {
         if (!(discStamper.getItem() instanceof DiscStamperItem)) return null;
         ItemStack disc = DiscStamperItem.getDisc(discStamper);
         if (disc.isEmpty()) return null;
-        return new ItemApplicationRecipe.Builder<>(DiscStampingRecipe::new, Destroy.asResource("disc_stamping_"+Item.getId(disc.getItem())))
+        ResourceLocation id = Destroy.asResource("disc_stamping_"+Item.getId(disc.getItem()));
+        DeployerApplicationRecipe recipe = new ItemApplicationRecipe.Builder<>(DiscStampingRecipe::new, id)
             .require(Ingredient.of(DestroyItems.BLANK_MUSIC_DISC))
-            .require(StrictNBTIngredient.of(discStamper))
+            .require(DataComponentIngredient.of(true, discStamper)) // Was StrictNBTIngredient
             .output(disc)
             .toolNotConsumed()
             .build();
+        return new RecipeHolder<>(id, recipe);
     };
 
     @Override

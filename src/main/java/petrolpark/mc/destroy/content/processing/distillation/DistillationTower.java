@@ -37,6 +37,7 @@ public class DistillationTower {
     private BlockPos position; // The bottom of the Distillation Tower
     private List<BubbleCapBlockEntity> bubbleCaps;
     private DistillationRecipe lastRecipe;
+    private RecipeHolder<?> lastRecipeHolder; // For the recipe crafted trigger, which needs the ID
     private int tick;
 
     public DistillationTower(Level level, BlockPos controllerPos) { // Create a new Distillation Tower from scratch
@@ -126,13 +127,15 @@ public class DistillationTower {
         if (getControllerBubbleCap() == null || level.isClientSide()) return;
         SmartFluidTank inputTank = getControllerBubbleCap().getTank();
         if (lastRecipe == null || !lastRecipe.getRequiredFluid().test(inputTank.getFluid()) || !lastRecipe.isValidAt(level, getControllerPos())) { // If the Recipe has changed
-            List<Recipe<?>> possibleRecipes = RecipeFinder.get(distillationRecipeKey, level, r -> r.value().getType() == DestroyRecipeTypes.DISTILLATION.getType()).stream().<Recipe<?>>map(RecipeHolder::value).filter(r -> {
-                DistillationRecipe recipe = (DistillationRecipe) r;
+            List<RecipeHolder<? extends Recipe<?>>> possibleRecipes = RecipeFinder.get(distillationRecipeKey, level, r -> r.value().getType() == DestroyRecipeTypes.DISTILLATION.getType()).stream().filter(r -> {
+                DistillationRecipe recipe = (DistillationRecipe) r.value();
                 return (recipe.getRequiredFluid().test(inputTank.getFluid())) && recipe.isValidAt(level, getControllerPos()); // If there is sufficient input Fluid and we're in the right biome
             }).collect(Collectors.toList());
             if (possibleRecipes.size() >= 1) {
-                lastRecipe = (DistillationRecipe)possibleRecipes.get(0);
+                lastRecipeHolder = possibleRecipes.get(0);
+                lastRecipe = (DistillationRecipe)lastRecipeHolder.value();
             } else {
+                lastRecipeHolder = null;
                 lastRecipe = null;
             };
         };
@@ -218,7 +221,7 @@ public class DistillationTower {
         controller.particleFluid = fluidDrained.copy();
         controller.onDistill();
         if (controller.advancementBehaviour.getPlayer() instanceof ServerPlayer player) {
-            player.triggerRecipeCrafted(lastRecipe, List.of());
+            player.triggerRecipeCrafted(lastRecipeHolder, List.of());
         };
         return true;
     };

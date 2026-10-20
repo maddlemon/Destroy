@@ -27,14 +27,14 @@ Library to the pack.
 
 ## START HERE — current state and next steps
 
-**State:** compile has **1,184 javac errors**. Recipes (step 1) are mostly done — see the status
-under step 1. Most common remaining missing symbols: packet classes (`Context`, `S2CPacket`,
+**State:** compile has **1,071 javac errors**. Recipes (step 1) are done at the code level — the
+only errors left in recipe files depend on other steps (see the status under step 1). Most common remaining missing symbols: packet classes (`Context`, `S2CPacket`,
 `C2SPacket`, `NetworkHooks`), pollution API (`pollute`, `max`, `CAPABILITY`,
 `SyncChunkPollutionS2CPacket`), `GUESSED_TICK`.
 
 **Do next, in this order** (each is a self-contained batch; compile + commit after each):
 
-1. **Recipes (batch 2 core) — MOSTLY DONE.** Done: mixture fluid ingredients are NeoForge
+1. **Recipes (batch 2 core) — DONE.** Mixture fluid ingredients are NeoForge
    `FluidIngredientType`s (`DestroyFluidIngredientTypes`, ids = old JSON key in snake case, e.g.
    `destroy:mixture_fluid_with_molecule`; codecs bridge to each ingredient's existing
    `readInternal(JsonObject)` so parsing rules are unchanged); `DestroyRecipeTypes` rewritten after
@@ -46,13 +46,26 @@ under step 1. Most common remaining missing symbols: packet classes (`Context`, 
    `RecipeFinder` returns `RecipeHolder`s (unwrap with `.value()`, ids via `.id()`); glassblowing has
    its own serializer for `"shape"`; `FillMixedExplosiveItemRecipe` + fireworks ported;
    `CircuitPatternIngredient` is an `ICustomIngredient` (`DestroyIngredientTypes`).
-   **Left in step 1:** trypolithography — `ManualCircuitBoardRecipe` (library `ManualOnlyShapedRecipe`
-   API), `CircuitDeployerApplicationRecipe` (+ its `ExampleMaskIngredient` → `ICustomIngredient`,
-   register in `DestroyIngredientTypes`; uses `ProcessingRecipeAccessor`), `CircuitSequencedAssemblyRecipe`,
-   `DiscStampingRecipe` (`ItemApplicationRecipeParams`; `StrictNBTIngredient` → `DataComponentIngredient`),
-   `ReactionInBasinRecipe` leftovers, `ProcessingRecipeParamsAccessor`, `SequencedAssemblyRecipeMixin`;
-   recipe consumers in block entities (e.g. `MechanicalSieveBlockEntity` uses the old
-   `FirstTimeLuckyRecipesBehaviour` → library `FTLRecipesBehaviour` + `rollLuckyResults`).
+   Trypolithography: `ManualCircuitBoardRecipe` is a library `ManualOnlyCraftingRecipe` wrapping a vanilla
+   `ShapedRecipe` (so the library's JEI "manual crafting" category shows it, as in 1.20.1) whose `#` slots
+   are `ExampleMaskIngredient`s; its `matches` still skips the manual-only check like 1.20.1.
+   `ExampleMaskIngredient` is an `ICustomIngredient` registered as `destroy:example_circuit_mask`.
+   `CircuitDeployerApplicationRecipe.specify(id, inv)` takes the holder id (recipes no longer know their id).
+   `CircuitSequencedAssemblyRecipe.Serializer` wraps Create 6's codec + validation as `DataResult` errors.
+   `SequencedAssemblyRecipeMixin` overwrites Create 6's private `advance(ResourceLocation, ItemStack, RandomSource)`.
+   `DiscStampingRecipe`: `StrictNBTIngredient` → `DataComponentIngredient.of(true, stack)`. Consumers:
+   sieve (`FTLRecipesBehaviour`, `RecipeHelper.rollResults(random, …)`), dynamo (`RecipeApplier` with
+   `returnProcessingRemainder = false` = 0.5.1 behaviour, `matchStaticFilters(RecipeHolder)`), distillation
+   (keeps the `RecipeHolder` for `triggerRecipeCrafted`), blowpipe (`BlowpipeItem.get/putFluidIngredient`:
+   `SizedFluidIngredient.FLAT_CODEC` as a JSON string under the same `"RequiredFluid"` key), basin reactions
+   (`DestroyFluidIngredientHelper.fromFluidStack`), vat materials (library dropped `SingleBlockIngredient` →
+   Destroy's own `core/chemistry/vat/material/SingleBlockIngredient`, type registered in `Destroy.init`).
+   **Parse-time gotcha:** 1.21.1 parses recipes *before* binding tags and `Ingredient.getItems()` caches
+   forever — never call it while parsing; use `DestroyIngredientHelper.parseTimeItems`.
+   Left (blocked on other steps): `DiscStampingRecipe`/`DestroyItems` discs need `BlankRecordItem` off
+   `RecordItem` (step 5); `ReactionInBasinRecipe`/`DistillationTower` use `Pollution.getLocalTemperature`
+   (step 3); `MechanicalSieveVisual` Flywheel `Context` (step 5); the 7 `compat.jei.*` mixins (step 6 — the
+   JEI one uses the retargeted `ProcessingRecipeParamsAccessor`, now `SizedFluidIngredient`).
    Original notes: Create 6 recipe API: `ProcessingRecipe.Factory<P,R>` takes two
    type params (`DestroyRecipeTypes`, `CircuitDeployerApplicationRecipe.Serializer`);
    `ProcessingRecipeBuilder` is abstract (~10 `new ProcessingRecipeBuilder(...)` sites); recipe
@@ -103,7 +116,9 @@ under step 1. Most common remaining missing symbols: packet classes (`Context`, 
    `…WithIon`, `…WithSalt`, `…WithTaggedMolecules`, `pureMixture` → `destroy:pure_mixture`); advanced
    params `processingTime` → `processing_time`, `heatRequirement` → `heat_requirement`, `biomes` stays,
    sieving `"lucky_first_time": true` → `"first_time_lucky_key": "<that recipe's own id>"` (per-recipe
-   luck like 1.20.1); glassblowing `"shape"` unchanged.
+   luck like 1.20.1); glassblowing `"shape"` unchanged. Sequenced assembly: `transitionalItem` →
+   `transitional_item`; deployer `keepHeldItem` → `keep_held_item`. Crafting results (incl.
+   `circuit_board_manual_crafting`) `{"item": …}` → `{"id": …}`.
 8. **Clean compile → datagen → `./gradlew build` → runtime test** in the dev client (`runClient`):
    watch for mixin apply failures, missing registries, recipe parse errors; test with Sodium and
    Farmer's Delight installed too.
@@ -139,6 +154,9 @@ JAVA_HOME=$JDK ./gradlew compileJava --console=plain    # log to a file, run det
   registrate, ponder, jei, flywheel, maven.modrinth/*). Sodium's classes are inside a jar-in-jar
   (`META-INF/jarjar/net.caffeinemc.sodium-neoforge-*-mod.jar`).
 - `port-tools/at_check.py` validates every AT entry against the merged jar.
+- Azzie's box also has decompiled reference sources in `/var/home/azziee/Documents/Azziecraft/build/src-ref/`
+  (`mc/` = NeoForge sources jar, `create/`, `petrolpark/` = library 1.21.1-1.5.11, `petrolpark-old/` = library
+  1.20.1-1.4.27; decompile with the Vineflower jar in the Gradle cache).
 - Jar: `./gradlew build` once compile is clean.
 
 ## Environment gotchas (Azzie's Linux box — sessions get killed)
@@ -198,6 +216,14 @@ Intended to be empty. Current entries:
   centrifugation recipe sets biomes, so nothing changes in play.
 - Upstream quirk kept: `RefrigerantDummyFluidIngredient` never overrode `getType()`, so it reports itself
   as a molecule-tag ingredient (its special JEI description is never used) — unchanged on purpose.
+- Upstream quirk kept: `MechanicalSieveBlockEntity` has `read`/`write` swapped (in-progress sieving is never
+  saved). Unchanged on purpose — "fixing" it would crash on load when a saved Item entity is gone.
+- Not ported: 1.20.1 `CircuitDeployerApplicationRecipe.Serializer` (its deployed-item check was inverted, but it
+  was never registered — `CIRCUIT_DEPLOYING` used the library's generic serializer), so nothing changes.
+- `ManualCircuitBoardRecipe.getExampleResult` copies the result before adding the example pattern (1.20.1 wrote
+  the pattern onto the recipe's own result stack; `assemble` always overwrote it, so crafting is the same).
+- `Tags.Items.MUSIC_DISCS` (`c:music_discs`) replaces `minecraft:music_discs`, which 1.21 removed (dynamo disc
+  electroplating + Destroy's discs' tags). NeoForge puts every vanilla disc in it.
 - `FillMixedExplosiveItemRecipe.matches` passed `null` registries in 1.20.1; it passes the level's now
   (1.21 needs them to read the Item's explosive inventory). Same result.
 
@@ -249,8 +275,9 @@ Intended to be empty. Current entries:
 | `62c33e8d` | Recipes part 2 (per-level potion recipes, `RecipeHolder` lookups, `PotionBrewing$Mix` AT) |
 | `89cfdbc6` | Fill-explosive + circuit pattern ingredient; registries threaded through mixed-explosive item helpers |
 | `127f23a1` | Farmer's Delight / Embeddium / Sodium compat mixins; **`DestroyMixinPlugin` package fixed** (was `com.destroy.mixin`, so compat mixins were never gated — would crash without the mod); water tint mixin retargeted to `ClientNeoForgeMod$1`; missing cartography mixins listed; `port-tools/`; this doc restructured |
+| _(this commit)_ | Recipes part 4: trypolithography + disc stamping recipes, sequenced assembly mixin, recipe consumers (sieve, dynamo, distillation, blowpipe, basin reactions, vat materials) |
 
-Error counts: 2,301 error lines (batch 1) → 2,178 javac → 2,050 → 1,940 → 1,892 → 1,718 → 1,621 → 1,502 → 1,501 → 1,281 (recipes 1) → 1,217 (recipes 2) → 1,184.
+Error counts: 2,301 error lines (batch 1) → 2,178 javac → 2,050 → 1,940 → 1,892 → 1,718 → 1,621 → 1,502 → 1,501 → 1,281 (recipes 1) → 1,217 (recipes 2) → 1,184 → 1,071 (recipes 4).
 
 ## Verified API mappings (NeoForge 21.1.262 / MC 1.21.1 / Create 6.0.10 / library 1.21.1-1.5.11)
 

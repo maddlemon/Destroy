@@ -43,6 +43,6 @@ public record VatMaterial(float maxPressure, float thermalConductivity, boolean 
     };
 
     public static void registerDestroyVatMaterials() {
-        BLOCK_MATERIALS.put(new BlockIngredient.SingleBlockIngredient(DestroyBlocks.VAT_CONTROLLER.get()), UNBREAKABLE);
+        BLOCK_MATERIALS.put(new SingleBlockIngredient(DestroyBlocks.VAT_CONTROLLER.get()), UNBREAKABLE);
     };
 };

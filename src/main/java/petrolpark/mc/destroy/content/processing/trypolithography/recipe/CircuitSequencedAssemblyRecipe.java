@@ -1,28 +1,29 @@
 package petrolpark.mc.destroy.content.processing.trypolithography.recipe;
 
-import java.util.stream.Stream;
+import java.util.function.Function;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSyntaxException;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.MapCodec;
 import petrolpark.mc.destroy.content.processing.trypolithography.CircuitPatternItem;
+import petrolpark.mc.destroy.util.DestroyIngredientHelper;
 import com.simibubi.create.content.processing.recipe.ProcessingOutput;
 import com.simibubi.create.content.processing.sequenced.SequencedAssemblyRecipe;
 import com.simibubi.create.content.processing.sequenced.SequencedAssemblyRecipeSerializer;
 import com.simibubi.create.content.processing.sequenced.SequencedRecipe;
 
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
 
 public class CircuitSequencedAssemblyRecipe extends SequencedAssemblyRecipe {
 
-    public CircuitSequencedAssemblyRecipe(ResourceLocation recipeId, SequencedAssemblyRecipeSerializer serializer) {
-        super(recipeId, serializer);
+    public CircuitSequencedAssemblyRecipe(SequencedAssemblyRecipeSerializer serializer) {
+        super(serializer);
     };
 
     @Override
-    public ItemStack getResultItem(RegistryAccess registryAccess) {
+    public ItemStack getResultItem(HolderLookup.Provider registries) {
         ItemStack stack = resultPool.get(0).getStack().copy();
         CircuitPatternItem.putPattern(stack, CircuitDeployerApplicationRecipe.EXAMPLE_PATTERN);
         return stack;
@@ -30,33 +31,44 @@ public class CircuitSequencedAssemblyRecipe extends SequencedAssemblyRecipe {
 
     public static class Serializer extends SequencedAssemblyRecipeSerializer {
 
+        private final MapCodec<SequencedAssemblyRecipe> codec;
+        private final StreamCodec<RegistryFriendlyByteBuf, SequencedAssemblyRecipe> streamCodec;
+
+        public Serializer() {
+            super();
+            codec = super.codec().flatXmap(recipe -> validate(copy(recipe)), DataResult::success);
+            streamCodec = super.streamCodec().map(this::copy, Function.identity());
+        };
+
         @Override
-        public SequencedAssemblyRecipe readFromJson(ResourceLocation recipeLoc, JsonObject recipeJson) {
-            SequencedAssemblyRecipe recipe = copy(super.readFromJson(recipeLoc, recipeJson));
-            
-            boolean inputHasPattern = !Stream.of(recipe.getIngredient().getItems()).anyMatch(stack -> !(stack.getItem() instanceof CircuitPatternItem));
-            if (!inputHasPattern && recipe.getLoops() != 1) throw new JsonSyntaxException("Circuit Sequenced Assembly recipes may not loop (unless the Circuit Pattern is determined by the input item), as it makes ambigious the step at which the Circuit Pattern of the result is determined.");
+        public MapCodec<SequencedAssemblyRecipe> codec() {
+            return codec;
+        };
+
+        @Override
+        public StreamCodec<RegistryFriendlyByteBuf, SequencedAssemblyRecipe> streamCodec() {
+            return streamCodec;
+        };
+
+        private static DataResult<SequencedAssemblyRecipe> validate(SequencedAssemblyRecipe recipe) {
+            boolean inputHasPattern = !DestroyIngredientHelper.parseTimeItems(recipe.getIngredient()).anyMatch(stack -> !(stack.getItem() instanceof CircuitPatternItem));
+            if (!inputHasPattern && recipe.getLoops() != 1) return DataResult.error(() -> "Circuit Sequenced Assembly recipes may not loop (unless the Circuit Pattern is determined by the input item), as it makes ambigious the step at which the Circuit Pattern of the result is determined.");
             boolean foundConferringRecipe = inputHasPattern;
             for (SequencedRecipe<?> subRecipe : recipe.getSequence()) {
                 if (subRecipe.getRecipe() instanceof IConfersCircuitPatternRecipe) {
                     if (foundConferringRecipe) {
-                        throw new JsonSyntaxException("Circuit Sequenced Assembly recipes may only define a single sub-recipe that can determine the Circuit Pattern of the result.");
+                        return DataResult.error(() -> "Circuit Sequenced Assembly recipes may only define a single sub-recipe that can determine the Circuit Pattern of the result.");
                     } else {
                         foundConferringRecipe = true;
                     };
                 };
             };
-            if (!foundConferringRecipe) throw new JsonSyntaxException("Circuit Sequenced Assembly recipes must define a step in which the Circuit Pattern of the result gets determined.");
-            return recipe;
-        };
-
-        @Override
-        protected SequencedAssemblyRecipe readFromBuffer(ResourceLocation recipeId, FriendlyByteBuf buffer) {
-            return copy(super.readFromBuffer(recipeId, buffer));
+            if (!foundConferringRecipe) return DataResult.error(() -> "Circuit Sequenced Assembly recipes must define a step in which the Circuit Pattern of the result gets determined.");
+            return DataResult.success(recipe);
         };
 
         public CircuitSequencedAssemblyRecipe copy(SequencedAssemblyRecipe wrappedRecipe) {
-            CircuitSequencedAssemblyRecipe recipe = new CircuitSequencedAssemblyRecipe(wrappedRecipe.getId(), this);
+            CircuitSequencedAssemblyRecipe recipe = new CircuitSequencedAssemblyRecipe(this);
             recipe.ingredient = wrappedRecipe.getIngredient();
             recipe.sequence = wrappedRecipe.getSequence();
             recipe.loops = wrappedRecipe.getLoops();
