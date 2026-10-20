@@ -12,7 +12,9 @@ public abstract class SingleFluidRecipe extends AdvancedProcessingRecipe<RecipeW
 
     public SingleFluidRecipe(IRecipeTypeInfo typeInfo, AdvancedProcessingRecipeParams params) {
         super(typeInfo, params);
-        if (processingDuration <= 0) processingDuration = 20;
+        // Only default the duration for types that use it; Create 6 validates `processingDuration > 0`
+        // against canSpecifyDuration() at load, and types like Distillation never read the duration
+        if (processingDuration <= 0 && canSpecifyDuration()) processingDuration = 20;
     };
 
     public SizedFluidIngredient getRequiredFluid() {

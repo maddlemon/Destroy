@@ -68,8 +68,5 @@
         }
     ],
     "heat_requirement": "heated",
-    "biomes": [
-        "#minecraft:is_badlands",
-        "minecraft:desert"
-    ]
+    "biomes": "#destroy:borax_distillation"
 }
