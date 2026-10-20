@@ -86,17 +86,21 @@ public class PollutionEvents {
     };
 
     /**
-     * Bone Meal may "fail". As in 1.20.1, this only shows the failure particles: 1.20.1 denied the event's result, which Forge ignored for
-     * Bone Meal (only cancelling or allowing it had an effect), so the Bone Meal still worked.
+     * Bone Meal may fail: it is used up but nothing grows, like vanilla Bone Meal failing on a sapling. (1.20.1 only showed the failure
+     * particles: it denied the event's result, which Forge ignored for Bone Meal.) Rolled on the server, which does the growing.
      * @param event
      */
     @SubscribeEvent
     public static final void onBonemeal(BonemealEvent event) {
         if (!isPollutionEnabled() || !config().growingAffected.get() || !config().bonemealingAffected.get() || event.getStack().is(DestroyTags.Items.BONEMEAL_BYPASSES_POLLUTION.tag)) return;
+        if (!(event.getLevel() instanceof ServerLevel serverLevel)) return;
         if (PollutionType.streamAll().anyMatch(pt -> 
-            rollPollutionEffect(event.getLevel().getRandom(), event.getLevel(), event.getPos(), pt, getPollutionTypeProperties(pt).bonemealFailureChanceMultiplier())
+            rollPollutionEffect(serverLevel.getRandom(), serverLevel, event.getPos(), pt, getPollutionTypeProperties(pt).bonemealFailureChanceMultiplier())
         )) {
-            if (event.getLevel() instanceof ServerLevel serverLevel) serverLevel.sendParticles(PollutionHelper.getCropGrowthFailureParticles(), event.getPos().getX() + 0.5d, event.getPos().getY() + event.getLevel().getRandom().nextDouble() * event.getState().getShape(event.getLevel(), event.getPos()).max(Axis.Y), event.getPos().getZ() + 0.5d, 10, 0.25d, 0.25d, 0.25d, 0.02d);
+            serverLevel.sendParticles(PollutionHelper.getCropGrowthFailureParticles(), event.getPos().getX() + 0.5d, event.getPos().getY() + serverLevel.getRandom().nextDouble() * event.getState().getShape(serverLevel, event.getPos()).max(Axis.Y), event.getPos().getZ() + 0.5d, 10, 0.25d, 0.25d, 0.25d, 0.02d);
+            event.getStack().shrink(1);
+            event.setSuccessful(true); // The Bone Meal was used
+            event.setCanceled(true); // But nothing grows
         };
     };
 

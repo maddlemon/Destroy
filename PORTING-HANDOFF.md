@@ -257,9 +257,9 @@ Intended to be empty. Current entries:
 - **Bug fix:** Level pollution is synced to clients whenever it changes (1.20.1 only synced it on login,
   dimension change and `/pollution set`, so e.g. rain colour went stale; its client handler also threw on every
   Level packet).
-- Upstream quirk kept: polluted Bone Meal only shows the failure particles and still works — 1.20.1 set
-  `Result.DENY`, which Forge ignores for Bone Meal. (Making it really fail is a one-line change in
-  `PollutionEvents.onBonemeal` if wanted.)
+- **Bug fix (requested by the humans):** polluted Bone Meal now really fails — it is used up and nothing grows,
+  like vanilla Bone Meal failing on a sapling. 1.20.1 only showed the failure particles (it set `Result.DENY`,
+  which Forge ignores for Bone Meal), so the Bone Meal still worked.
 - Upstream quirks kept: `PollutionHelper.pollute` always sends evaporation particles to all clients
   (`particleWeight` unused because of a stray semicolon); outdoor temperature only rises at maximum greenhouse /
   ozone depletion (integer division); Level pollution decays at twice the configured rate (phase-less tick handler).
