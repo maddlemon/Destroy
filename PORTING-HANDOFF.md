@@ -2,21 +2,97 @@
 
 Port of **Destroy** (Create chemistry add-on, upstream: `Petrolpark-Mods/Destroy`)
 from **Forge 1.20.1 → NeoForge 1.21.1** (MC 1.21.1, NeoForge 21.1.262, Create
-6.0.10-280) for the **Maddiecraft** modpack. When the jar builds, publish a
-GitHub release on this fork and add the mod + Petrolpark's Library to the pack.
+6.0.10-280, Petrolpark's Library 1.21.1-1.5.11) for the **Maddiecraft** modpack. When the
+jar builds and works, publish a GitHub release on this fork and add the mod + Petrolpark's
+Library to the pack.
 
-- Branch: `1.21.1-neoforge` (base: upstream `1.20.1` @ `851d5d55`)
-- Package moved `com.petrolpark.destroy` → `petrolpark.mc.destroy` (author's
-  NeoForge-branch convention)
-- 777 java files under `src/main/java/petrolpark/mc/destroy/`
+- Branch: `1.21.1-neoforge` (base: upstream `1.20.1` @ `851d5d55`; the author's own
+  unfinished NeoForge work is upstream branch `1.21.1-neo`, also on this fork's remote)
+- Package moved `com.petrolpark.destroy` → `petrolpark.mc.destroy` (author's convention)
+- Two people work on this: Azzie (Linux box, paths under `/var/home/azziee/...`) and
+  Maddie (Windows). **Pull before starting** — the branch moves.
+
+## Goal and rules
+
+**The port must behave as close to the original 1.20.1 mod as possible, with no regressions**
+(Maddie's requirement). So:
+
+- No intentional behaviour changes. If something *has* to differ, add it to
+  [Behaviour differences](#behaviour-differences-from-1201) and tell the humans.
+- Don't drop features or compat without asking. **JEI compat is required** (it was dropped
+  earlier; that's reversed).
+- Clear upstream bugs (e.g. a save/load key mismatch) may be fixed — list them below.
+- Verify APIs against the real jars (`javap`, see Build) instead of guessing; this port has been
+  bitten by silent failures (SRG ATs, wrong mixin package, unregistered registries).
+
+## START HERE — current state and next steps
+
+**State:** compile has **1,501 javac errors** (`port-tools/errsummary.py` counts 1,423 unique
+locations). Biggest areas: `content/processing` (mostly recipes) 428, top-level registry
+classes 299, `core/chemistry` 173, `core/explosion` 94. Most common missing symbols:
+`FluidIngredient`, packet classes (`Context`, `S2CPacket`, `C2SPacket`, `NetworkHooks`),
+pollution API (`pollute`, `max`, `CAPABILITY`, `SyncChunkPollutionS2CPacket`), `GUESSED_TICK`.
+
+**Do next, in this order** (each is a self-contained batch; compile + commit after each):
+
+1. **Recipes (batch 2 core).** Create 6 recipe API: `ProcessingRecipe.Factory<P,R>` takes two
+   type params (`DestroyRecipeTypes`, `CircuitDeployerApplicationRecipe.Serializer`);
+   `ProcessingRecipeBuilder` is abstract (~10 `new ProcessingRecipeBuilder(...)` sites); recipe
+   serializers move from JSON/`FriendlyByteBuf` to `MapCodec` + `StreamCodec`; recipes are used
+   through `RecipeHolder`; `DestroyRecipeTypes.getType` is ambiguous with `IRecipeTypeInfo.getType`;
+   `AdvancedProcessingRecipeSerializer` → library `compat.create.core.data.recipe.AdvancedProcessingRecipe$Serializer`.
+   Fluid ingredients → NeoForge `SizedFluidIngredient`/`FluidIngredient`; Destroy's custom fluid
+   ingredients (`core/recipe/ingredient/fluid/*`, incl. `MixtureFluidIngredient`, which still uses
+   item `getOrCreateTag`) become NeoForge `FluidIngredientType`s. Crafting ingredients
+   (`IIngredientSerializer`/`StrictNBTIngredient`/`AbstractIngredient`) → `ICustomIngredient` + `IngredientType`.
+2. **Packets (batch 3).** ~24 old packet classes + `DestroyMessages` + ~38 send sites → Catnip
+   payloads following the author's `DestroyPackets` enum (record + `STREAM_CODEC` + enum entry +
+   `CatnipServices.NETWORK.sendToServer/sendToPlayer…`). Delete the old packets and `DestroyMessages`.
+3. **Pollution / crude oil consumers.** Old code still uses the 1.20.1 `Pollution.CAPABILITY`,
+   enum fields `.local`/`.max`, `PollutionType.values()`, `PollutionHelper.pollute(...)` (10 sites),
+   `changePollutionGlobal`, `getCropGrowthFailureParticles`, `SyncChunkPollutionS2CPacket`. Port them
+   onto the author's design: `DestroyPollutionTypes` registry entries, `LevelPollution`/`ChunkPollution`
+   attachments, and data-map `PollutionType.Properties` (max, decay, etc). Same for crude oil: old
+   `content.oil.ChunkCrudeOil` (capability) vs the author's `core.oil.ChunkCrudeOil` (attachment) —
+   keep the author's. Users: `SmogAffectedBlockColor`, `ServerLevelMixin`, `ClientNeoForgeMod$1Mixin`,
+   `ForgeMod`-style water tint, `PumpjackBlockEntity`, seismology (`GUESSED_TICK`, `OilPonderScenes`).
+   Then re-enable the pollution ponder storyboards marked `TODO(port)` in `DestroyPonderScenes`
+   (the author's `PollutionPonderScenes` is commented out upstream — port it from upstream `1.20.1`).
+4. **Item capabilities + leftover NBT.** `ItemMixtureTank`, Blowpipe spout handler, measuring
+   cylinder, test tube → `Capabilities.FluidHandler.ITEM` registered with `event.registerItem` in
+   `DestroyCapabilities` (handlers backed by `ItemStackNBT` / data components). Inventory
+   `serializeNBT()`/`deserializeNBT()` now take a `HolderLookup.Provider`. Potion fluids in
+   `CentrifugeBlockEntity` → `DataComponents.POTION_CONTENTS` + Create's bottle-type component.
+   `SequencedAssemblyRecipeMixin` must be rewritten against Create 6 (progress is a Create data
+   component now, not `"SequencedAssembly"` NBT).
+5. **Remaining API changes** (smaller, scattered): MobEffect `applyEffectTick`/attribute-modifier
+   signatures; `ToolActions` → `ItemAbilities`; `PlantType` gone; `RecordItem` → jukebox song
+   components; Create 6 `DisplaySource` API; `DestroyCreativeModeTabs` (library `CustomTab` changed);
+   contamination (library classes gone — reimplement minimally); decay items → library
+   `ItemDecay`/`StackableFlashingDecayingItem`; client model code; Create `renderFluidBox` signature;
+   `Component.Serializer` JSON → codecs.
+6. **JEI compat.** Restore `compat/jei` (45 files) and the 7 `compat.jei.*` mixins from upstream
+   `1.20.1` and port to JEI 19 (already a dependency). Needs batch 1 done first. Register the mixins
+   in `destroy.mixins.json` under `compat.jei.*` so `DestroyMixinPlugin` gates them on JEI.
+7. **Data migration.** MC 1.21 renamed data folders to singular: `data/*/recipes|advancements|loot_tables|structures`
+   → `recipe|advancement|loot_table|structure` (also in `src/generated`) — until then **none of it
+   loads**. Recipe JSON must match the new codecs: Create 6 style (`"type": "neoforge:single"` fluid
+   ingredients, `{"id", "amount"}` fluid results, snake_case keys like `heat_requirement`); mixture
+   fluid results' `"nbt": {"Mixture": …}` → `"components": {"destroy:mixture": …}`. Look at Create
+   6's own JSON (inside its jar) for reference.
+8. **Clean compile → datagen → `./gradlew build` → runtime test** in the dev client (`runClient`):
+   watch for mixin apply failures, missing registries, recipe parse errors; test with Sodium and
+   Farmer's Delight installed too.
+9. **Release + pack integration** (runbooks at the bottom).
 
 ## Build
 
-On Windows (Maddie's machine): JDK 21 is `JAVA_HOME`; from Git Bash run
-`./gradlew compileJava --console=plain > compile.log 2>&1` and read the `N errors` line.
-NFRT artifacts were already cached, so the first compile took ~1.5 min.
+**Windows (Maddie):** JDK 21 is `JAVA_HOME`. From Git Bash in the repo:
+`./gradlew compileJava --console=plain > compile.log 2>&1`, then read the `N errors` line or run
+`python port-tools/errsummary.py compile.log`. ~1.5 min (NFRT cache shared with other mods).
+Repo-local git identity is `Meowfoe`.
 
-Working dir is `/var/home/azziee/Documents/Azziecraft/build/destroy` — do **not**
+**Linux (Azzie):** working dir `/var/home/azziee/Documents/Azziecraft/build/destroy` — do **not**
 use `/tmp` for anything that must survive.
 
 ```
@@ -29,16 +105,19 @@ JAVA_HOME=$JDK ./gradlew compileJava --console=plain    # log to a file, run det
   `org.gradle.java.installations.paths=/var/home/azziee/Documents/Azziecraft/build/jdk21`.
 - First-ever run ≈ 9 min (ModDev compiles MC+NeoForge into
   `build/moddev/artifacts/neoforge-21.1.262-{merged,}.jar`); cached runs are seconds.
-- Parse a compile log: `python3 /var/home/azziee/Documents/Azziecraft/build/parse_errors.py <log>`
-- Jar: `./gradlew build` once compile is clean.
-- Migration scripts (idempotent, rerunnable) live in
-  `/var/home/azziee/Documents/Azziecraft/build/`: `phase_a.py`, `phase_a2.py`,
-  `phase_a3.py`, `manual_edits.py`, `resources_migrate.py`, `phase_b1.py`.
-- javap inspection: `$JDK/bin/javap -classpath <dir> <class>`; dependency jars are in
-  `~/.gradle/caches/modules-2/files-2.1/` (create, petrolpark, pquality, registrate,
-  ponder, jei, flywheel) — extract classes from there instead of re-downloading.
+- Azzie-only scripts in `/var/home/azziee/Documents/Azziecraft/build/`: `parse_errors.py`,
+  `phase_a.py`, `phase_a2.py`, `phase_a3.py`, `manual_edits.py`, `resources_migrate.py`, `phase_b1.py`.
 
-## Environment gotchas (sessions get killed)
+**Both:**
+- Inspect APIs: `$JAVA_HOME/bin/javap -p -cp <jar> <class>` against
+  `build/moddev/artifacts/neoforge-21.1.262-merged.jar` (MC + NeoForge, ATs applied) or the
+  dependency jars in `~/.gradle/caches/modules-2/files-2.1/` (create, petrolpark, pquality,
+  registrate, ponder, jei, flywheel, maven.modrinth/*). Sodium's classes are inside a jar-in-jar
+  (`META-INF/jarjar/net.caffeinemc.sodium-neoforge-*-mod.jar`).
+- `port-tools/at_check.py` validates every AT entry against the merged jar.
+- Jar: `./gradlew build` once compile is clean.
+
+## Environment gotchas (Azzie's Linux box — sessions get killed)
 
 - `/tmp` is wiped on restart (logs, extracted jars gone).
 - `~/.ssh/netbox` (copy of the server key) disappears — re-copy from
@@ -51,194 +130,130 @@ JAVA_HOME=$JDK ./gradlew compileJava --console=plain    # log to a file, run det
 - Ground-truth jars in `build/`: `neoforge-21.1.262-universal.jar`, `fmlloader.jar`
   (`fmlcore.jar` there is a 404 HTML page — ignore it).
 
-## Progress
+## Patterns established in this port (follow them)
+
+- **Block-entity capabilities:** no `getCapability` overrides. Each BE exposes typed
+  `getFluidHandler(Direction side)` / `getItemHandler(Direction side)` (return `null` = none on that
+  side) and is registered in `DestroyCapabilities` (mod-bus `RegisterCapabilitiesEvent`). Call
+  `invalidateCapabilities()` whenever what those return changes. To *consume* a capability use the
+  null-safe `DestroyCapabilities.fluidHandler(be, side)` / `itemHandler(be, side)`.
+- **Entity data (old entity capabilities):** NeoForge attachments in `DestroyAttachmentTypes`
+  (`AttachmentType.serializable(...)`, same ids as the old capabilities). The data classes implement
+  `INBTSerializable<CompoundTag>`; access with `X.of(entity)` → `Optional<X>` (empty for entities the
+  old capability wasn't attached to). Death copying stays in the `PlayerEvent.Clone` handler.
+- **Mixture fluids:** the mixture lives in data component `DestroyDataComponentTypes.MIXTURE`
+  (`CompoundTag`). Use `MixtureFluid.getMixtureTag/hasMixtureTag/addMixtureToFluidStack`; never
+  mutate a stored tag — `set` a new one.
+- **Item NBT:** `util/ItemStackNBT` maps the old `getOrCreateTag()` keys onto vanilla
+  `minecraft:custom_data` (same keys). `read` returns a *copy*; write with `update`/`set`. Use real
+  vanilla/Create components where they exist (fireworks, dye colour, potion contents, custom name).
+- **Mob effects:** `DestroyMobEffects.X` is a `Holder<MobEffect>`; pass it directly (no `.get()`).
+  Compare with `holder.is(DestroyMobEffects.X)`, never `==`.
+- **Tick events:** Forge fired Player/Level tick events at START *and* END. Handlers that ignored the
+  phase subscribe to both `Pre` and `Post` (see `ChemistryHazardHelper`) to keep the 1.20.1 rate.
+- **Compat mixins:** put them in `mixin/compat/<modid>/...`. `DestroyMixinPlugin` (via the library's
+  `PetrolparkMixinPlugin`) only applies `compat.<modid>.*` mixins when that mod is loaded. For mods
+  that aren't compile dependencies, target by name: `@Mixin(targets = "...", remap = false)`.
+- **Access transformers:** Mojang names only; `validateAccessTransformers = true` fails the build on
+  a bad entry.
+- **Registries:** every `Destroy*` registry class must be registered from the `Destroy` constructor —
+  compare with the author's `Destroy.java` on `1.21.1-neo` when adding one.
+
+## Behaviour differences from 1.20.1
+
+Intended to be empty. Current entries:
+
+- **Bug fix:** `ExtendedBasinBehaviour` wrote `"EvaporatedFluid"` but read `"EvaporatedFluidStack"`,
+  so a basin's evaporated fluid was lost on reload. Now reads the key it writes.
+- **Sodium compat is new** (1.20.1 only had Embeddium compat, and the pack uses Sodium). It redirects
+  only Destroy's three smog tint resolvers, where the Embeddium mixin redirects all tints; the visible
+  result (smog-tinted grass/foliage/water) is the same.
+- Pollution ponder storyboards are disabled until step 3 (temporary, marked `TODO(port)`).
+
+## Decisions
+
+- Compat: **JEI — required, to be restored (step 6).** Farmer's Delight cutting-board mixin —
+  restored (onion cutting makes nearby entities cry + advancement), ported to FD 1.21's `useItemOn` →
+  `processStoredItemUsingTool`. Embeddium `WorldSliceMixin` — restored as in 1.20.1; Sodium
+  `LevelSliceMixin` — added for the pack. Kept `compat/pquality` (author kept it). Create Big Cannons
+  compat dropped (CBC not in the pack; 5.11.x API incompatible) — ask before restoring. Curios compat
+  (1 file, never wired up in 1.20.1 either) dropped.
+- Config: old config tree kept (Catnip `ConfigBase`-compatible); author's `DestroyConfigs` = engine
+  (`@EventBusSubscriber(bus = Bus.MOD)`); `config/DestroyAllConfigs.java` = thin facade
+  (`CLIENT/COMMON/SERVER` + `register(ModLoadingContext, ModContainer)`) so `DestroyAllConfigs.SERVER.x` works.
+- `DestroyAdvancementTrigger`: `SimpleAdvancementTrigger` → `PlayerTrigger`
+  (`CriteriaTriggers.register(Destroy.asResource(e.triggerId), e.trigger)`).
+- `Destroy.java`: ctor `Destroy(IEventBus modEventBus, ModContainer modContainer)`; static tooltip
+  block removed (no library tooltip factory); compat init lines removed; registers the author's
+  registries (`DestroyAttachmentTypes`, `DestroyDataComponentTypes`, `DestroyNumberProviderTypes`,
+  `DestroyPollutionTypes`, `DestroySeismologyProviders`) and `DestroyPackets` in the ctor;
+  `runForDist/unsafeCallClient/unsafeRunClient` helpers added.
+- Resources (done so far): pack.mcmeta ×3 → 48 + supported_formats; biome_modifier →
+  `data/destroy/neoforge/biome_modifier` + `neoforge:add_features`; conditions `forge:`→`neoforge:`;
+  generated `data/forge/tags/{blocks,items}` → `data/c/tags/{block,item}`
+  (glass→glass_blocks, glass/colorless→glass_blocks/colorless, string→strings);
+  `data/forge/tags/fluids` → `data/destroy/tags/fluid`; singularized tag dirs; content seds
+  (fluidTag urine/crude_oil/apple_juice→`destroy:`, milk→`c:milk`, chocolate→`c:chocolate`;
+  `"forge:X"`→`"c:X"`; `#forge:`→`#c:`). Still to do: step 7.
+- Mixin config: JAVA_21; must list exactly the files in `mixin/` (the author's 3 cartography
+  mixins were missing and are now listed; `ForgeMod$2$1Mixin` → `ClientNeoForgeMod$1Mixin`).
+
+## History
 
 | Commit | Contents |
 |---|---|
 | `381a135f` | Phase A: `git mv com/petrolpark/destroy → petrolpark/mc/destroy`, grafted the author's 59 NeoForge files, ordered mechanical rewrite (810 files; `new ResourceLocation(...)` → `parse`/`fromNamespaceAndPath`; slash-form mixin descriptors) |
-| `7de3041f` | Scaffolding: library imports, tag namespaces (`c:`), config facade, compat cleanup (dropped CBC/JEI/curios compat), resources migration (163 JSON), build files, mixins json |
+| `7de3041f` | Scaffolding: library imports, tag namespaces (`c:`), config facade, compat cleanup, resources migration (163 JSON), build files, mixins json |
 | `21063ac6` | `gradlew` executable bit |
 | `29815ce4` | `DestroyTagDatagen` syntax fix; `-Xmaxerrs 10000` on JavaCompile |
-| `f7a0c130` | Phase B batch 1 (mechanical): `DestroyLang` import fixes (`client.`→`util.`, incl. `TemperatureUnit`), `ForgeCatnipServices`→`CatnipServices`, static `AllTags` import fixes, `DistExecutor.unsafeRunWhenOn(Dist.CLIENT, …)`→`Destroy.unsafeRunClient(…)`, `RegistryObject`→`DeferredHolder` fields (`DestroyParticleTypes`, `DestroyRecipeTypes`), nested `Pollution.PollutionType` / `SeismographItem.Seismograph(.Mark)` import fixes, `saturationMod(`→`saturationModifier(` |
+| `f7a0c130` | Phase B batch 1 (mechanical): `DestroyLang` imports, `CatnipServices`, `AllTags` imports, `DistExecutor`→`Destroy.unsafeRunClient`, `RegistryObject`→`DeferredHolder`, nested import fixes, `saturationModifier` |
+| `207d3fd1` | AT registration `files()`→`from()`, `BlockSource` package, `Explosion.center()/radius()` |
+| `9e90380a` | **AT blocker fixed** (entries were SRG names; NeoForge 1.21 only matches Mojang names) + validated against the jar; Create 6 `ProcessingRecipeParams` import; `HolderLookup.Provider` through BE/behaviour `read`/`write`/`writeSafe`; `FluidStack` NBT → `parseOptional`/`saveOptional` |
+| `955c7499` | Tick events → `ClientTickEvent`/`PlayerTickEvent`/`LevelTickEvent`; `DestroyPollutionTypes` refs; pollution ponder storyboards disabled; `ItemProviderEntry<?, ?>` |
+| `85efc333` | Mob effects → `Holder<MobEffect>`, `Registries.MOB_EFFECT` |
+| `7bfb29aa` | Block-entity capabilities → `DestroyCapabilities`; `BlockSource` record accessors |
+| `7bdf6d44` | Entity capabilities → attachments; **registered the author's missing registries** in the ctor |
+| `bd702b4b` | Mixture `MIXTURE` component; `ItemStackNBT`; fireworks/dye components; tick handlers back to 2x/tick; `EvaporatedFluid` key fix |
+| (this commit) | Farmer's Delight / Embeddium / Sodium compat mixins; **`DestroyMixinPlugin` package fixed** (was `com.destroy.mixin`, so compat mixins were never gated — would crash without the mod); water tint mixin retargeted to `ClientNeoForgeMod$1`; missing cartography mixins listed; `port-tools/`; this doc restructured |
 
-| `9e90380a` | AT fix (above); Create 6 `ProcessingRecipeParams` import; `HolderLookup.Provider registries` added to all `SmartBlockEntity`/`BlockEntityBehaviour` `read`/`write`/`writeSafe` overrides + super/behaviour/`FluidTank` NBT calls inside them (28 files); `FluidStack.loadFluidStackFromNBT`/`writeToNBT` -> `parseOptional`/`saveOptional` in block entities; Blowpipe `readBlowing`/`writeBlowing` take a provider. Done from Maddie's Windows machine. |
-
-| `955c7499` | Tick events -> `ClientTickEvent.Pre/Post`, `PlayerTickEvent.Post`, `LevelTickEvent.Post` (all 9 files; `ExtendedInventoryClientHandler.tick()` no-arg; dropped duplicate `SeismometerItemRenderer.tick()` call, it self-subscribes now); old `PollutionType.SMOG/GREENHOUSE/ACID_RAIN/OZONE_DEPLETION` -> `DestroyPollutionTypes.X.get()`, `pollutionEnabled()` -> `isPollutionEnabled()`; pollution ponder storyboards disabled with `TODO(port)` (author's `PollutionPonderScenes` is fully commented out upstream); `ItemProviderEntry<?>` -> `<?, ?>`. |
-
-**Behaviour note (tick events) — superseded, now restored to 2x/tick:** Forge fired Player/Level tick events twice per tick (START+END).
-`ChemistryHazardHelper.onPlayerTick`, `PlayerCrouchingCapability`, `PlayerPreviousPositionsCapability`,
-`RedstoneProgrammerItemHandler.onLevelTick` and `DestroyCommonEvents.onLevelTick` never checked the
-phase, so they ran 2x/tick. They're now on `Post` only = 1x/tick: crouch/urinate counters, ozone-cancer
-roll, previous-position sampling and global pollution decay run at half their old rate. Subscribe to
-`Pre` too if the old rates matter.
-
-| (mob effects commit) | Mob effects -> `Holder<MobEffect>`: `DeferredRegister.create(Registries.MOB_EFFECT, …)` (NeoForgeRegistries has no MOB_EFFECTS), `DestroyMobEffects.X.get()` -> `DestroyMobEffects.X` everywhere (DeferredHolder is a Holder), `increaseEffectLevel` takes `Holder<MobEffect>`. Note: compare effects with `holder.is(DestroyMobEffects.X)`, never `==` (DeferredHolder != the registry's Holder.Reference). |
-
-| (caps commit) | Batch 3a — **block-entity capabilities**: new `DestroyCapabilities` (mod bus) registers `Capabilities.FluidHandler.BLOCK` / `ItemHandler.BLOCK` for 13 BE types; each BE's `getCapability(Capability, Direction)` override became typed `getFluidHandler(side)` / `getItemHandler(side)` (null = none on that side); `LazyOptional` fields -> nullable handlers + `invalidateCapabilities()` wherever the old code invalidated or the exposed handler changes (vat display type, vat cap refresh, mixed-explosive refresh, tree tap); `invalidate()`/`invalidateCaps()` overrides removed (NeoForge invalidates on removal). Consumers use `DestroyCapabilities.fluidHandler(be, side)` / `itemHandler(be, side)` (null-safe `level.getCapability` lookups). Also `BlockSource` getters -> record accessors (`level()/pos()/state()/blockEntity()`). |
-
-| (attachments commit) | Batch 3b — **entity capabilities -> data attachments**: `EntityChemicalPoison`, `PlayerBabyBlueAddiction`, `PlayerCrouching`, `PlayerNovelCompoundsSynthesized`, `PlayerPreviousPositions` keep their class (now `INBTSerializable<CompoundTag>`), registered in `DestroyAttachmentTypes` via `AttachmentType.serializable(...)` under the old capability ids; `Provider` classes and the `onAttachCapabilities*` handlers deleted. Access via `X.of(entity)` -> `Optional<X>` (empty for non-players / non-living, same as the old attach rules), so `ifPresent`/`map` call sites only changed receiver. Not `copyOnDeath`: the existing `PlayerEvent.Clone` handler still does the config-dependent copying. **Also fixed: `Destroy` ctor never registered `DestroyAttachmentTypes`, `DestroyDataComponentTypes`, `DestroyNumberProviderTypes`, `DestroyPollutionTypes`, `DestroySeismologyProviders`** (lost when the 1.20.1 `Destroy.java` was restored over the author's) — added, and `DestroyPackets.register()` moved from common setup to the ctor like the author's. |
-
-| (components commit) | Batch 3c (part) — **NBT -> data components**. Fluids: new `DestroyDataComponentTypes.MIXTURE` (`CompoundTag`) replaces the FluidStack `"Mixture"` child tag; all access via `MixtureFluid.getMixtureTag/hasMixtureTag/addMixtureToFluidStack` (~30 sites). Items: `util/ItemStackNBT` bridges the old `getOrCreateTag()` keys onto vanilla `minecraft:custom_data` (same keys; MC's 1.20->1.21 fixer also moves old item NBT there) — `read` returns a copy, writes go through `update`/`set`, multi-line blocks got explicit `set` after each write. Fireworks recipe + mixed-explosive firework effect -> `Fireworks`/`FireworkExplosion` components (recipe also ported to `CraftingInput`). Explosive dyeing -> `DyedItemColor` + `minecraft:dyeable` item tag (tagged in `DestroyBlocks` and in generated tags) + ARGB-opaque item tint. **Tick handlers restored to 2x/tick** (Pre + Post) to match 1.20.1 exactly. **Bug fix:** `ExtendedBasinBehaviour` now reads the `"EvaporatedFluid"` key it writes. |
-
-Latest compile: **1,502 errors**.
-
-**Goal (from Maddie): behave as close to the original 1.20.1 mod as possible, with no regressions.**
-So: no intentional behaviour changes; anything that has to differ gets written down here.
-
-**Decision change: JEI compat is required.** Restore `compat/jei` (45 files) and the 7 `compat.jei.*`
-mixins from upstream `1.20.1` and port to JEI 19 *after* the core recipe classes compile (the categories
-depend on them). JEI is already a dependency in build.gradle.
-
-**Data migration step (after recipe codecs are ported, before runtime testing):** the resource
-migration missed MC 1.21's singular data folders — `data/*/recipes|advancements|loot_tables|structures`
-must become `recipe|advancement|loot_table|structure` (also in `src/generated`), or none of it loads.
-Recipe JSON must then match the new codecs: Create 6 style (`"type": "neoforge:single"` fluid
-ingredients, `{"id", "amount"}` fluid results, snake_case keys like `heat_requirement`), and mixture
-fluid results' `"nbt": {"Mixture": …}` -> `"components": {"destroy:mixture": …}`.
-
-Other NBT leftovers: potion fluids in `CentrifugeBlockEntity` (Create 6 uses `POTION_CONTENTS` +
-Create's bottle-type component), `MixtureFluidIngredient` (with the fluid-ingredient rework),
-`SequencedAssemblyRecipeMixin` (Create 6 keeps sequenced-assembly progress in its own data component,
-so the mixin must be rewritten against Create 6's code), and item capabilities (`ItemMixtureTank`,
-Blowpipe spout handler, measuring cylinder, test tube) -> `Capabilities.FluidHandler.ITEM` via
-`event.registerItem`. Typed components for hot item keys (Blowpipe, Swiss Army Knife, Circuit Mask)
-are optional cleanup later.
-
-Capability work still TODO (batch 3b/3c): the 5 player/entity capabilities -> attachments
-(see below), old `Pollution.CAPABILITY` / `ChunkCrudeOil.Provider.CHUNK_CRUDE_OIL` consumers ->
-the author's `LevelPollution`/`ChunkPollution`/`ChunkCrudeOil` attachments, and item capabilities
-(`ItemMixtureTank`, `BlowpipeItem`, measuring cylinder, test tubes) -> `Capabilities.FluidHandler.ITEM`
-registered via `event.registerItem(...)`, backed by data components (do together with `getOrCreateTag`).
-`DestroyCommonEvents.onAttachCapabilities*` were mangled into `RegisterCapabilitiesEvent<Level>` by
-Phase A's rename — they must be deleted, not fixed.
-
-Still TODO for pollution consumers (old enum API, needs redesign against the author's registry +
-data-map `PollutionType.Properties`): `pollutionType.local` / `.max`, `PollutionType.values()`,
-`PollutionHelper.pollute(...)` (10 sites), `changePollutionGlobal`, `getCropGrowthFailureParticles`.
-
-Previous compile (after the AT commit): **2,050 errors** (javac count; gradle prints each twice).
-Before: 2,178 (after batch 1, javac count). Remaining big buckets: `LazyOptional`/`Capability`
-(batch 3), `getOrCreateTag` (batch 3), packets (batch 3), Create `FluidIngredient` (batch 2).
-
-Upstream bug (fixed in the components commit): `ExtendedBasinBehaviour` wrote `"EvaporatedFluid"` but
-read `"EvaporatedFluidStack"`, so the evaporated fluid never survived a reload.
-
-Previous count (after batch 1): **2301 error lines**. Mix: cannot-find-symbol 1205,
-no-override 333, incompatible-types 185, bad-args 133, package-missing 99,
-private-access 85, ambiguous 59, no-suitable 53, not-abstract 43, static-ref 9,
-inaccessible 5, final-class 2, name-clash 2.
-
-## Resolved: project access transformers were not applied
-
-Root cause: every entry in `META-INF/accesstransformer.cfg` used **SRG names**
-(`f_46012_`, `m_280585_(...)`). Since 1.20.5 NeoForge runs on Mojang names in dev *and*
-prod, so SRG entries match nothing and NFRT skips them silently. Fixed by rewriting each
-entry to the Mojang name from its `#` comment, then checking every entry with `javap`
-against `build/moddev/artifacts/neoforge-21.1.262-merged.jar`. Stale entries fixed:
-`Gui.renderSlot` (float -> `DeltaTracker`), `SpriteSources.register` (`Codec` -> `MapCodec`),
-`PotionBrewing.POTION_MIXES/CONTAINER_MIXES` -> instance fields `potionMixes/containerMixes`
-(callers must now go through `level.potionBrewing()`, not static access), and the 4
-`ShapedRecipe` entries removed (pattern logic moved to `ShapedRecipePattern` in 1.21).
-`validateAccessTransformers = true` is now on in build.gradle, so a bad entry fails the
-build instead of being ignored. The `files()` -> `from()` fix was also needed.
-
-## Remaining work (Phase B)
-
-Quick mechanical first:
-
-- `import net.minecraft.core.BlockSource;` → `import net.minecraft.core.dispenser.BlockSource;`
-  (8 files; the interface moved packages in 1.21). Vanilla dispenser `execute(BlockSource, ItemStack)` signature unchanged.
-
-Batch 2 — API fixes (verified against the jars):
-
-- Create 6 recipe API (imports DONE): `ProcessingRecipeParams` is now a **top-level** class
-  `com.simibubi.create.content.processing.recipe.ProcessingRecipeParams` (was
-  nested in `ProcessingRecipeBuilder`); the recipe factory is
-  `ProcessingRecipe$Factory<P,R>` (was `ProcessingRecipeBuilder.ProcessingRecipeFactory`). Still TODO: `Factory` takes **two**
-  type params now, so `DestroyRecipeTypes` and `CircuitDeployerApplicationRecipe.Serializer`
-  need real rework; `new ProcessingRecipeBuilder(...)` (abstract now) at ~10 sites.
-- Fluid ingredients are NeoForge `net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient`
-  (recipes take `SizedFluidIngredient`, not the old Create `FluidIngredient`); Create 6
-  keeps a deprecated `com.simibubi.create.foundation.fluid.FluidIngredientOld`. Destroy's
-  custom fluid ingredients (`core/recipe/ingredient/fluid/*`) must be reworked to
-  NeoForge's `FluidIngredient`/`SizedFluidIngredient`.
-- `AllTags.forgeItemTag/forgeBlockTag/forgeFluidTag` → `commonItemTag/commonBlockTag/commonFluidTag`.
-  `AllTags` has **no** `tagBlockAndItem` — use `commonItemTag` + `commonBlockTag`.
-- `Explosion.center()` returns `Vec3` (no `getPosition()`); `Explosion.level` is
-  private — an AT entry `protected net.minecraft.world.level.Explosion f_46012_ # level`
-  exists but compile still reports private: investigate AT application.
-- `FluidTank.writeToNBT(HolderLookup.Provider, CompoundTag)` — DONE inside block-entity
-  read/write; remaining sites are outside those methods (item tanks, capabilities).
-- `MobEffectInstance.getEffect()` → `Holder<MobEffect>` — DONE for `DestroyMobEffects` refs.
-
-Batch 3 — structural:
-
-- Packets: ~24 old packet classes + `DestroyMessages` + ~38 send sites → Catnip
-  payloads following the author's `DestroyPackets` enum pattern (record +
-  `STREAM_CODEC` + register in enum + `CatnipServices.NETWORK.sendToServer/sendToPlayer…`).
-  Delete old packets + `DestroyMessages`; fix `SyncChunkPollutionS2CPacket` refs
-  (ServerLevelMixin, DestroyCommonEvents, DestroyMessages).
-- `LazyOptional` → direct nullable (29 files; `getCapability` returns `@Nullable T`).
-- 5 custom capabilities → attachments: `EntityChemicalPoisonCapability`,
-  `PlayerBabyBlueAddictionCapability`, `PlayerCrouchingCapability`,
-  `PlayerNovelCompoundsSynthesizedCapability`, `PlayerPreviousPositionsCapability` —
-  follow `DestroyAttachmentTypes` + the grafted `LevelPollution`/`ChunkPollution`/`ChunkCrudeOil` pattern.
-- `getOrCreateTag` (76 sites) + `FluidStack.getOrCreateChildTag("Mixture")` → DataComponents:
-  add a MIXTURE `DataComponentType<CompoundTag>` (`ExtraCodecs.COMPOUND_TAG` +
-  `ByteBufCodecs.COMPOUND_TAG`) to `DestroyDataComponentTypes`; use
-  `DataComponents.MAP_ID` for the cartography "map" int and `DataComponents.POTION_CONTENTS`
-  for the potion string. `INBTSerializable` (5 capability files — rewritten anyway).
-
-Batch 4:
-
-- Tick events (9 files: FogHandler, RedstoneProgrammerMenu, RedstoneProgrammerItemHandler,
-  PlayerCrouchingCapability, PlayerPreviousPositionsCapability, ChemistryHazardHelper,
-  DestroyClientEvents, DestroyCommonEvents, ExtendedInventoryClientHandler) →
-  `event.tick.*TickEvent` Pre/Post + `client.event.ClientTickEvent`;
-  `phase==START`→Pre, `==END`→Post, `side==LogicalSide.SERVER`→`!event.getEntity().level().isClientSide()`.
-- Ponder scenes: `OilPonderScenes` (54 errors — old nested `SeismographItem.Seismograph/Mark`),
-  `DestroyPonderScenes` → `PollutionPonderScenes` refs.
-- Contamination (`CircuitPatternItemAttribute`, `FireproofingHelper`) — library classes
-  gone; reimplement minimal. Decay (`CarboxylatingItem`, `OxidizingItem`) →
-  `StackableFlashingDecayingItem`/`ItemDecay`.
-- Recipe system: `DestroyRecipeTypes` still imports
-  `com.petrolpark.recipe.advancedprocessing.AdvancedProcessingRecipeSerializer` →
-  `petrolpark.mc.library.compat.create.core.data.recipe.AdvancedProcessingRecipe$Serializer`.
-- `DestroyCreativeModeTabs` — library `CustomTab`/`ITabEntry` API changed.
-- Client model code (BakedModelWrapper/geometry/ModelEvent — same paths in 21.1,
-  signatures may differ). `SwissArmyKnifeItem` ToolActions — gone; use vanilla
-  `net.minecraft.world.item.TierSortingRegistry`. Crafting ingredients
-  (`IIngredientSerializer`/`StrictNBTIngredient`/`AbstractIngredient`) →
-  `ICustomIngredient` + `IngredientType`; brewing OK at `common.brewing`.
-
-Then: iterate compile until clean → `./gradlew build` → commit → push → GitHub
-release with the jar.
+Error counts: 2,301 error lines (batch 1) → 2,178 javac → 2,050 → 1,940 → 1,892 → 1,718 → 1,621 → 1,502 → 1,501.
 
 ## Verified API mappings (NeoForge 21.1.262 / MC 1.21.1 / Create 6.0.10 / library 1.21.1-1.5.11)
 
 NeoForge: `NeoForge`, `NeoForgeMod`, `ModConfigSpec`, `DeferredHolder<R,T>` (RegistryObject
 GONE), `DeferredRegister` (+`.DataComponents`), `Capabilities.{FluidHandler,ItemHandler,EnergyStorage}.{BLOCK,ITEM}`,
 `RegisterCapabilitiesEvent`, `BlockCapability/ItemCapability/EntityCapability/LevelCapability`,
-`AttachmentType`, `event.tick.{Entity,Level,Player,Server}TickEvent` (Pre/Post nested),
-`client.event.ClientTickEvent.Pre/Post`, `EventHooks` (was ForgeEventFactory), `IShearable`,
-`IEntityWithComplexSpawn`, extensions `IItemExtension/IBlockExtension/IBlockStateExtension/IBlockEntityExtension/IEntityExtension/IMenuTypeExtension`,
-`RegisterGuiLayersEvent`, `VanillaGuiLayers` (at `client.gui`, was `client.gui.overlay.VanillaGuiOverlay`),
-`DeferredSoundType` (at `common.util`, was ForgeSoundType), conditions at
+`AttachmentType` (`builder`, `serializable`, `copyOnDeath`), `INBTSerializable` methods take a
+`HolderLookup.Provider`, `event.tick.{Entity,Level,Player,Server}TickEvent` (Pre/Post nested; the
+base classes are abstract and can't be subscribed to), `client.event.ClientTickEvent.Pre/Post`,
+`EventHooks` (was ForgeEventFactory), `IShearable`, `IEntityWithComplexSpawn`, extensions
+`IItemExtension/IBlockExtension/IBlockStateExtension/IBlockEntityExtension/IEntityExtension/IMenuTypeExtension`,
+`IBlockEntityExtension.invalidateCapabilities()` (null-level safe), `RegisterGuiLayersEvent`,
+`VanillaGuiLayers` (at `client.gui`), `DeferredSoundType` (at `common.util`), conditions at
 `net.neoforged.neoforge.common.conditions` (ids `neoforge:mod_loaded|false|true|not|and|or|tag_empty|item_exists`;
 `"conditions"` key still works in recipes), `ModConfigEvent implements IModBusEvent`,
-`net.neoforged.fml.ModContainer`, `ModLoadingContext` + `LogicalSide`, `InterModComms`.
-GONE: ToolActions/ToolAction, PlantType, TierSortingRegistry (use vanilla
-`net.minecraft.world.item.TierSortingRegistry`), ForgeHooks, ForgeGui, `registries.tags.ITag`,
-`Capability/CapabilityManager/CapabilityToken/LazyOptional`, the whole network stack
-(SimpleChannel/NetworkRegistry/NetworkHooks/NetworkEvent/NetworkDirection; PacketDistributor exists),
-DistExecutor, FMLJavaModLoadingContext.
+`net.neoforged.fml.ModContainer`, `ModLoadingContext` + `LogicalSide`, `InterModComms`. Fluid client
+extensions live in `ClientNeoForgeMod` (water = anonymous `ClientNeoForgeMod$1`). MixinExtras is
+available (`@WrapOperation` etc). GONE: ToolActions/ToolAction (→ `net.neoforged.neoforge.common.ItemAbilities`/`ItemAbility`), PlantType,
+TierSortingRegistry (exists nowhere in 21.1 — tiers are the `Tool` data component + `incorrect_for_*_tool`
+block tags; an earlier note here wrongly said to use a vanilla one), ForgeHooks, ForgeGui,
+`registries.tags.ITag`, `Capability/CapabilityManager/CapabilityToken/LazyOptional`, the whole
+network stack (SimpleChannel/NetworkRegistry/NetworkHooks/NetworkEvent/NetworkDirection;
+PacketDistributor exists), DistExecutor, FMLJavaModLoadingContext, `NeoForgeRegistries.MOB_EFFECTS`
+(use `Registries.MOB_EFFECT`).
 
 MC 1.21.1: `FoodProperties.Builder.saturationModifier(float)`; `Explosion.center()` → Vec3;
 `CriteriaTriggers.register(ResourceLocation, trigger)`; `ItemStack` `getOrCreateTag/getTag/setTag`
-GONE (use DataComponents); `ItemTags.create/BlockTags.create/FluidTags.create` GONE
-(use `TagKey.create(Registries.X, id)`); dispenser `BlockSource` at `net.minecraft.core.dispenser`;
-tag dirs singular (`tags/block`, `tags/item`, `tags/fluid`); `pack.mcmeta` pack_format 48 +
-`supported_formats: [0, 2147483647]`, no forge:/neoforge: split keys.
+GONE (data components; `CustomData` for free-form NBT); `ItemTags.create/BlockTags.create/FluidTags.create`
+GONE (use `TagKey.create(Registries.X, id)`); dispenser `BlockSource` is a record at
+`net.minecraft.core.dispenser` (`level()/pos()/state()/blockEntity()`); `CustomRecipe(CraftingBookCategory)`,
+`matches/assemble(CraftingInput, …)`, `ShapelessRecipe(group, category, result, ingredients)`, recipe ids
+via `RecipeHolder`; `Fireworks`/`FireworkExplosion`/`DyedItemColor` components, `minecraft:dyeable`
+tag replaces `DyeableLeatherItem`; item tint colours are ARGB (`FastColor.ARGB32.opaque`);
+`Level.createFireworks(..., List<FireworkExplosion>)`; `PotionBrewing` is per-level
+(`level.potionBrewing()`); `CompoundTag.CODEC`, `ByteBufCodecs.COMPOUND_TAG`; data folders singular
+(`recipe/`, `advancement/`, `loot_table/`, `structure/`, `tags/block|item|fluid`); `pack.mcmeta`
+pack_format 48 + `supported_formats: [0, 2147483647]`.
 
 Tags: all conventional under `c:` — `c:strings` (was forge:string), `c:leathers`,
 `c:glass_blocks` (+`/colorless`; covers all 16 stained colors via `c:glass_blocks/cheap`),
@@ -247,11 +262,15 @@ Tags: all conventional under `c:` — `c:strings` (was forge:string), `c:leather
 `c:sandstone/blocks` (was forge:sandstone). biome_modifier: `data/<ns>/neoforge/biome_modifier`
 + `"type": "neoforge:add_features"`.
 
-Create 6: `CreateRegistrate`, `TagGen$CreateTagsProvider`, `compat.jei`
+Create 6: `CreateRegistrate`, `TagGen$CreateTagsProvider`, `AllTags.commonItemTag/commonBlockTag/commonFluidTag`
+(no `forge*`; `AllTags` has no `tagBlockAndItem`), `SmartBlockEntity`/`BlockEntityBehaviour`
+`read/write(CompoundTag, HolderLookup.Provider, boolean)`, `SmartFluidTankBehaviour.getCapability()`
+returns the `IFluidHandler` directly, BEs register caps via static `registerCapabilities(RegisterCapabilitiesEvent)`,
+`ProcessingRecipeParams` is top-level, `ProcessingRecipe$Factory<P,R>`, `compat.jei`
 (`ConversionRecipe`, `MysteriousItemConversionCategory`, `SequencedAssemblySubCategory$AssemblyDeploying`
-public no-arg ctor); `IAssemblyRecipe.getJEISubCategory` ABSTRACT →
-`Supplier<Supplier<SequencedAssemblySubCategory>>`; `GogglesItem.addIsWearingPredicate(Predicate<Player>)`;
-`ProcessingRecipeBuilder` has no nested params/factory (see batch 2).
+public no-arg ctor); `IAssemblyRecipe.getJEISubCategory` ABSTRACT → `Supplier<Supplier<SequencedAssemblySubCategory>>`;
+`GogglesItem.addIsWearingPredicate(Predicate<Player>)`; `IHaveGoggleInformation.containedFluidTooltip(List, boolean, IFluidHandler)`;
+recipe JSON: `"type": "neoforge:single"` fluid ingredients, `{"id","amount"}` results, snake_case keys.
 
 Library (petrolpark 1.21.1-1.5.11): `compat.Mods` enum (`isLoaded()/isLoading()/executeIfInstalled(Supplier<Runnable>)/asResource(String)`);
 `compat.curios.{PetrolparkCurios,PetrolparkCuriosSetup}`; `compat.create.core.world.block.entity.behaviour.AbstractRememberPlacerBehaviour`;
@@ -263,38 +282,17 @@ Library (petrolpark 1.21.1-1.5.11): `compat.Mods` enum (`isLoaded()/isLoading()/
 `compat.create.core.data.recipe.firstTimeLucky.{FTLRecipesBehaviour,IFTLProcessingRecipe}`,
 `compat.create.core.data.recipe.AdvancedProcessingRecipe$Serializer`,
 `core.world.item.decay.{ItemDecay,StackableFlashingDecayingItem,DecayTime}`,
-`AbstractPetrolparkRegistrate` (NO setTooltipModifierFactory).
+`AbstractPetrolparkRegistrate` (NO setTooltipModifierFactory), `mixin.plugin.PetrolparkMixinPlugin`
+(gates `<getMixinPackage()>.compat.<modid>.*` on that mod being loaded).
 GONE from library: contamination classes, SimpleAdvancementTrigger, C2SPacket/S2CPacket.
 Catnip classes (274, incl. `CatnipServices`, `CatnipPacketRegistry`, `ConfigBase`,
-`BasePacketPayload`, `ScreenOpener`, …) are shaded inside Ponder's jar — no Catnip
-mod/dependency needed.
+`BasePacketPayload`, `ScreenOpener`, …) are shaded inside Ponder's jar — no Catnip mod/dependency needed.
 
-## Decisions
-
-- Dropped `compat/createbigcannons` (CBC not in pack; 5.11.x API incompatible),
-  `compat/jei` (45 files; JEI 15→19 too large/risky; author dropped it too),
-  `compat/curios` (1 file, never wired). Kept `compat/pquality` (author kept it).
-- Deleted mixins: `compat.jei.*` (7), `compat.embeddium.client.WorldSliceMixin`
-  (embeddium not in pack), `compat.farmersdelight.CuttingBoardMixin` (FD 1.21.1 uses
-  `useItemOn`; old `use` descriptor would fail at runtime).
-- Config: old config tree kept (Catnip `ConfigBase`-compatible); author's `DestroyConfigs`
-  = engine (`@EventBusSubscriber(bus = Bus.MOD)`); NEW `config/DestroyAllConfigs.java` =
-  thin facade (`CLIENT/COMMON/SERVER` fields + `register(ModLoadingContext, ModContainer)`)
-  so all `DestroyAllConfigs.SERVER.x` refs work.
-- `DestroyAdvancementTrigger`: `SimpleAdvancementTrigger` → `PlayerTrigger`
-  (`CriteriaTriggers.register(Destroy.asResource(e.triggerId), e.trigger)`).
-- `Destroy.java`: ctor `Destroy(IEventBus modEventBus, ModContainer modContainer)`;
-  static tooltip block removed (no library tooltip factory); compat init lines removed;
-  `DestroyMessages.register()`→`DestroyPackets.register()`; `+DestroyCriteriaTriggers.register()`;
-  `runForDist/unsafeCallClient/unsafeRunClient` helpers added.
-- Resources: pack.mcmeta ×3 → 48 + supported_formats; biome_modifier →
-  `data/destroy/neoforge/biome_modifier` + `neoforge:add_features`; conditions `forge:`→`neoforge:`;
-  generated `data/forge/tags/{blocks,items}` → `data/c/tags/{block,item}`
-  (glass→glass_blocks, glass/colorless→glass_blocks/colorless, string→strings);
-  `data/forge/tags/fluids` → `data/destroy/tags/fluid`; singularized tag dirs;
-  content seds (fluidTag urine/crude_oil/apple_juice→`destroy:`, milk→`c:milk`,
-  chocolate→`c:chocolate`; `"forge:X"`→`"c:X"`; `#forge:`→`#c:`); 0 leftover `forge:` tokens.
-  mixins json: JAVA_21 + 10 compat lines removed.
+Compat targets: Farmer's Delight 1.21.1-1.3.4 (`compileOnly`, mod id `farmersdelight`):
+`CuttingBoardBlock.useItemOn` → `CuttingBoardBlockEntity.processStoredItemUsingTool(ItemStack, Player)`.
+Sodium 0.8.x (mod id `sodium`): `net.caffeinemc.mods.sodium.client.world.LevelSlice` (`private final ClientLevel level`,
+`getBlockTint(BlockPos, ColorResolver)`). Embeddium 1.0.x (mod id `embeddium`):
+`org.embeddedt.embeddium.impl.world.WorldSlice` (`public final ClientLevel world`, same method).
 
 ## Pack integration runbook (once the jar exists)
 

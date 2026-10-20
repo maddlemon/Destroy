@@ -6,7 +6,7 @@ public class DestroyMixinPlugin extends PetrolparkMixinPlugin {
     
     @Override
     protected String getMixinPackage() {
-        return "com.destroy.mixin";
+        return "petrolpark.mc.destroy.mixin"; // compat.<modid>.* mixins only apply when that mod is loaded
     };
 
     @Override

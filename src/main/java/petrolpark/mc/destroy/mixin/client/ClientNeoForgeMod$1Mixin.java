@@ -11,8 +11,12 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.material.FluidState;
 
-@Mixin(targets = "net.neoforged.neoforge.common.NeoForgeMod$2$1")
-public class NeoForgeMod$2$1Mixin {
+/**
+ * Smog tints Water. Targets NeoForge's anonymous Water client extensions (1.20.1 Forge: {@code ForgeMod$2$1}; NeoForge 21.1:
+ * {@code ClientNeoForgeMod$1}) - re-check the index if NeoForge is updated.
+ */
+@Mixin(targets = "net.neoforged.neoforge.client.ClientNeoForgeMod$1")
+public class ClientNeoForgeMod$1Mixin {
     
     @Overwrite(remap = false)
     public int getTintColor(FluidState state, BlockAndTintGetter getter, BlockPos pos) {

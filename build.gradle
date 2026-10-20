@@ -137,6 +137,10 @@ dependencies {
     // JEI
     implementation("mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}")
 
+    // Compile-only compat target (compat.farmersdelight mixins are skipped by DestroyMixinPlugin when the mod is absent).
+    // The Sodium/Embeddium mixins target classes by name, so those mods aren't needed to compile.
+    compileOnly("maven.modrinth:farmers-delight:${farmers_delight_version}")
+
 }
 
 jar {
