@@ -1,20 +1,20 @@
 package petrolpark.mc.destroy.content.tool.swissarmyknife;
 
-import java.util.function.Supplier;
-
 import javax.annotation.Nullable;
 
+import petrolpark.mc.destroy.DestroyPackets;
 import petrolpark.mc.destroy.content.tool.swissarmyknife.SwissArmyKnifeItem.Tool;
-import com.petrolpark.network.packet.C2SPacket;
 
-import net.minecraft.network.FriendlyByteBuf;
+import net.createmod.catnip.net.base.ServerboundPacketPayload;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.network.NetworkEvent;
-import net.neoforged.neoforge.network.NetworkEvent.Context;
 
-public class SwissArmyKnifeToolC2SPacket extends C2SPacket {
+public class SwissArmyKnifeToolC2SPacket implements ServerboundPacketPayload {
+
+    public static final StreamCodec<RegistryFriendlyByteBuf, SwissArmyKnifeToolC2SPacket> STREAM_CODEC = StreamCodec.ofMember(SwissArmyKnifeToolC2SPacket::toBytes, SwissArmyKnifeToolC2SPacket::new);
 
     private final boolean hasTool;
     private final Tool tool;
@@ -24,28 +24,27 @@ public class SwissArmyKnifeToolC2SPacket extends C2SPacket {
         hasTool = tool != null;
     };
 
-    public SwissArmyKnifeToolC2SPacket(FriendlyByteBuf buffer) {
+    public SwissArmyKnifeToolC2SPacket(RegistryFriendlyByteBuf buffer) {
         hasTool = buffer.readBoolean();
         tool = hasTool ? Tool.values()[buffer.readInt()] : null;
     };
 
-    @Override
-    public void toBytes(FriendlyByteBuf buffer) {
+    public void toBytes(RegistryFriendlyByteBuf buffer) {
         buffer.writeBoolean(hasTool);
         buffer.writeInt(hasTool ? tool.ordinal() : 0);
     };
 
     @Override
-    public boolean handle(Supplier<Context> supplier) {
-        NetworkEvent.Context context = supplier.get();
-        context.enqueueWork(() -> {
-            ServerPlayer player = context.getSender();
-            for (InteractionHand hand : InteractionHand.values()) {
-                ItemStack stack = player.getItemInHand(hand);
-                if (stack.getItem() instanceof SwissArmyKnifeItem) SwissArmyKnifeItem.putTool(stack, tool);
-            };
-        });
-        return true;
+    public void handle(ServerPlayer player) {
+        for (InteractionHand hand : InteractionHand.values()) {
+            ItemStack stack = player.getItemInHand(hand);
+            if (stack.getItem() instanceof SwissArmyKnifeItem) SwissArmyKnifeItem.putTool(stack, tool);
+        };
+    };
+
+    @Override
+    public PacketTypeProvider getTypeProvider() {
+        return DestroyPackets.SWISS_ARMY_KNIFE_TOOL;
     };
     
 };

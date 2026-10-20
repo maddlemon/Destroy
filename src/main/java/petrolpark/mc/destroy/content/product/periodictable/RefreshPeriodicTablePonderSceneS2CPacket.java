@@ -1,26 +1,31 @@
 package petrolpark.mc.destroy.content.product.periodictable;
 
-import java.util.function.Supplier;
-
+import petrolpark.mc.destroy.DestroyPackets;
 import petrolpark.mc.destroy.client.DestroyPonderScenes;
-import com.petrolpark.network.packet.S2CPacket;
 
-import net.minecraft.network.FriendlyByteBuf;
-import net.neoforged.neoforge.network.NetworkEvent.Context;
+import net.createmod.catnip.net.base.ClientboundPacketPayload;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 
-public class RefreshPeriodicTablePonderSceneS2CPacket extends S2CPacket {
+public class RefreshPeriodicTablePonderSceneS2CPacket implements ClientboundPacketPayload {
+
+    public static final StreamCodec<RegistryFriendlyByteBuf, RefreshPeriodicTablePonderSceneS2CPacket> STREAM_CODEC = StreamCodec.ofMember(RefreshPeriodicTablePonderSceneS2CPacket::toBytes, RefreshPeriodicTablePonderSceneS2CPacket::new);
 
     public RefreshPeriodicTablePonderSceneS2CPacket() {};
 
-    public RefreshPeriodicTablePonderSceneS2CPacket(FriendlyByteBuf buffer) {};
+    public RefreshPeriodicTablePonderSceneS2CPacket(RegistryFriendlyByteBuf buffer) {};
+
+    public void toBytes(RegistryFriendlyByteBuf buffer) {};
 
     @Override
-    public void toBytes(FriendlyByteBuf buffer) {};
+    public void handle(LocalPlayer player) {
+        DestroyPonderScenes.refreshPeriodicTableBlockScenes();
+    };
 
     @Override
-    public boolean handle(Supplier<Context> supplier) {
-        supplier.get().enqueueWork(DestroyPonderScenes::refreshPeriodicTableBlockScenes);
-        return true;
+    public PacketTypeProvider getTypeProvider() {
+        return DestroyPackets.REFRESH_PERIODIC_TABLE_PONDER_SCENE;
     };
     
 };

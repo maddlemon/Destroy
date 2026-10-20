@@ -1,11 +1,11 @@
 package petrolpark.mc.destroy.content.processing.glassblowing;
 
+import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import java.util.List;
 import java.util.Optional;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import petrolpark.mc.destroy.DestroyMessages;
 import petrolpark.mc.destroy.client.DestroyFluidRenderer;
 import petrolpark.mc.destroy.client.DestroyGuiTextures;
 import petrolpark.mc.destroy.util.DestroyLang;
@@ -121,7 +121,7 @@ public class BlowpipeScreen extends AbstractSimiScreen {
             super(x, y, 64, 18);
             withCallback(() -> {
                 if (recipeNo >= recipes.size()) return;
-                DestroyMessages.sendToServer(new SelectGlassblowingRecipeC2SPacket(hand, recipes.get(recipeNo).id()));
+                CatnipServices.NETWORK.sendToServer(new SelectGlassblowingRecipeC2SPacket(hand, recipes.get(recipeNo).id()));
                 if (minecraft != null && minecraft.player != null) minecraft.player.closeContainer();
             });
         };

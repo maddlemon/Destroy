@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.content.processing.trypolithography;
 
+import net.createmod.catnip.platform.CatnipServices;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -15,7 +16,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonSyntaxException;
 import petrolpark.mc.destroy.Destroy;
-import petrolpark.mc.destroy.DestroyMessages;
 import petrolpark.mc.library.util.BinaryMatrix4x4;
 
 import net.minecraft.nbt.CompoundTag;
@@ -192,7 +192,7 @@ public class CircuitPatternHandler extends SavedData {
                     throw new JsonSyntaxException("Could not read circuit pattern generator '"+rl+"': ", e);
                 };
             };
-            try { DestroyMessages.sendToAllClients(new CircuitPatternsS2CPacket(GENERATED_PATTERNS)); } catch (Throwable e) {};
+            try { CatnipServices.NETWORK.sendToAllClients(new CircuitPatternsS2CPacket(GENERATED_PATTERNS)); } catch (Throwable e) {};
         };
 
     };

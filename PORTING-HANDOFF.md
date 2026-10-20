@@ -27,10 +27,10 @@ Library to the pack.
 
 ## START HERE — current state and next steps
 
-**State:** compile has **1,071 javac errors**. Recipes (step 1) are done at the code level — the
-only errors left in recipe files depend on other steps (see the status under step 1). Most common remaining missing symbols: packet classes (`Context`, `S2CPacket`,
-`C2SPacket`, `NetworkHooks`), pollution API (`pollute`, `max`, `CAPABILITY`,
-`SyncChunkPollutionS2CPacket`), `GUESSED_TICK`.
+**State:** compile has **863 javac errors**. Recipes (step 1) and packets (step 2) are done at the
+code level — the only errors left in their files depend on other steps (see each step's status).
+Most common remaining missing symbols: pollution API (`pollute`, `max`, `CAPABILITY`,
+`SyncChunkPollutionS2CPacket`, `LevelPollutionS2CPacket`), `GUESSED_TICK`.
 
 **Do next, in this order** (each is a self-contained batch; compile + commit after each):
 
@@ -76,9 +76,23 @@ only errors left in recipe files depend on other steps (see the status under ste
    ingredients (`core/recipe/ingredient/fluid/*`, incl. `MixtureFluidIngredient`, which still uses
    item `getOrCreateTag`) become NeoForge `FluidIngredientType`s. Crafting ingredients
    (`IIngredientSerializer`/`StrictNBTIngredient`/`AbstractIngredient`) → `ICustomIngredient` + `IngredientType`.
-2. **Packets (batch 3).** ~24 old packet classes + `DestroyMessages` + ~38 send sites → Catnip
-   payloads following the author's `DestroyPackets` enum (record + `STREAM_CODEC` + enum entry +
-   `CatnipServices.NETWORK.sendToServer/sendToPlayer…`). Delete the old packets and `DestroyMessages`.
+2. **Packets (batch 3) — DONE.** The 21 old `S2CPacket`/`C2SPacket` classes are Catnip
+   `ClientboundPacketPayload`/`ServerboundPacketPayload`s registered in `DestroyPackets` (enum id = class name
+   without the `S2C`/`C2S`+`Packet` suffix, in snake case). Each keeps its 1.20.1 buffer constructor and `toBytes`
+   (now on a `RegistryFriendlyByteBuf`), so the encoding is unchanged:
+   `STREAM_CODEC = StreamCodec.ofMember(X::toBytes, X::new)`. `handle(LocalPlayer|ServerPlayer)` holds what used to
+   be `enqueueWork`ed (Catnip runs handlers on the main thread). `DestroyMessages` is deleted; its 38 send sites
+   use `CatnipServices.NETWORK` (`sendToServer`, `sendToClient(player, p)`, `sendToAllClients`,
+   `sendToClientsTrackingEntity(e, p)`, `sendToClientsTrackingChunk(level, chunkPos, p)`, and
+   `sendToClientsAround(level, blockSource.center(), 32d, p)` for the old `sendToAllClientsNear`).
+   `NetworkHooks.openScreen` → `ServerPlayer.openMenu(provider, writer)`; `NetworkHooks.getEntitySpawningPacket` →
+   removed (NeoForge sends `IEntityWithComplexSpawn` data itself; spawn data methods take `RegistryFriendlyByteBuf`).
+   `ServerGamePacketListenerImplMixin` (creative mode into extended slots) retargeted: 1.21's
+   `handleSetCreativeModeSlot` has one `isEmpty()` call (ordinal 0, verified in bytecode; it was ordinal 1) and
+   no `CompoundTag` local, so it reads the record packet instead of capturing locals.
+   **Left for step 3:** the pollution sends in `DestroyCommonEvents` and `ServerLevelMixin` already use
+   `CatnipServices.NETWORK` but still construct the deleted 1.20.1 `LevelPollutionS2CPacket` /
+   `SyncChunkPollutionS2CPacket` — switch them to the author's `LevelPollutionPacket` / `ChunkPollutionPacket`.
 3. **Pollution / crude oil consumers.** Old code still uses the 1.20.1 `Pollution.CAPABILITY`,
    enum fields `.local`/`.max`, `PollutionType.values()`, `PollutionHelper.pollute(...)` (10 sites),
    `changePollutionGlobal`, `getCropGrowthFailureParticles`, `SyncChunkPollutionS2CPacket`. Port them
@@ -121,7 +135,8 @@ only errors left in recipe files depend on other steps (see the status under ste
    `circuit_board_manual_crafting`) `{"item": …}` → `{"id": …}`.
 8. **Clean compile → datagen → `./gradlew build` → runtime test** in the dev client (`runClient`):
    watch for mixin apply failures, missing registries, recipe parse errors; test with Sodium and
-   Farmer's Delight installed too.
+   Farmer's Delight installed too. Also start a **dedicated server** (`runServer`) and join it: clientbound
+   packet handlers reference client classes, so make sure nothing client-only gets loaded server-side.
 9. **Release + pack integration** (runbooks at the bottom).
 
 ## Build
@@ -198,6 +213,9 @@ JAVA_HOME=$JDK ./gradlew compileJava --console=plain    # log to a file, run det
   that aren't compile dependencies, target by name: `@Mixin(targets = "...", remap = false)`.
 - **Access transformers:** Mojang names only; `validateAccessTransformers = true` fails the build on
   a bad entry.
+- **Packets:** a Catnip payload class (`ClientboundPacketPayload` / `ServerboundPacketPayload`) with a
+  `STREAM_CODEC`, `getTypeProvider()` returning its `DestroyPackets` entry, and `handle(player)`; add the entry to
+  `DestroyPackets`. Send with `CatnipServices.NETWORK.*`.
 - **Registries:** every `Destroy*` registry class must be registered from the `Destroy` constructor —
   compare with the author's `Destroy.java` on `1.21.1-neo` when adding one.
 
@@ -276,8 +294,9 @@ Intended to be empty. Current entries:
 | `89cfdbc6` | Fill-explosive + circuit pattern ingredient; registries threaded through mixed-explosive item helpers |
 | `127f23a1` | Farmer's Delight / Embeddium / Sodium compat mixins; **`DestroyMixinPlugin` package fixed** (was `com.destroy.mixin`, so compat mixins were never gated — would crash without the mod); water tint mixin retargeted to `ClientNeoForgeMod$1`; missing cartography mixins listed; `port-tools/`; this doc restructured |
 | `26b63081` | Recipes part 4: trypolithography + disc stamping recipes, sequenced assembly mixin, recipe consumers (sieve, dynamo, distillation, blowpipe, basin reactions, vat materials) |
+| _(this commit)_ | Packets: 21 packets → Catnip payloads in `DestroyPackets`, `DestroyMessages` deleted, 38 send sites → `CatnipServices.NETWORK`, `NetworkHooks` replaced, creative-slot mixin retargeted |
 
-Error counts: 2,301 error lines (batch 1) → 2,178 javac → 2,050 → 1,940 → 1,892 → 1,718 → 1,621 → 1,502 → 1,501 → 1,281 (recipes 1) → 1,217 (recipes 2) → 1,184 → 1,071 (recipes 4).
+Error counts: 2,301 error lines (batch 1) → 2,178 javac → 2,050 → 1,940 → 1,892 → 1,718 → 1,621 → 1,502 → 1,501 → 1,281 (recipes 1) → 1,217 (recipes 2) → 1,184 → 1,071 (recipes 4) → 863 (packets).
 
 ## Verified API mappings (NeoForge 21.1.262 / MC 1.21.1 / Create 6.0.10 / library 1.21.1-1.5.11)
 

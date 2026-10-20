@@ -1,17 +1,17 @@
 package petrolpark.mc.destroy.content.processing.trypolithography.keypunch;
 
-import java.util.function.Supplier;
-
-import com.petrolpark.network.packet.C2SPacket;
-
+import net.createmod.catnip.net.base.ServerboundPacketPayload;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.network.NetworkEvent.Context;
+import petrolpark.mc.destroy.DestroyPackets;
 
-public class NameKeypunchC2SPacket extends C2SPacket {
+public class NameKeypunchC2SPacket implements ServerboundPacketPayload {
+
+    public static final StreamCodec<RegistryFriendlyByteBuf, NameKeypunchC2SPacket> STREAM_CODEC = StreamCodec.ofMember(NameKeypunchC2SPacket::toBytes, NameKeypunchC2SPacket::new);
 
     public final BlockPos pos;
     public final String name;
@@ -21,32 +21,31 @@ public class NameKeypunchC2SPacket extends C2SPacket {
         this.name = name;
     };
 
-    public NameKeypunchC2SPacket(FriendlyByteBuf buffer) {
+    public NameKeypunchC2SPacket(RegistryFriendlyByteBuf buffer) {
         pos = buffer.readBlockPos();
         name = buffer.readUtf();
     };
 
-    @Override
-    public void toBytes(FriendlyByteBuf buffer) {
+    public void toBytes(RegistryFriendlyByteBuf buffer) {
         buffer.writeBlockPos(pos);
         buffer.writeUtf(name);
     };
 
     @Override
-    public boolean handle(Supplier<Context> supplier) {
-        Context context = supplier.get();
-        context.enqueueWork(() -> {
-            ServerPlayer sender  = context.getSender();
-            if (sender == null) return;
-            Level level = sender.level();
-            if (level == null) return;
-            BlockEntity be = level.getBlockEntity(pos);
-            if (be instanceof KeypunchBlockEntity keypunch) {
-                keypunch.name = name;
-                keypunch.notifyUpdate();  
-            };
-        });
-        return true;
+    public void handle(ServerPlayer sender) {
+        if (sender == null) return;
+        Level level = sender.level();
+        if (level == null) return;
+        BlockEntity be = level.getBlockEntity(pos);
+        if (be instanceof KeypunchBlockEntity keypunch) {
+            keypunch.name = name;
+            keypunch.notifyUpdate();  
+        };
+    };
+
+    @Override
+    public PacketTypeProvider getTypeProvider() {
+        return DestroyPackets.NAME_KEYPUNCH;
     };
     
 };

@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.content.processing.trypolithography.keypunch;
 
+import net.createmod.catnip.platform.CatnipServices;
 import petrolpark.mc.destroy.util.ItemStackNBT;
 import net.minecraft.core.HolderLookup;
 import java.util.List;
@@ -11,7 +12,6 @@ import petrolpark.mc.library.compat.create.core.world.item.transported.Direction
 import petrolpark.mc.library.compat.create.core.world.item.transported.IDirectionalBeltItem;
 import petrolpark.mc.destroy.Destroy;
 import petrolpark.mc.destroy.DestroyAdvancementTrigger;
-import petrolpark.mc.destroy.DestroyMessages;
 import petrolpark.mc.destroy.content.processing.trypolithography.CircuitMaskItem;
 import petrolpark.mc.destroy.content.processing.trypolithography.CircuitPatternItem;
 import petrolpark.mc.destroy.content.processing.trypolithography.CircuitPuncherHandler;
@@ -154,7 +154,7 @@ public class KeypunchBlockEntity extends KineticBlockEntity implements ICircuitP
         if (!namedYet && !getLevel().isClientSide()) {
             Player player = namingBehaviour.getPlayer();
             if (player != null && player instanceof ServerPlayer serverPlayer) {
-                DestroyMessages.sendToClient(new RequestKeypunchNameS2CPacket(getBlockPos()), serverPlayer);
+                CatnipServices.NETWORK.sendToClient(serverPlayer, new RequestKeypunchNameS2CPacket(getBlockPos()));
             } else {
                 name = "Unnamed";
             };

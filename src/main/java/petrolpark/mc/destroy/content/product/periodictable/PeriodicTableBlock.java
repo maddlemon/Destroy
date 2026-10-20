@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.content.product.periodictable;
 
+import net.createmod.catnip.platform.CatnipServices;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -11,7 +12,6 @@ import javax.annotation.Nullable;
 import com.google.gson.JsonObject;
 import petrolpark.mc.destroy.Destroy;
 import petrolpark.mc.destroy.DestroyAdvancementTrigger;
-import petrolpark.mc.destroy.DestroyMessages;
 import petrolpark.mc.destroy.util.DestroyReloadListener;
 
 import net.createmod.catnip.data.Iterate;
@@ -130,7 +130,7 @@ public class PeriodicTableBlock extends HorizontalDirectionalBlock {
 
         @Override
         public void afterReload() {
-            try {DestroyMessages.sendToAllClients(new RefreshPeriodicTablePonderSceneS2CPacket());} catch (Throwable e) {};
+            try {CatnipServices.NETWORK.sendToAllClients(new RefreshPeriodicTablePonderSceneS2CPacket());} catch (Throwable e) {};
         };
     };
 

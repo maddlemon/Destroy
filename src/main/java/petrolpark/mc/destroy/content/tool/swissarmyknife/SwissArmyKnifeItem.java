@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.content.tool.swissarmyknife;
 
+import net.createmod.catnip.platform.CatnipServices;
 import petrolpark.mc.destroy.util.ItemStackNBT;
 import java.util.EnumMap;
 import java.util.Map;
@@ -10,7 +11,6 @@ import java.util.function.Supplier;
 
 import javax.annotation.Nullable;
 
-import petrolpark.mc.destroy.DestroyMessages;
 import com.simibubi.create.foundation.item.render.SimpleCustomRenderer;
 
 import net.createmod.catnip.animation.LerpedFloat;
@@ -94,7 +94,7 @@ public class SwissArmyKnifeItem extends DiggerItem {
         if (level.isClientSide() && entity == Minecraft.getInstance().player) {
             ClientState clientState = getClientState(Minecraft.getInstance().player);
             if (getTool(stack) != clientState.selectedTool) {
-                DestroyMessages.sendToServer(new SwissArmyKnifeToolC2SPacket(clientState.selectedTool));
+                CatnipServices.NETWORK.sendToServer(new SwissArmyKnifeToolC2SPacket(clientState.selectedTool));
             };
         };
     };
@@ -186,7 +186,7 @@ public class SwissArmyKnifeItem extends DiggerItem {
         };
         switchTool |= newTool != null && newTool != clientState.selectedTool;
         if (switchTool) {
-            DestroyMessages.sendToServer(new SwissArmyKnifeToolC2SPacket(newTool));
+            CatnipServices.NETWORK.sendToServer(new SwissArmyKnifeToolC2SPacket(newTool));
             clientState.selectedTool = newTool;
         };
     };

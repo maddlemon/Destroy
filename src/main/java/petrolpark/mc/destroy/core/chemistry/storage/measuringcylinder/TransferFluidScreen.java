@@ -1,7 +1,7 @@
 package petrolpark.mc.destroy.core.chemistry.storage.measuringcylinder;
 
+import net.createmod.catnip.platform.CatnipServices;
 import com.mojang.blaze3d.platform.Window;
-import petrolpark.mc.destroy.DestroyMessages;
 import petrolpark.mc.destroy.core.bettervaluesettings.BetterValueSettingsScreen;
 import com.simibubi.create.foundation.blockEntity.behaviour.ValueSettingsBehaviour.ValueSettings;
 import com.simibubi.create.foundation.blockEntity.behaviour.ValueSettingsBoard;
@@ -43,7 +43,7 @@ public class TransferFluidScreen extends BetterValueSettingsScreen {
     @Override
     protected void saveAndClose(double mouseX, double mouseY) {
         ValueSettings closest = getClosestCoordinate((int) mouseX, (int) mouseY);
-		DestroyMessages.sendToServer(new TransferFluidC2SPacket(pos, sideAccessed, hand, blockToItem, closest.value()));
+		CatnipServices.NETWORK.sendToServer(new TransferFluidC2SPacket(pos, sideAccessed, hand, blockToItem, closest.value()));
 		onClose();
     };
     

@@ -2,16 +2,19 @@ package petrolpark.mc.destroy.core.chemistry.vat.material;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Supplier;
 
+import petrolpark.mc.destroy.DestroyPackets;
 import petrolpark.mc.destroy.client.DestroyPonderTags;
-import com.petrolpark.network.packet.S2CPacket;
 import petrolpark.mc.library.core.data.recipe.ingredient.BlockIngredient;
 
-import net.minecraft.network.FriendlyByteBuf;
-import net.neoforged.neoforge.network.NetworkEvent.Context;
+import net.createmod.catnip.net.base.ClientboundPacketPayload;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 
-public class SyncVatMaterialsS2CPacket extends S2CPacket {
+public class SyncVatMaterialsS2CPacket implements ClientboundPacketPayload {
+
+    public static final StreamCodec<RegistryFriendlyByteBuf, SyncVatMaterialsS2CPacket> STREAM_CODEC = StreamCodec.ofMember(SyncVatMaterialsS2CPacket::toBytes, SyncVatMaterialsS2CPacket::new);
 
     private final Map<BlockIngredient<?>, VatMaterial> materials;
 
@@ -19,7 +22,7 @@ public class SyncVatMaterialsS2CPacket extends S2CPacket {
         this.materials = materials;
     };
 
-    public SyncVatMaterialsS2CPacket(FriendlyByteBuf buffer) {
+    public SyncVatMaterialsS2CPacket(RegistryFriendlyByteBuf buffer) {
         int count = buffer.readVarInt();
         materials = new HashMap<>(count);
         for (int i = 0; i < count; i++) {
@@ -27,8 +30,7 @@ public class SyncVatMaterialsS2CPacket extends S2CPacket {
         };
     };
 
-    @Override
-    public void toBytes(FriendlyByteBuf buffer) {
+    public void toBytes(RegistryFriendlyByteBuf buffer) {
         buffer.writeVarInt(materials.size());
         materials.forEach((blockIngredient, material) -> {
             BlockIngredient.write(blockIngredient, buffer);
@@ -39,13 +41,15 @@ public class SyncVatMaterialsS2CPacket extends S2CPacket {
     };
 
     @Override
-    public boolean handle(Supplier<Context> supplier) {
-        supplier.get().enqueueWork(() -> {
-            VatMaterial.clearDatapackMaterials();
-            VatMaterial.BLOCK_MATERIALS.putAll(materials);
-            DestroyPonderTags.refreshVatMaterialsTag();
-        });
-        return true;
+    public void handle(LocalPlayer player) {
+        VatMaterial.clearDatapackMaterials();
+        VatMaterial.BLOCK_MATERIALS.putAll(materials);
+        DestroyPonderTags.refreshVatMaterialsTag();
+    };
+
+    @Override
+    public PacketTypeProvider getTypeProvider() {
+        return DestroyPackets.SYNC_VAT_MATERIALS;
     };
     
 };

@@ -6,8 +6,8 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
-import petrolpark.mc.destroy.DestroyDataComponentTypes;
 import petrolpark.mc.destroy.DestroyPackets;
+import petrolpark.mc.destroy.DestroyDataComponentTypes;
 
 public record MarkSeismographPacket(byte x, byte z, Seismograph.Mark mark, boolean mainHand) implements ServerboundPacketPayload {
 

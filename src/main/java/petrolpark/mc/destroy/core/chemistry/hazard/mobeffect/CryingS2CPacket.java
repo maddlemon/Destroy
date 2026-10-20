@@ -1,19 +1,21 @@
 package petrolpark.mc.destroy.core.chemistry.hazard.mobeffect;
 
-import java.util.function.Supplier;
-
+import petrolpark.mc.destroy.DestroyPackets;
 import petrolpark.mc.destroy.DestroyMobEffects;
-import com.petrolpark.network.packet.S2CPacket;
 
+import net.createmod.catnip.net.base.ClientboundPacketPayload;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.neoforged.neoforge.network.NetworkEvent;
 
-public class CryingS2CPacket extends S2CPacket {
+public class CryingS2CPacket implements ClientboundPacketPayload {
+
+    public static final StreamCodec<RegistryFriendlyByteBuf, CryingS2CPacket> STREAM_CODEC = StreamCodec.ofMember(CryingS2CPacket::toBytes, CryingS2CPacket::new);
 
     private final boolean isCrying;
     private final int entityId;
@@ -23,32 +25,32 @@ public class CryingS2CPacket extends S2CPacket {
         this.isCrying = isCrying;
     };
 
-    public CryingS2CPacket(FriendlyByteBuf buffer) {
+    public CryingS2CPacket(RegistryFriendlyByteBuf buffer) {
         this.isCrying = buffer.readBoolean();
         this.entityId = buffer.readInt();
     };
 
-    @Override
-    public void toBytes(FriendlyByteBuf buffer) {
+    public void toBytes(RegistryFriendlyByteBuf buffer) {
         buffer.writeBoolean(isCrying);
         buffer.writeInt(entityId);
     };
     
     @SuppressWarnings("resource")
     @Override
-    public boolean handle(Supplier<NetworkEvent.Context> supplier) {
-        NetworkEvent.Context context = supplier.get();
-        context.enqueueWork(() -> {
-            ClientLevel level = Minecraft.getInstance().level;
-            if (level == null) return;
-            Entity entity = level.getEntity(entityId);
-            if (entity == null || !(entity instanceof LivingEntity livingEntity)) return;
-            if (isCrying && !livingEntity.hasEffect(DestroyMobEffects.CRYING)) {
-                livingEntity.addEffect(new MobEffectInstance(DestroyMobEffects.CRYING, Integer.MAX_VALUE, 0, true, false, false));
-            } else {
-                livingEntity.removeEffect(DestroyMobEffects.CRYING);
-            };
-        });
-        return true;
+    public void handle(LocalPlayer player) {
+        ClientLevel level = Minecraft.getInstance().level;
+        if (level == null) return;
+        Entity entity = level.getEntity(entityId);
+        if (entity == null || !(entity instanceof LivingEntity livingEntity)) return;
+        if (isCrying && !livingEntity.hasEffect(DestroyMobEffects.CRYING)) {
+            livingEntity.addEffect(new MobEffectInstance(DestroyMobEffects.CRYING, Integer.MAX_VALUE, 0, true, false, false));
+        } else {
+            livingEntity.removeEffect(DestroyMobEffects.CRYING);
+        };
+    };
+
+    @Override
+    public PacketTypeProvider getTypeProvider() {
+        return DestroyPackets.CRYING;
     };  
 };

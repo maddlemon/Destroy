@@ -1,6 +1,6 @@
 package petrolpark.mc.destroy.content.confetti;
 
-import petrolpark.mc.destroy.DestroyMessages;
+import net.createmod.catnip.platform.CatnipServices;
 import petrolpark.mc.destroy.core.explosion.SmartExplosion;
 import petrolpark.mc.destroy.core.explosion.mixedexplosive.ISpecialEffectExplosiveItem;
 
@@ -41,7 +41,7 @@ public class ConfettiItem extends Item implements ISpecialEffectExplosiveItem {
         @SuppressWarnings("resource")
         protected ItemStack execute(BlockSource blockSource, ItemStack stack) {
             Direction facing = blockSource.state().getValue(DispenserBlock.FACING);
-            DestroyMessages.sendToAllClientsNear(new ConfettiBurstS2CPacket(stack, Vec3.atCenterOf(blockSource.pos()).add(Vec3.atLowerCornerOf(facing.getNormal()).scale(0.5f)), Vec3.atLowerCornerOf(facing.getNormal()).scale(0.25f)), blockSource);
+            CatnipServices.NETWORK.sendToClientsAround(blockSource.level(), blockSource.center(), 32d, new ConfettiBurstS2CPacket(stack, Vec3.atCenterOf(blockSource.pos()).add(Vec3.atLowerCornerOf(facing.getNormal()).scale(0.5f)), Vec3.atLowerCornerOf(facing.getNormal()).scale(0.25f)));
             stack.shrink(1);
             return stack;
         };

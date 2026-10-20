@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.core.extendedinventory;
 
+import net.createmod.catnip.platform.CatnipServices;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -9,7 +10,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import petrolpark.mc.destroy.Destroy;
 import petrolpark.mc.destroy.DestroyClient;
-import petrolpark.mc.destroy.DestroyMessages;
 import petrolpark.mc.destroy.MoveToPetrolparkLibrary;
 import petrolpark.mc.destroy.client.DestroyGuiTextures;
 import petrolpark.mc.destroy.client.DestroyKeys;
@@ -144,7 +144,7 @@ public class ExtendedInventoryClientHandler {
         inv.setExtraInventorySize(packet.extraInventorySize);
         inv.setExtraHotbarSlots(packet.extraHotbarSlots);
         refreshClientInventoryMenu(inv);
-        if (packet.requestFullState) DestroyMessages.sendToServer(new RequestInventoryFullStateC2SPacket());
+        if (packet.requestFullState) CatnipServices.NETWORK.sendToServer(new RequestInventoryFullStateC2SPacket());
     };
 
     /**
@@ -376,7 +376,7 @@ public class ExtendedInventoryClientHandler {
         AbstractContainerMenu menu = screen.getMenu();
         Minecraft mc = Minecraft.getInstance();
 
-        if (menu == mc.player.inventoryMenu) DestroyMessages.sendToServer(new RequestInventoryFullStateC2SPacket()); // Just in case
+        if (menu == mc.player.inventoryMenu) CatnipServices.NETWORK.sendToServer(new RequestInventoryFullStateC2SPacket()); // Just in case
 
         if (!ExtendedInventory.supportsExtraInventory(menu) && !(menu == mc.player.inventoryMenu || screen instanceof CreativeModeInventoryScreen)) {
             currentScreen = null;

@@ -7,12 +7,10 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.At.Shift;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import petrolpark.mc.destroy.MoveToPetrolparkLibrary;
 import petrolpark.mc.destroy.core.extendedinventory.ExtendedInventory;
 
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.game.ServerGamePacketListener;
 import net.minecraft.network.protocol.game.ServerboundSetCarriedItemPacket;
 import net.minecraft.network.protocol.game.ServerboundSetCreativeModeSlotPacket;
@@ -54,19 +52,24 @@ public abstract class ServerGamePacketListenerImplMixin implements ServerGamePac
         };
     };
 
+    /**
+     * Lets creative mode put Items in extended inventory slots (vanilla only accepts slots 1-45). Injects just before vanilla's
+     * slot/stack validity check, like 1.20.1 did; in 1.21 that check holds the method's first {@code isEmpty()} call (it was the second).
+     * The stack is read from the packet (the same object as vanilla's local, which a Block Entity's data may already have been saved to).
+     */
     @Inject(
         method = "handleSetCreativeModeSlot",
         at = @At(
             value = "INVOKE",
             target = "Lnet/minecraft/world/item/ItemStack;isEmpty()Z",
-            ordinal = 1
+            ordinal = 0
         ),
-        locals = LocalCapture.CAPTURE_FAILSOFT,
         cancellable = true
     )
-    public void inHandleSetCreativeModeSlot(ServerboundSetCreativeModeSlotPacket packet, CallbackInfo ci, boolean flag, ItemStack itemstack, CompoundTag compoundtag) {
-        if (packet.getSlotNum() >= 1 && (itemstack.isEmpty() || itemstack.getDamageValue() >= 0 && !itemstack.isEmpty())) {
-            player.inventoryMenu.getSlot(packet.getSlotNum()).setByPlayer(itemstack);
+    public void inHandleSetCreativeModeSlot(ServerboundSetCreativeModeSlotPacket packet, CallbackInfo ci) {
+        ItemStack itemstack = packet.itemStack();
+        if (packet.slotNum() >= 1 && (itemstack.isEmpty() || itemstack.getDamageValue() >= 0 && !itemstack.isEmpty())) {
+            player.inventoryMenu.getSlot(packet.slotNum()).setByPlayer(itemstack);
             player.inventoryMenu.broadcastChanges();
             ci.cancel();
         };

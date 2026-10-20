@@ -31,7 +31,6 @@ import net.minecraft.world.level.LevelAccessor;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
-import net.neoforged.neoforge.network.NetworkHooks;
 
 public class RedstoneProgrammerBlockItem extends BlockItem {
 
@@ -63,7 +62,7 @@ public class RedstoneProgrammerBlockItem extends BlockItem {
     public static void openScreen(ItemStack stack, Level level, Player player) {
         getProgram(stack, level, player).ifPresent(program -> {
             if (!level.isClientSide() && player instanceof ServerPlayer serverPlayer) {
-                NetworkHooks.openScreen(serverPlayer, new ItemStackRedstoneProgramMenuOpener(program), buffer -> {
+                serverPlayer.openMenu(new ItemStackRedstoneProgramMenuOpener(program), buffer -> {
                     program.write(buffer);
                     buffer.writeBoolean(false); // The menu expects to read whether the program is powered or not; when in Item form, the programmer is never powered
                 });

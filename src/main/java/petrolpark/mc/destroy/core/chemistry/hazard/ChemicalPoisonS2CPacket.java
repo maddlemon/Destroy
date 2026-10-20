@@ -1,17 +1,17 @@
 package petrolpark.mc.destroy.core.chemistry.hazard;
 
-import java.util.function.Supplier;
-
+import petrolpark.mc.destroy.DestroyPackets;
 import petrolpark.mc.destroy.chemistry.legacy.LegacySpecies;
-import com.petrolpark.network.packet.S2CPacket;
 
+import net.createmod.catnip.net.base.ClientboundPacketPayload;
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.FriendlyByteBuf;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.network.NetworkEvent;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 
-public class ChemicalPoisonS2CPacket extends S2CPacket {
+public class ChemicalPoisonS2CPacket implements ClientboundPacketPayload {
+
+    public static final StreamCodec<RegistryFriendlyByteBuf, ChemicalPoisonS2CPacket> STREAM_CODEC = StreamCodec.ofMember(ChemicalPoisonS2CPacket::toBytes, ChemicalPoisonS2CPacket::new);
     
     private final LegacySpecies molecule;
     
@@ -19,7 +19,7 @@ public class ChemicalPoisonS2CPacket extends S2CPacket {
         this.molecule = molecule;
     };
 
-    public ChemicalPoisonS2CPacket(FriendlyByteBuf buffer) {
+    public ChemicalPoisonS2CPacket(RegistryFriendlyByteBuf buffer) {
         String moleculeID = buffer.readUtf();
         if ("NO_MOLECULE".equals(moleculeID)) {
             molecule = null;
@@ -29,25 +29,24 @@ public class ChemicalPoisonS2CPacket extends S2CPacket {
 
     };
 
-    @Override
-    public void toBytes(FriendlyByteBuf buffer) {
+    public void toBytes(RegistryFriendlyByteBuf buffer) {
         buffer.writeUtf(molecule == null ? "NO_MOLECULE" : molecule.getFullID());
     };
 
     @Override
-    @OnlyIn(Dist.CLIENT)
-    public boolean handle(Supplier<NetworkEvent.Context> supplier) {
-        NetworkEvent.Context context = supplier.get();
-        context.enqueueWork(() -> {
-            Minecraft minecraft = Minecraft.getInstance();
-            if (minecraft.player != null) {
-                if (molecule == null) {
-                    EntityChemicalPoisonCapability.removeMolecule(minecraft.player);
-                } else {
-                    EntityChemicalPoisonCapability.setMolecule(minecraft.player, molecule);
-                };
-            }
-        });
-        return true;
-    }; 
+    public void handle(LocalPlayer player) {
+        Minecraft minecraft = Minecraft.getInstance();
+        if (minecraft.player != null) {
+            if (molecule == null) {
+                EntityChemicalPoisonCapability.removeMolecule(minecraft.player);
+            } else {
+                EntityChemicalPoisonCapability.setMolecule(minecraft.player, molecule);
+            };
+        }
+    };
+
+    @Override
+    public PacketTypeProvider getTypeProvider() {
+        return DestroyPackets.CHEMICAL_POISON;
+    };
 };

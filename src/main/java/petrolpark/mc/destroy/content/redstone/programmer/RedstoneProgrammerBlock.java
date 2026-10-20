@@ -42,7 +42,6 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.neoforge.network.NetworkHooks;
 
 public class RedstoneProgrammerBlock extends HorizontalDirectionalBlock implements IBE<RedstoneProgrammerBlockEntity>, IWrenchable, ProperWaterloggedBlock, IPickUpPutDownBlock {
 
@@ -60,7 +59,7 @@ public class RedstoneProgrammerBlock extends HorizontalDirectionalBlock implemen
     @Override
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         if (!level.isClientSide() && player instanceof ServerPlayer serverPlayer) {
-            withBlockEntityDo(level, pos, be -> NetworkHooks.openScreen(serverPlayer, be.programmer, buffer -> {
+            withBlockEntityDo(level, pos, be -> serverPlayer.openMenu(be.programmer, buffer -> {
                 be.programmer.program.write(buffer);
                 buffer.writeBoolean(be.programmer.program.hasPower());
             }));

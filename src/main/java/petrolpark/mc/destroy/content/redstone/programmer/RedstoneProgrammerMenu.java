@@ -1,11 +1,11 @@
 package petrolpark.mc.destroy.content.redstone.programmer;
 
+import net.createmod.catnip.platform.CatnipServices;
 import java.util.WeakHashMap;
 
 import net.createmod.catnip.data.Couple;
 import org.jetbrains.annotations.NotNull;
 
-import petrolpark.mc.destroy.DestroyMessages;
 import petrolpark.mc.destroy.client.DestroyMenuTypes;
 import petrolpark.mc.destroy.client.IConditionalGhostSlot;
 import petrolpark.mc.destroy.config.DestroyAllConfigs;
@@ -162,7 +162,7 @@ public class RedstoneProgrammerMenu extends GhostItemMenu<RedstoneProgram> {
     };
 
     public void sync() {
-        DestroyMessages.sendToServer(new RedstoneProgramSyncC2SPacket(contentHolder));
+        CatnipServices.NETWORK.sendToServer(new RedstoneProgramSyncC2SPacket(contentHolder));
     };
 
     @Override
@@ -219,7 +219,7 @@ public class RedstoneProgrammerMenu extends GhostItemMenu<RedstoneProgram> {
                 boolean currentPower = menu.contentHolder.hasPower();
                 Boolean oldPower = programmersPowered.get(player);
                 if (oldPower == null || currentPower != oldPower) {
-                    DestroyMessages.sendToClient(new RedstoneProgrammerPowerChangedS2CPacket(menu.contentHolder.hasPower()), player);
+                    CatnipServices.NETWORK.sendToClient(player, new RedstoneProgrammerPowerChangedS2CPacket(menu.contentHolder.hasPower()));
                     programmersPowered.put(player, currentPower);
                 };
             } else {

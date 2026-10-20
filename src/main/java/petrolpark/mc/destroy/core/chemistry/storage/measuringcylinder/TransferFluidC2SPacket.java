@@ -1,26 +1,26 @@
 package petrolpark.mc.destroy.core.chemistry.storage.measuringcylinder;
 
-import java.util.function.Supplier;
-
+import petrolpark.mc.destroy.DestroyPackets;
 import petrolpark.mc.destroy.core.chemistry.storage.IMixtureStorageItem;
 import petrolpark.mc.destroy.core.chemistry.storage.ItemMixtureTank;
-import com.petrolpark.network.packet.C2SPacket;
 
+import net.createmod.catnip.net.base.ServerboundPacketPayload;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.common.util.LazyOptional;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
-import net.neoforged.neoforge.network.NetworkEvent.Context;
 
-public class TransferFluidC2SPacket extends C2SPacket {
+public class TransferFluidC2SPacket implements ServerboundPacketPayload {
+
+    public static final StreamCodec<RegistryFriendlyByteBuf, TransferFluidC2SPacket> STREAM_CODEC = StreamCodec.ofMember(TransferFluidC2SPacket::toBytes, TransferFluidC2SPacket::new);
 
     private final BlockPos pos;
     private final Direction face;
@@ -37,7 +37,7 @@ public class TransferFluidC2SPacket extends C2SPacket {
         this.transferAmount = transferAmount;
     };
 
-    public TransferFluidC2SPacket(FriendlyByteBuf buffer) {
+    public TransferFluidC2SPacket(RegistryFriendlyByteBuf buffer) {
         pos = buffer.readBlockPos();
         face = buffer.readEnum(Direction.class);
         hand = buffer.readBoolean() ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND;
@@ -45,8 +45,7 @@ public class TransferFluidC2SPacket extends C2SPacket {
         transferAmount = buffer.readVarInt();
     };
 
-    @Override
-    public void toBytes(FriendlyByteBuf buffer) {
+    public void toBytes(RegistryFriendlyByteBuf buffer) {
         buffer.writeBlockPos(pos);
         buffer.writeEnum(face);
         buffer.writeBoolean(hand == InteractionHand.MAIN_HAND);
@@ -55,27 +54,27 @@ public class TransferFluidC2SPacket extends C2SPacket {
     };
 
     @Override
-    public boolean handle(Supplier<Context> supplier) {
-        Context context = supplier.get();
-        context.enqueueWork(() -> {
-            Player player = context.getSender();
-            ItemStack stack = context.getSender().getItemInHand(hand);
-            if (stack.getItem() instanceof IMixtureStorageItem mixtureItem) {
-                Level level = player.level();
-                BlockState state = level.getBlockState(pos);
-                LazyOptional<IFluidHandlerItem> cap = stack.getCapability(Capabilities.FluidHandler.ITEM);
-                if (!cap.isPresent()) return;
-                ItemMixtureTank itemTank = (ItemMixtureTank)cap.resolve().get();
-                IFluidHandler otherTank = mixtureItem.getTank(level, pos, state, face, player, hand, stack, !blockToItem);
-                if (otherTank == null) return;
-                if (blockToItem) {
-                    mixtureItem.afterFill(level, pos, state, face, player, hand, stack, mixtureItem.tryFill(stack, itemTank, otherTank, transferAmount));
-                } else {
-                    mixtureItem.afterEmpty(level, pos, state, face, player, hand, stack, mixtureItem.tryEmpty(stack, itemTank, otherTank, false, transferAmount));
-                };
+    public void handle(ServerPlayer player) {
+        ItemStack stack = player.getItemInHand(hand);
+        if (stack.getItem() instanceof IMixtureStorageItem mixtureItem) {
+            Level level = player.level();
+            BlockState state = level.getBlockState(pos);
+            IFluidHandlerItem cap = stack.getCapability(Capabilities.FluidHandler.ITEM);
+            if (cap == null) return;
+            ItemMixtureTank itemTank = (ItemMixtureTank)cap;
+            IFluidHandler otherTank = mixtureItem.getTank(level, pos, state, face, player, hand, stack, !blockToItem);
+            if (otherTank == null) return;
+            if (blockToItem) {
+                mixtureItem.afterFill(level, pos, state, face, player, hand, stack, mixtureItem.tryFill(stack, itemTank, otherTank, transferAmount));
+            } else {
+                mixtureItem.afterEmpty(level, pos, state, face, player, hand, stack, mixtureItem.tryEmpty(stack, itemTank, otherTank, false, transferAmount));
             };
-        });
-        return true;
+        };
+    };
+
+    @Override
+    public PacketTypeProvider getTypeProvider() {
+        return DestroyPackets.TRANSFER_FLUID;
     };
     
 };

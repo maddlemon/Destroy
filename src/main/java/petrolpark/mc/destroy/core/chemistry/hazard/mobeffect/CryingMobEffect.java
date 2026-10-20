@@ -1,6 +1,6 @@
 package petrolpark.mc.destroy.core.chemistry.hazard.mobeffect;
 
-import petrolpark.mc.destroy.DestroyMessages;
+import net.createmod.catnip.platform.CatnipServices;
 import petrolpark.mc.destroy.core.mobeffect.DestroyMobEffect;
 
 import net.minecraft.client.Minecraft;
@@ -20,13 +20,13 @@ public class CryingMobEffect extends DestroyMobEffect {
     @Override
     public void addAttributeModifiers(LivingEntity livingEntity, AttributeMap attributeMap, int amplifier) {
         super.addAttributeModifiers(livingEntity, attributeMap, amplifier);
-        DestroyMessages.sendToClientsTrackingEntity(new CryingS2CPacket(livingEntity, true), livingEntity); // Let the Client know the Effect has been applied (otherwise Tears won't render until reload)
+        CatnipServices.NETWORK.sendToClientsTrackingEntity(livingEntity, new CryingS2CPacket(livingEntity, true)); // Let the Client know the Effect has been applied (otherwise Tears won't render until reload)
     };
 
     @Override
     public void removeAttributeModifiers(LivingEntity livingEntity, AttributeMap attributeMap, int amplifier) {
         super.removeAttributeModifiers(livingEntity, attributeMap, amplifier);
-        DestroyMessages.sendToClientsTrackingEntity(new CryingS2CPacket(livingEntity, false), livingEntity); // Let the Client know the Effect is gone once it runs out
+        CatnipServices.NETWORK.sendToClientsTrackingEntity(livingEntity, new CryingS2CPacket(livingEntity, false)); // Let the Client know the Effect is gone once it runs out
     };
 
     @Override

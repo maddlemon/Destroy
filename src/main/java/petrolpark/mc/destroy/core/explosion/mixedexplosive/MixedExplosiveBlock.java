@@ -33,7 +33,6 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.network.NetworkHooks;
 
 public class MixedExplosiveBlock extends PrimeableBombBlock<MixedExplosiveEntity> implements IBE<MixedExplosiveBlockEntity> {
     
@@ -108,7 +107,7 @@ public class MixedExplosiveBlock extends PrimeableBombBlock<MixedExplosiveEntity
         });
         if (result != InteractionResult.PASS) return result;
         if (!lighter && !level.isClientSide() && player instanceof ServerPlayer serverPlayer) {
-            withBlockEntityDo(level, pos, be -> NetworkHooks.openScreen(serverPlayer, be, be::writeToBuffer));
+            withBlockEntityDo(level, pos, be -> serverPlayer.openMenu(be, be::writeToBuffer));
             return InteractionResult.sidedSuccess(level.isClientSide());
         };
         return InteractionResult.PASS;

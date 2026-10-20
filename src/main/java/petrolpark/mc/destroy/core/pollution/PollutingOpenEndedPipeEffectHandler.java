@@ -1,9 +1,9 @@
 package petrolpark.mc.destroy.core.pollution;
 
+import net.createmod.catnip.platform.CatnipServices;
 import java.util.Random;
 
 import petrolpark.mc.destroy.DestroyFluids;
-import petrolpark.mc.destroy.DestroyMessages;
 import petrolpark.mc.destroy.core.fluid.gasparticle.EvaporatingFluidS2CPacket;
 import petrolpark.mc.destroy.core.pollution.PollutionType;
 import com.simibubi.create.api.effect.OpenPipeEffectHandler;
@@ -31,7 +31,7 @@ public class PollutingOpenEndedPipeEffectHandler implements OpenPipeEffectHandle
         if(!canApplyEffects(fluid)) return;
         BlockPos pollutionAt = new BlockPos((int) area.minX, (int) area.maxY - 1, (int) area.minZ);
         PollutionHelper.pollute(level, pollutionAt, fluid);
-        if (random.nextInt(20) == 0) DestroyMessages.sendToAllClients(new EvaporatingFluidS2CPacket(pollutionAt, fluid));
+        if (random.nextInt(20) == 0) CatnipServices.NETWORK.sendToAllClients(new EvaporatingFluidS2CPacket(pollutionAt, fluid));
     }
 
 };

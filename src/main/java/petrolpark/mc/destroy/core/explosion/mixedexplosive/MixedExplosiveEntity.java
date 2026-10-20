@@ -8,9 +8,7 @@ import petrolpark.mc.destroy.core.explosion.SmartExplosion;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -19,7 +17,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
-import net.neoforged.neoforge.network.NetworkHooks;
 
 public class MixedExplosiveEntity extends PrimedBombEntity implements IEntityWithComplexSpawn {
 
@@ -64,19 +61,14 @@ public class MixedExplosiveEntity extends PrimedBombEntity implements IEntityWit
     };
 
     @Override
-	public Packet<ClientGamePacketListener> getAddEntityPacket() {
-		return NetworkHooks.getEntitySpawningPacket(this);
-	};
-
-    @Override
-	public void writeSpawnData(FriendlyByteBuf buffer) {
+	public void writeSpawnData(RegistryFriendlyByteBuf buffer) {
 		CompoundTag compound = new CompoundTag();
 		addAdditionalSaveData(compound);
 		buffer.writeNbt(compound);
 	};
 
 	@Override
-	public void readSpawnData(FriendlyByteBuf additionalData) {
+	public void readSpawnData(RegistryFriendlyByteBuf additionalData) {
 		readAdditionalSaveData(additionalData.readNbt());
 	};
     

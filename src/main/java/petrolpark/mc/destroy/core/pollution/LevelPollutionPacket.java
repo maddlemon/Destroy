@@ -9,8 +9,8 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.level.Level;
-import petrolpark.mc.destroy.DestroyAttachmentTypes;
 import petrolpark.mc.destroy.DestroyPackets;
+import petrolpark.mc.destroy.DestroyAttachmentTypes;
 import petrolpark.mc.destroy.DestroyRegistries;
 
 public record LevelPollutionPacket(Map<PollutionType<Level>, Integer> values) implements ClientboundPacketPayload {

@@ -1,18 +1,21 @@
 package petrolpark.mc.destroy.core.explosion;
 
+import net.createmod.catnip.platform.CatnipServices;
 import java.util.Optional;
-import java.util.function.Supplier;
 
-import com.petrolpark.network.packet.S2CPacket;
-import petrolpark.mc.destroy.DestroyMessages;
+import petrolpark.mc.destroy.DestroyPackets;
 
+import net.createmod.catnip.net.base.ClientboundPacketPayload;
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.network.NetworkEvent.Context;
 
-public class SmartExplosionS2CPacket extends S2CPacket {
+public class SmartExplosionS2CPacket implements ClientboundPacketPayload {
+
+    public static final StreamCodec<RegistryFriendlyByteBuf, SmartExplosionS2CPacket> STREAM_CODEC = StreamCodec.ofMember(SmartExplosionS2CPacket::toBytes, SmartExplosionS2CPacket::read);
 
     public final SmartExplosion explosion;
     public final Vec3 recipientKnockback;
@@ -22,17 +25,16 @@ public class SmartExplosionS2CPacket extends S2CPacket {
         this.recipientKnockback = recipientKnockback;
     };
 
-    public static final SmartExplosionS2CPacket read(FriendlyByteBuf buffer) {
+    public static final SmartExplosionS2CPacket read(RegistryFriendlyByteBuf buffer) {
         SmartExplosion.Serializer<?> serializer = SmartExplosion.getType(buffer.readResourceLocation());
         return new SmartExplosionS2CPacket(serializer.read(buffer), new Vec3(buffer.readDouble(), buffer.readDouble(), buffer.readDouble()));
     };
 
     public static void send(ServerPlayer player, SmartExplosion explosion) {
-        DestroyMessages.sendToClient(new SmartExplosionS2CPacket(explosion, Optional.ofNullable(explosion.getHitPlayers().get(player)).orElse(Vec3.ZERO)), player);
+        CatnipServices.NETWORK.sendToClient(player, new SmartExplosionS2CPacket(explosion, Optional.ofNullable(explosion.getHitPlayers().get(player)).orElse(Vec3.ZERO)));
     };
 
-    @Override
-    public void toBytes(FriendlyByteBuf buffer) {
+    public void toBytes(RegistryFriendlyByteBuf buffer) {
         buffer.writeResourceLocation(explosion.getSerializer().id);
         explosion.write(buffer);
         buffer.writeDouble(recipientKnockback.x());
@@ -41,13 +43,15 @@ public class SmartExplosionS2CPacket extends S2CPacket {
     };
 
     @Override
-    public boolean handle(Supplier<Context> supplier) {
-        supplier.get().enqueueWork(() -> {
-            Minecraft mc = Minecraft.getInstance();
-            explosion.finalizeExplosion(true);
-            mc.player.setDeltaMovement(recipientKnockback);
-        });
-        return true;
+    public void handle(LocalPlayer player) {
+        Minecraft mc = Minecraft.getInstance();
+        explosion.finalizeExplosion(true);
+        mc.player.setDeltaMovement(recipientKnockback);
+    };
+
+    @Override
+    public PacketTypeProvider getTypeProvider() {
+        return DestroyPackets.SMART_EXPLOSION;
     };
     
 };

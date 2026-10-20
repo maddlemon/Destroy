@@ -1,12 +1,12 @@
 package petrolpark.mc.destroy.core.chemistry.hazard;
 
+import net.createmod.catnip.platform.CatnipServices;
 import petrolpark.mc.destroy.DestroyAttachmentTypes;
 import net.minecraft.core.HolderLookup;
 import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import petrolpark.mc.destroy.DestroyMessages;
 import petrolpark.mc.destroy.chemistry.legacy.LegacySpecies;
 
 import net.minecraft.core.Direction;
@@ -33,7 +33,7 @@ public class EntityChemicalPoisonCapability implements INBTSerializable<Compound
         of(entity).ifPresent(cp -> {
             if (cp.molecule != null) return; // Don't replace existing poison
             cp.molecule = molecule;
-            if (entity instanceof ServerPlayer serverPlayer) DestroyMessages.sendToClient(new ChemicalPoisonS2CPacket(molecule), serverPlayer);
+            if (entity instanceof ServerPlayer serverPlayer) CatnipServices.NETWORK.sendToClient(serverPlayer, new ChemicalPoisonS2CPacket(molecule));
         });
     };
 
@@ -41,7 +41,7 @@ public class EntityChemicalPoisonCapability implements INBTSerializable<Compound
         if (!(entity instanceof LivingEntity)) return;
         of(entity).ifPresent(cp -> {
             cp.molecule = null;
-            if (entity instanceof ServerPlayer serverPlayer) DestroyMessages.sendToClient(new ChemicalPoisonS2CPacket((LegacySpecies)null), serverPlayer);
+            if (entity instanceof ServerPlayer serverPlayer) CatnipServices.NETWORK.sendToClient(serverPlayer, new ChemicalPoisonS2CPacket((LegacySpecies)null));
         });
     };
 

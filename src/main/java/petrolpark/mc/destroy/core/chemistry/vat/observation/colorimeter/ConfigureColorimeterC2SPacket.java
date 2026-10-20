@@ -1,16 +1,18 @@
 package petrolpark.mc.destroy.core.chemistry.vat.observation.colorimeter;
 
-import java.util.function.Supplier;
-
+import petrolpark.mc.destroy.DestroyPackets;
 import petrolpark.mc.destroy.DestroyBlockEntityTypes;
 import petrolpark.mc.destroy.chemistry.legacy.LegacySpecies;
-import com.petrolpark.network.packet.C2SPacket;
 
+import net.createmod.catnip.net.base.ServerboundPacketPayload;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.FriendlyByteBuf;
-import net.neoforged.neoforge.network.NetworkEvent.Context;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.server.level.ServerPlayer;
 
-public class ConfigureColorimeterC2SPacket extends C2SPacket {
+public class ConfigureColorimeterC2SPacket implements ServerboundPacketPayload {
+
+    public static final StreamCodec<RegistryFriendlyByteBuf, ConfigureColorimeterC2SPacket> STREAM_CODEC = StreamCodec.ofMember(ConfigureColorimeterC2SPacket::toBytes, ConfigureColorimeterC2SPacket::new);
 
     protected final boolean observingGas;
     protected final LegacySpecies species;
@@ -22,7 +24,7 @@ public class ConfigureColorimeterC2SPacket extends C2SPacket {
         this.pos = pos;
     };
 
-    public ConfigureColorimeterC2SPacket(FriendlyByteBuf buffer) {
+    public ConfigureColorimeterC2SPacket(RegistryFriendlyByteBuf buffer) {
         observingGas = buffer.readBoolean();
         if (buffer.readBoolean()) {
             species = LegacySpecies.getMolecule(buffer.readUtf());
@@ -32,8 +34,7 @@ public class ConfigureColorimeterC2SPacket extends C2SPacket {
         pos = buffer.readBlockPos();
     };
 
-    @Override
-    public void toBytes(FriendlyByteBuf buffer) {
+    public void toBytes(RegistryFriendlyByteBuf buffer) {
         buffer.writeBoolean(observingGas);
         buffer.writeBoolean(species != null);
         if (species != null) buffer.writeUtf(species.getFullID());
@@ -41,14 +42,15 @@ public class ConfigureColorimeterC2SPacket extends C2SPacket {
     };
 
     @Override
-    public boolean handle(Supplier<Context> supplier) {
-        Context context = supplier.get();
-        context.enqueueWork(() -> {
-            context.getSender().level().getBlockEntity(pos, DestroyBlockEntityTypes.COLORIMETER.get()).ifPresent(be -> {
-                be.configure(species, observingGas);
-            });
+    public void handle(ServerPlayer player) {
+        player.level().getBlockEntity(pos, DestroyBlockEntityTypes.COLORIMETER.get()).ifPresent(be -> {
+            be.configure(species, observingGas);
         });
-        return true;
+    };
+
+    @Override
+    public PacketTypeProvider getTypeProvider() {
+        return DestroyPackets.CONFIGURE_COLORIMETER;
     };
     
 };

@@ -1,9 +1,9 @@
 package petrolpark.mc.destroy.core.chemistry.vat.observation.colorimeter;
 
+import net.createmod.catnip.platform.CatnipServices;
 import java.util.List;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import petrolpark.mc.destroy.DestroyMessages;
 import petrolpark.mc.destroy.chemistry.legacy.LegacySpecies;
 import petrolpark.mc.destroy.client.DestroyGuiTextures;
 import petrolpark.mc.destroy.client.DestroyIcons;
@@ -100,12 +100,12 @@ public class ColorimeterScreen extends AbstractQuantityObservingScreen {
 
     @Override
     protected void updateThresholds(float lower, float upper) {
-        DestroyMessages.sendToServer(new RedstoneQuantityMonitorThresholdChangeC2SPacket(lower, upper, colorimeter.getBlockPos()));
+        CatnipServices.NETWORK.sendToServer(new RedstoneQuantityMonitorThresholdChangeC2SPacket(lower, upper, colorimeter.getBlockPos()));
     }
 
     @Override
     public void onClose() {
-        DestroyMessages.sendToServer(new ConfigureColorimeterC2SPacket(observingGas, species, colorimeter.getBlockPos()));
+        CatnipServices.NETWORK.sendToServer(new ConfigureColorimeterC2SPacket(observingGas, species, colorimeter.getBlockPos()));
         super.onClose();
     };
 

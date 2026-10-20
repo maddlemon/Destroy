@@ -1,6 +1,6 @@
 package petrolpark.mc.destroy.core.chemistry.vat.observation;
 
-import petrolpark.mc.destroy.DestroyMessages;
+import net.createmod.catnip.platform.CatnipServices;
 import petrolpark.mc.destroy.client.DestroyGuiTextures;
 import petrolpark.mc.destroy.util.DestroyLang;
 import petrolpark.mc.destroy.core.chemistry.vat.VatSideBlockEntity;
@@ -21,7 +21,7 @@ public class RedstoneMonitorVatSideScreen extends AbstractQuantityObservingScree
 
     @Override
     protected void updateThresholds(float lower, float upper) {
-        DestroyMessages.sendToServer(new RedstoneQuantityMonitorThresholdChangeC2SPacket(lower, upper, vatSide.getBlockPos()));
+        CatnipServices.NETWORK.sendToServer(new RedstoneQuantityMonitorThresholdChangeC2SPacket(lower, upper, vatSide.getBlockPos()));
     }
 
 };

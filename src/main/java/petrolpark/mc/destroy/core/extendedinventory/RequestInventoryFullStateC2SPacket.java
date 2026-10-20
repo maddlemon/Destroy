@@ -1,24 +1,26 @@
 package petrolpark.mc.destroy.core.extendedinventory;
 
-import java.util.function.Supplier;
+import net.createmod.catnip.net.base.ServerboundPacketPayload;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.server.level.ServerPlayer;
+import petrolpark.mc.destroy.DestroyPackets;
 
-import com.petrolpark.network.packet.C2SPacket;
+public class RequestInventoryFullStateC2SPacket implements ServerboundPacketPayload {
 
-import net.minecraft.network.FriendlyByteBuf;
-import net.neoforged.neoforge.network.NetworkEvent.Context;
+    public static final StreamCodec<RegistryFriendlyByteBuf, RequestInventoryFullStateC2SPacket> STREAM_CODEC = StreamCodec.ofMember(RequestInventoryFullStateC2SPacket::toBytes, buffer -> new RequestInventoryFullStateC2SPacket());
 
-public class RequestInventoryFullStateC2SPacket extends C2SPacket {
+    public void toBytes(RegistryFriendlyByteBuf buffer) {};
 
     @Override
-    public void toBytes(FriendlyByteBuf buffer) {};
+    public void handle(ServerPlayer player) {
+        player.inventoryMenu.broadcastFullState();
+        player.inventoryMenu.sendAllDataToRemote();
+    };
 
     @Override
-    public boolean handle(Supplier<Context> supplier) {
-        supplier.get().enqueueWork(() -> {
-            supplier.get().getSender().inventoryMenu.broadcastFullState();
-            supplier.get().getSender().inventoryMenu.sendAllDataToRemote();
-        });
-        return true;
+    public PacketTypeProvider getTypeProvider() {
+        return DestroyPackets.REQUEST_INVENTORY_FULL_STATE;
     };
     
 };

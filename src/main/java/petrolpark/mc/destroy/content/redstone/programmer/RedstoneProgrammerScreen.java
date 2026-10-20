@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.content.redstone.programmer;
 
+import net.createmod.catnip.platform.CatnipServices;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,7 +9,6 @@ import java.util.Map.Entry;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.vertex.PoseStack;
-import petrolpark.mc.destroy.DestroyMessages;
 import petrolpark.mc.destroy.client.DestroyGuiTextures;
 import petrolpark.mc.destroy.client.DestroyIcons;
 import petrolpark.mc.destroy.util.DestroyLang;
@@ -200,7 +200,7 @@ public class RedstoneProgrammerScreen extends AbstractSimiContainerScreen<Redsto
         
         // Sync to server
         if (shouldSend) {
-            DestroyMessages.sendToServer(new RedstoneProgramSyncC2SPacket(program));
+            CatnipServices.NETWORK.sendToServer(new RedstoneProgramSyncC2SPacket(program));
             shouldSend = false;
         };
     };

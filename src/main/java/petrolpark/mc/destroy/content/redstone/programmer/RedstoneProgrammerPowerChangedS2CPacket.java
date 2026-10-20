@@ -1,15 +1,17 @@
 package petrolpark.mc.destroy.content.redstone.programmer;
 
-import java.util.function.Supplier;
-
+import petrolpark.mc.destroy.DestroyPackets;
 import petrolpark.mc.destroy.content.redstone.programmer.RedstoneProgrammerMenu.DummyRedstoneProgram;
-import com.petrolpark.network.packet.S2CPacket;
 
+import net.createmod.catnip.net.base.ClientboundPacketPayload;
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.FriendlyByteBuf;
-import net.neoforged.neoforge.network.NetworkEvent.Context;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 
-public class RedstoneProgrammerPowerChangedS2CPacket extends S2CPacket {
+public class RedstoneProgrammerPowerChangedS2CPacket implements ClientboundPacketPayload {
+
+    public static final StreamCodec<RegistryFriendlyByteBuf, RedstoneProgrammerPowerChangedS2CPacket> STREAM_CODEC = StreamCodec.ofMember(RedstoneProgrammerPowerChangedS2CPacket::toBytes, RedstoneProgrammerPowerChangedS2CPacket::new);
 
     public final boolean powered;
 
@@ -17,24 +19,25 @@ public class RedstoneProgrammerPowerChangedS2CPacket extends S2CPacket {
         this.powered = powered;
     };
 
-    public RedstoneProgrammerPowerChangedS2CPacket(FriendlyByteBuf buffer) {
+    public RedstoneProgrammerPowerChangedS2CPacket(RegistryFriendlyByteBuf buffer) {
         powered = buffer.readBoolean();
     };
 
-    @Override
-    public void toBytes(FriendlyByteBuf buffer) {
+    public void toBytes(RegistryFriendlyByteBuf buffer) {
         buffer.writeBoolean(powered);
     };
 
     @Override
-    public boolean handle(Supplier<Context> supplier) {
-        supplier.get().enqueueWork(() -> {
-            Minecraft mc = Minecraft.getInstance();
-            if (mc.screen instanceof RedstoneProgrammerScreen screen) {
-                if (screen.program instanceof DummyRedstoneProgram program) program.powered = powered;
-            };
-        });
-        return true;
+    public void handle(LocalPlayer player) {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.screen instanceof RedstoneProgrammerScreen screen) {
+            if (screen.program instanceof DummyRedstoneProgram program) program.powered = powered;
+        };
+    };
+
+    @Override
+    public PacketTypeProvider getTypeProvider() {
+        return DestroyPackets.REDSTONE_PROGRAMMER_POWER_CHANGED;
     };
     
 };

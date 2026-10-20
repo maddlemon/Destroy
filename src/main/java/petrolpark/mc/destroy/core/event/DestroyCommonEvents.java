@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.core.event;
 
+import net.createmod.catnip.platform.CatnipServices;
 import petrolpark.mc.destroy.DestroyPollutionTypes;
 import java.util.HashMap;
 import java.util.List;
@@ -12,7 +13,6 @@ import petrolpark.mc.destroy.DestroyAdvancementTrigger;
 import petrolpark.mc.destroy.DestroyAttributes;
 import petrolpark.mc.destroy.DestroyBlocks;
 import petrolpark.mc.destroy.DestroyItems;
-import petrolpark.mc.destroy.DestroyMessages;
 import petrolpark.mc.destroy.DestroyMobEffects;
 import petrolpark.mc.destroy.DestroyTags;
 import petrolpark.mc.destroy.DestroyTags.MobEffects;
@@ -135,27 +135,27 @@ public class DestroyCommonEvents {
 
         // Update render info
         level.getCapability(Pollution.CAPABILITY).ifPresent(levelPollution -> {
-            DestroyMessages.sendToClient(new LevelPollutionS2CPacket(levelPollution), serverPlayer);
+            CatnipServices.NETWORK.sendToClient(serverPlayer, new LevelPollutionS2CPacket(levelPollution));
         });
 
         // Update the Ponders for periodic table blocks
-        DestroyMessages.sendToClient(new RefreshPeriodicTablePonderSceneS2CPacket(), serverPlayer);
+        CatnipServices.NETWORK.sendToClient(serverPlayer, new RefreshPeriodicTablePonderSceneS2CPacket());
 
         // Update the circuit pattern crafting recipes
-        DestroyMessages.sendToClient(new CircuitPatternsS2CPacket(Destroy.CIRCUIT_PATTERN_HANDLER.getAllPatterns()), serverPlayer);
+        CatnipServices.NETWORK.sendToClient(serverPlayer, new CircuitPatternsS2CPacket(Destroy.CIRCUIT_PATTERN_HANDLER.getAllPatterns()));
 
         // Update the known Vat Materials
         Map<BlockIngredient<?>, VatMaterial> datapackMaterials = new HashMap<>(VatMaterial.BLOCK_MATERIALS.size());
         VatMaterial.BLOCK_MATERIALS.entrySet().stream()
             .filter(entry -> !entry.getValue().builtIn())
             .forEach(entry -> datapackMaterials.put(entry.getKey(), entry.getValue()));
-        DestroyMessages.sendToClient(new SyncVatMaterialsS2CPacket(datapackMaterials), serverPlayer);
+        CatnipServices.NETWORK.sendToClient(serverPlayer, new SyncVatMaterialsS2CPacket(datapackMaterials));
     };
 
     @SubscribeEvent
     public static final void onPlayerLoadsChunk(ChunkWatchEvent.Watch event) {
         event.getChunk().getCapability(Pollution.CAPABILITY).ifPresent(pollution -> {
-            DestroyMessages.sendToClient(new SyncChunkPollutionS2CPacket(event.getPos(), pollution), event.getPlayer());
+            CatnipServices.NETWORK.sendToClient(event.getPlayer(), new SyncChunkPollutionS2CPacket(event.getPos(), pollution));
         });
     };
 
@@ -173,7 +173,7 @@ public class DestroyCommonEvents {
 
         // Update render info
         level.getCapability(Pollution.CAPABILITY).ifPresent(levelPollution -> {
-            DestroyMessages.sendToClient(new LevelPollutionS2CPacket(levelPollution), player);
+            CatnipServices.NETWORK.sendToClient(player, new LevelPollutionS2CPacket(levelPollution));
         });
 
         // Clear Chorus wine info

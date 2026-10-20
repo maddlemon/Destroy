@@ -1,24 +1,25 @@
 package petrolpark.mc.destroy.core.fluid.gasparticle;
 
-import java.util.function.Supplier;
-
+import petrolpark.mc.destroy.DestroyPackets;
 import petrolpark.mc.destroy.client.DestroyParticleTypes;
-import com.petrolpark.network.packet.S2CPacket;
 
 import net.createmod.catnip.math.VecHelper;
+import net.createmod.catnip.net.base.ClientboundPacketPayload;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.network.NetworkEvent;
-import net.neoforged.neoforge.network.NetworkEvent.Context;
 
 /**
  * Summons evaporating Fluid Particles to simulate the emission of a gas.
  */
-public class EvaporatingFluidS2CPacket extends S2CPacket {
+public class EvaporatingFluidS2CPacket implements ClientboundPacketPayload {
+
+    public static final StreamCodec<RegistryFriendlyByteBuf, EvaporatingFluidS2CPacket> STREAM_CODEC = StreamCodec.ofMember(EvaporatingFluidS2CPacket::toBytes, EvaporatingFluidS2CPacket::new);
 
     private BlockPos blockPos;
     private FluidStack fluidStack;
@@ -28,31 +29,31 @@ public class EvaporatingFluidS2CPacket extends S2CPacket {
         this.fluidStack = stack;
     };
 
-    public EvaporatingFluidS2CPacket(FriendlyByteBuf buffer) {
+    public EvaporatingFluidS2CPacket(RegistryFriendlyByteBuf buffer) {
         blockPos = buffer.readBlockPos();
-        fluidStack = buffer.readFluidStack();
+        fluidStack = FluidStack.OPTIONAL_STREAM_CODEC.decode(buffer);
     };
 
-    @Override
-    public void toBytes(FriendlyByteBuf buffer) {
+    public void toBytes(RegistryFriendlyByteBuf buffer) {
         buffer.writeBlockPos(blockPos);
-        buffer.writeFluidStack(fluidStack);
+        FluidStack.OPTIONAL_STREAM_CODEC.encode(buffer, fluidStack);
     };
 
     @Override
     @SuppressWarnings("resource")
-    public boolean handle(Supplier<Context> supplier) {
-        NetworkEvent.Context context = supplier.get();
-        context.enqueueWork(() -> {
-            ClientLevel level = Minecraft.getInstance().level;
-            Vec3 center = VecHelper.getCenterOf(blockPos);
-            if (level == null || fluidStack.isEmpty()) return;
-            GasParticleData particleData = new GasParticleData(DestroyParticleTypes.EVAPORATION.get(), fluidStack);
-            for (int i = 0; i < 5; i++) {
-                level.addParticle(particleData, center.x, center.y, center.z, 0, 0.07D, 0);
-            };
-        });
-        return true;
+    public void handle(LocalPlayer player) {
+        ClientLevel level = Minecraft.getInstance().level;
+        Vec3 center = VecHelper.getCenterOf(blockPos);
+        if (level == null || fluidStack.isEmpty()) return;
+        GasParticleData particleData = new GasParticleData(DestroyParticleTypes.EVAPORATION.get(), fluidStack);
+        for (int i = 0; i < 5; i++) {
+            level.addParticle(particleData, center.x, center.y, center.z, 0, 0.07D, 0);
+        };
+    };
+
+    @Override
+    public PacketTypeProvider getTypeProvider() {
+        return DestroyPackets.EVAPORATING_FLUID;
     };
     
 };

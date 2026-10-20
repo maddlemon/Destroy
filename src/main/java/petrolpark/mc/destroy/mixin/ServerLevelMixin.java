@@ -9,7 +9,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import petrolpark.mc.destroy.DestroyMessages;
 import petrolpark.mc.destroy.config.DestroyAllConfigs;
 import petrolpark.mc.destroy.core.pollution.Pollution;
 import petrolpark.mc.destroy.core.pollution.PollutionHelper;
@@ -68,12 +67,12 @@ public abstract class ServerLevelMixin extends Level {
                         pollutions.getSecond().change(pollutionType, transfer);
                         changeOccured = true;
                     };
-                    if (changeOccured) DestroyMessages.sendToClientsTrackingChunk(new SyncChunkPollutionS2CPacket(otherPos, otherPollution), otherChunk);
+                    if (changeOccured) CatnipServices.NETWORK.sendToClientsTrackingChunk((ServerLevel)otherChunk.getLevel(), otherChunk.getPos(), new SyncChunkPollutionS2CPacket(otherPos, otherPollution));
                 });
             };
             
             // Sync to Clients
-            DestroyMessages.sendToClientsTrackingChunk(new SyncChunkPollutionS2CPacket(pos, pollution), chunk);
+            CatnipServices.NETWORK.sendToClientsTrackingChunk((ServerLevel)chunk.getLevel(), chunk.getPos(), new SyncChunkPollutionS2CPacket(pos, pollution));
         });
     };
 };

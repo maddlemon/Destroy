@@ -3,16 +3,19 @@ package petrolpark.mc.destroy.content.processing.trypolithography;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.HashMap;
-import java.util.function.Supplier;
 
+import petrolpark.mc.destroy.DestroyPackets;
 import petrolpark.mc.destroy.Destroy;
-import com.petrolpark.network.packet.S2CPacket;
 
-import net.minecraft.network.FriendlyByteBuf;
+import net.createmod.catnip.net.base.ClientboundPacketPayload;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.network.NetworkEvent.Context;
 
-public class CircuitPatternsS2CPacket extends S2CPacket {
+public class CircuitPatternsS2CPacket implements ClientboundPacketPayload {
+
+    public static final StreamCodec<RegistryFriendlyByteBuf, CircuitPatternsS2CPacket> STREAM_CODEC = StreamCodec.ofMember(CircuitPatternsS2CPacket::toBytes, CircuitPatternsS2CPacket::read);
 
     public final Map<ResourceLocation, Integer> patterns;
 
@@ -20,7 +23,7 @@ public class CircuitPatternsS2CPacket extends S2CPacket {
         this.patterns = patterns;
     };
 
-    public static CircuitPatternsS2CPacket read(FriendlyByteBuf buffer) {
+    public static CircuitPatternsS2CPacket read(RegistryFriendlyByteBuf buffer) {
         int entries = buffer.readVarInt();
         Map<ResourceLocation, Integer> patterns = new HashMap<>(entries);
         for (int i = 0; i < entries; i++) {
@@ -29,8 +32,7 @@ public class CircuitPatternsS2CPacket extends S2CPacket {
         return new CircuitPatternsS2CPacket(patterns);
     };
 
-    @Override
-    public void toBytes(FriendlyByteBuf buffer) {
+    public void toBytes(RegistryFriendlyByteBuf buffer) {
         buffer.writeVarInt(patterns.size());
         for (Entry<ResourceLocation, Integer> entry : patterns.entrySet()) {
             buffer.writeResourceLocation(entry.getKey());
@@ -39,11 +41,13 @@ public class CircuitPatternsS2CPacket extends S2CPacket {
     };
 
     @Override
-    public boolean handle(Supplier<Context> supplier) {
-        supplier.get().enqueueWork(() -> {
-            Destroy.CIRCUIT_PATTERN_HANDLER.setPatterns(patterns);
-        });
-        return true;
+    public void handle(LocalPlayer player) {
+        Destroy.CIRCUIT_PATTERN_HANDLER.setPatterns(patterns);
+    };
+
+    @Override
+    public PacketTypeProvider getTypeProvider() {
+        return DestroyPackets.CIRCUIT_PATTERNS;
     };
     
 };

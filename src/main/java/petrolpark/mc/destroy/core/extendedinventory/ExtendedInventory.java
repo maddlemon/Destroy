@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.core.extendedinventory;
 
+import net.createmod.catnip.platform.CatnipServices;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -7,7 +8,6 @@ import java.util.stream.Stream;
 import com.petrolpark.PetrolparkTags;
 import petrolpark.mc.destroy.Destroy;
 import petrolpark.mc.destroy.DestroyAttributes;
-import petrolpark.mc.destroy.DestroyMessages;
 import petrolpark.mc.destroy.config.DestroyAllConfigs;
 
 import net.minecraft.CrashReport;
@@ -65,7 +65,7 @@ public class ExtendedInventory extends Inventory {
         if (player.getAttributes().hasAttribute(DestroyAttributes.EXTRA_HOTBAR_SLOTS.get())) setExtraHotbarSlots((int)player.getAttributeValue(DestroyAttributes.EXTRA_HOTBAR_SLOTS.get()));
         if (player.getAttributes().hasAttribute(DestroyAttributes.EXTRA_INVENTORY_SIZE.get())) setExtraInventorySize((int)player.getAttributeValue(DestroyAttributes.EXTRA_INVENTORY_SIZE.get()));
         if ((forceSync || sizeBefore != extraItems.size() || hotbarBefore != extraHotbarSlots) && !player.level().isClientSide() && player instanceof ServerPlayer sp && sp.connection != null) {
-            DestroyMessages.sendToClient(new ExtraInventorySizeChangeS2CPacket(extraItems.size(), extraHotbarSlots, false), sp);
+            CatnipServices.NETWORK.sendToClient(sp, new ExtraInventorySizeChangeS2CPacket(extraItems.size(), extraHotbarSlots, false));
         };
     };
 
@@ -141,7 +141,7 @@ public class ExtendedInventory extends Inventory {
         refreshPlayerInventoryMenu(event.getEntity());
         ExtendedInventory inv = get(event.getEntity());
         if (event.getEntity() instanceof ServerPlayer player) {
-            DestroyMessages.sendToClient(new ExtraInventorySizeChangeS2CPacket(inv.extraItems.size(), inv.extraHotbarSlots, true), player);
+            CatnipServices.NETWORK.sendToClient(player, new ExtraInventorySizeChangeS2CPacket(inv.extraItems.size(), inv.extraHotbarSlots, true));
         };
     };
 

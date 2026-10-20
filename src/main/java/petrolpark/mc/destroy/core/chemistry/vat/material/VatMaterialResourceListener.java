@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.core.chemistry.vat.material;
 
+import net.createmod.catnip.platform.CatnipServices;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.HashMap;
@@ -8,7 +9,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
-import petrolpark.mc.destroy.DestroyMessages;
 import petrolpark.mc.library.core.data.recipe.ingredient.BlockIngredient;
 import petrolpark.mc.library.core.data.recipe.ingredient.BlockIngredient.BlockTagIngredient;
 
@@ -114,7 +114,7 @@ public class VatMaterialResourceListener extends SimpleJsonResourceReloadListene
         VatMaterial.BLOCK_MATERIALS.putAll(datapackMaterials);
 
         // Send to clients, if possible
-        try {DestroyMessages.sendToAllClients(new SyncVatMaterialsS2CPacket(datapackMaterials));} catch (NullPointerException e) {};
+        try {CatnipServices.NETWORK.sendToAllClients(new SyncVatMaterialsS2CPacket(datapackMaterials));} catch (NullPointerException e) {};
     };
     
 };

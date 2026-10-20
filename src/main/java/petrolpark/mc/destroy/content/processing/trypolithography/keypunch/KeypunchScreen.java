@@ -1,10 +1,10 @@
 package petrolpark.mc.destroy.content.processing.trypolithography.keypunch;
 
+import net.createmod.catnip.platform.CatnipServices;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import petrolpark.mc.destroy.DestroyMessages;
 import petrolpark.mc.destroy.client.DestroyGuiTextures;
 import petrolpark.mc.destroy.util.GuiHelper;
 import com.simibubi.create.content.trains.station.NoShadowFontWrapper;
@@ -48,7 +48,7 @@ public class KeypunchScreen extends AbstractSimiScreen {
                 buttons.forEach(b -> b.active = true);
                 button.active = false;
                 selectedPosition = position;
-                DestroyMessages.sendToServer(new ChangeKeypunchPositionC2SPacket(keypunch.getBlockPos(), position));
+                CatnipServices.NETWORK.sendToServer(new ChangeKeypunchPositionC2SPacket(keypunch.getBlockPos(), position));
             });
             button.active = !(selectedPosition == i);
             buttons.add(button);
@@ -123,7 +123,7 @@ public class KeypunchScreen extends AbstractSimiScreen {
     public void syncName() {
         if (!nameBox.getValue().equals(keypunch.name)){
             keypunch.name = nameBox.getValue();
-            DestroyMessages.sendToServer(new NameKeypunchC2SPacket(keypunch.getBlockPos(), nameBox.getValue()));
+            CatnipServices.NETWORK.sendToServer(new NameKeypunchC2SPacket(keypunch.getBlockPos(), nameBox.getValue()));
         };
     };
 

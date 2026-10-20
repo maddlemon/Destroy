@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.content.processing.trypolithography;
 
+import net.createmod.catnip.platform.CatnipServices;
 import static petrolpark.mc.destroy.Destroy.CIRCUIT_PATTERN_HANDLER;
 
 import java.util.Collection;
@@ -14,7 +15,6 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import petrolpark.mc.destroy.Destroy;
-import petrolpark.mc.destroy.DestroyMessages;
 
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -37,7 +37,7 @@ public class RegenerateCircuitPatternCommand {
     public static int regenerateCircuitPattern(CommandSourceStack source, ResourceLocation pattern) {
         Destroy.CIRCUIT_PATTERN_HANDLER.removePattern(pattern);
         Destroy.CIRCUIT_PATTERN_HANDLER.setDirty();
-        DestroyMessages.sendToAllClients(new CircuitPatternsS2CPacket(CIRCUIT_PATTERN_HANDLER.getAllPatterns()));
+        CatnipServices.NETWORK.sendToAllClients(new CircuitPatternsS2CPacket(CIRCUIT_PATTERN_HANDLER.getAllPatterns()));
         source.sendSuccess(() -> Component.translatable("commands.destroy.regeneratecircuitpattern", pattern), true);
         return 1;
     };

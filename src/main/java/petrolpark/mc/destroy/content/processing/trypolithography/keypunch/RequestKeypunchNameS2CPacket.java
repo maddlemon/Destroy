@@ -1,18 +1,21 @@
 package petrolpark.mc.destroy.content.processing.trypolithography.keypunch;
 
+import net.createmod.catnip.platform.CatnipServices;
 import java.util.List;
-import java.util.function.Supplier;
 
-import com.petrolpark.network.packet.S2CPacket;
-import petrolpark.mc.destroy.DestroyMessages;
+import petrolpark.mc.destroy.DestroyPackets;
 import petrolpark.mc.destroy.util.NameLists;
 
+import net.createmod.catnip.net.base.ClientboundPacketPayload;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.FriendlyByteBuf;
-import net.neoforged.neoforge.network.NetworkEvent.Context;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 
-public class RequestKeypunchNameS2CPacket extends S2CPacket {
+public class RequestKeypunchNameS2CPacket implements ClientboundPacketPayload {
+
+    public static final StreamCodec<RegistryFriendlyByteBuf, RequestKeypunchNameS2CPacket> STREAM_CODEC = StreamCodec.ofMember(RequestKeypunchNameS2CPacket::toBytes, RequestKeypunchNameS2CPacket::new);
 
     public final BlockPos pos;
 
@@ -20,23 +23,24 @@ public class RequestKeypunchNameS2CPacket extends S2CPacket {
         this.pos = pos;
     };
 
-    public RequestKeypunchNameS2CPacket(FriendlyByteBuf buffer) {
+    public RequestKeypunchNameS2CPacket(RegistryFriendlyByteBuf buffer) {
         pos = buffer.readBlockPos();
     };
 
-    @Override
-    public void toBytes(FriendlyByteBuf buffer) {
+    public void toBytes(RegistryFriendlyByteBuf buffer) {
         buffer.writeBlockPos(pos);
     };
 
     @Override
-    public boolean handle(Supplier<Context> supplier) {
-        supplier.get().enqueueWork(() -> {
-            Minecraft minecraft = Minecraft.getInstance();
-            List<String> names = NameLists.getNames(KeypunchBlock.NAME_LIST_ID);
-            DestroyMessages.sendToServer(new NameKeypunchC2SPacket(pos, names.get(minecraft.level.getRandom().nextInt(names.size()))));
-        });
-        return true;
+    public void handle(LocalPlayer player) {
+        Minecraft minecraft = Minecraft.getInstance();
+        List<String> names = NameLists.getNames(KeypunchBlock.NAME_LIST_ID);
+        CatnipServices.NETWORK.sendToServer(new NameKeypunchC2SPacket(pos, names.get(minecraft.level.getRandom().nextInt(names.size()))));
+    };
+
+    @Override
+    public PacketTypeProvider getTypeProvider() {
+        return DestroyPackets.REQUEST_KEYPUNCH_NAME;
     };
     
 };

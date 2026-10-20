@@ -10,8 +10,8 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.chunk.ChunkAccess;
-import petrolpark.mc.destroy.DestroyAttachmentTypes;
 import petrolpark.mc.destroy.DestroyPackets;
+import petrolpark.mc.destroy.DestroyAttachmentTypes;
 import petrolpark.mc.destroy.DestroyRegistries;
 import petrolpark.mc.library.util.codec.CodecHelper;
 
