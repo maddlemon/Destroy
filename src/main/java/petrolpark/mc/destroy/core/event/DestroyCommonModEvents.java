@@ -4,7 +4,6 @@ import petrolpark.mc.destroy.Destroy;
 import petrolpark.mc.destroy.DestroyAttributes;
 import petrolpark.mc.destroy.content.processing.trypolithography.RegenerateCircuitPatternCommand.CircuitPatternIdArgument;
 import petrolpark.mc.destroy.content.processing.trypolithography.recipe.CircuitDeployerApplicationRecipe;
-import petrolpark.mc.destroy.content.processing.trypolithography.recipe.CircuitPatternIngredient;
 
 import com.simibubi.create.foundation.pack.ModFilePackResources;
 import net.minecraft.commands.synchronization.ArgumentTypeInfos;
@@ -67,7 +66,6 @@ public class DestroyCommonModEvents {
     public static final void registerIngredientTypes(RegisterEvent event) {
         if (event.getRegistryKey().equals(NeoForgeRegistries.Keys.RECIPE_SERIALIZERS)) {
             // Ingredient types
-            CraftingHelper.register(Destroy.asResource("circuit_pattern_item"), CircuitPatternIngredient.SERIALIZER);
             CraftingHelper.register(Destroy.asResource("example_circuit_mask"), CircuitDeployerApplicationRecipe.ExampleMaskIngredient.SERIALIZER); // Should never actually appear in a JSON recipe
         };
     };

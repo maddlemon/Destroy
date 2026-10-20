@@ -27,15 +27,33 @@ Library to the pack.
 
 ## START HERE — current state and next steps
 
-**State:** compile has **1,501 javac errors** (`port-tools/errsummary.py` counts 1,423 unique
-locations). Biggest areas: `content/processing` (mostly recipes) 428, top-level registry
-classes 299, `core/chemistry` 173, `core/explosion` 94. Most common missing symbols:
-`FluidIngredient`, packet classes (`Context`, `S2CPacket`, `C2SPacket`, `NetworkHooks`),
-pollution API (`pollute`, `max`, `CAPABILITY`, `SyncChunkPollutionS2CPacket`), `GUESSED_TICK`.
+**State:** compile has **1,184 javac errors**. Recipes (step 1) are mostly done — see the status
+under step 1. Most common remaining missing symbols: packet classes (`Context`, `S2CPacket`,
+`C2SPacket`, `NetworkHooks`), pollution API (`pollute`, `max`, `CAPABILITY`,
+`SyncChunkPollutionS2CPacket`), `GUESSED_TICK`.
 
 **Do next, in this order** (each is a self-contained batch; compile + commit after each):
 
-1. **Recipes (batch 2 core).** Create 6 recipe API: `ProcessingRecipe.Factory<P,R>` takes two
+1. **Recipes (batch 2 core) — MOSTLY DONE.** Done: mixture fluid ingredients are NeoForge
+   `FluidIngredientType`s (`DestroyFluidIngredientTypes`, ids = old JSON key in snake case, e.g.
+   `destroy:mixture_fluid_with_molecule`; codecs bridge to each ingredient's existing
+   `readInternal(JsonObject)` so parsing rules are unchanged); `DestroyRecipeTypes` rewritten after
+   Create 6 `AllRecipeTypes` (`advanced(...)` = library `AdvancedProcessingRecipe.Serializer`,
+   `standard(...)` = Create `StandardProcessingRecipe.Serializer`, `itemApplication(...)`); the 14
+   processing recipes extend library `AdvancedProcessingRecipe` (biomes / first-time-lucky built in);
+   runtime-built recipes use `AdvancedProcessingRecipe.Builder` / `StandardProcessingRecipe.Builder` /
+   `ItemApplicationRecipe.Builder`; potion recipes are per-level (`getRecipes(level)`, cached);
+   `RecipeFinder` returns `RecipeHolder`s (unwrap with `.value()`, ids via `.id()`); glassblowing has
+   its own serializer for `"shape"`; `FillMixedExplosiveItemRecipe` + fireworks ported;
+   `CircuitPatternIngredient` is an `ICustomIngredient` (`DestroyIngredientTypes`).
+   **Left in step 1:** trypolithography — `ManualCircuitBoardRecipe` (library `ManualOnlyShapedRecipe`
+   API), `CircuitDeployerApplicationRecipe` (+ its `ExampleMaskIngredient` → `ICustomIngredient`,
+   register in `DestroyIngredientTypes`; uses `ProcessingRecipeAccessor`), `CircuitSequencedAssemblyRecipe`,
+   `DiscStampingRecipe` (`ItemApplicationRecipeParams`; `StrictNBTIngredient` → `DataComponentIngredient`),
+   `ReactionInBasinRecipe` leftovers, `ProcessingRecipeParamsAccessor`, `SequencedAssemblyRecipeMixin`;
+   recipe consumers in block entities (e.g. `MechanicalSieveBlockEntity` uses the old
+   `FirstTimeLuckyRecipesBehaviour` → library `FTLRecipesBehaviour` + `rollLuckyResults`).
+   Original notes: Create 6 recipe API: `ProcessingRecipe.Factory<P,R>` takes two
    type params (`DestroyRecipeTypes`, `CircuitDeployerApplicationRecipe.Serializer`);
    `ProcessingRecipeBuilder` is abstract (~10 `new ProcessingRecipeBuilder(...)` sites); recipe
    serializers move from JSON/`FriendlyByteBuf` to `MapCodec` + `StreamCodec`; recipes are used
@@ -79,7 +97,13 @@ pollution API (`pollute`, `max`, `CAPABILITY`, `SyncChunkPollutionS2CPacket`), `
    loads**. Recipe JSON must match the new codecs: Create 6 style (`"type": "neoforge:single"` fluid
    ingredients, `{"id", "amount"}` fluid results, snake_case keys like `heat_requirement`); mixture
    fluid results' `"nbt": {"Mixture": …}` → `"components": {"destroy:mixture": …}`. Look at Create
-   6's own JSON (inside its jar) for reference.
+   6's own JSON (inside its jar) for reference. Destroy-specific conversions: mixture ingredients
+   `{"mixtureFluidWithMolecule": "destroy:mixture", "molecule": …, "amount": n}` →
+   `{"type": "destroy:mixture_fluid_with_molecule", "molecule": …, "amount": n}` (same for
+   `…WithIon`, `…WithSalt`, `…WithTaggedMolecules`, `pureMixture` → `destroy:pure_mixture`); advanced
+   params `processingTime` → `processing_time`, `heatRequirement` → `heat_requirement`, `biomes` stays,
+   sieving `"lucky_first_time": true` → `"first_time_lucky_key": "<that recipe's own id>"` (per-recipe
+   luck like 1.20.1); glassblowing `"shape"` unchanged.
 8. **Clean compile → datagen → `./gradlew build` → runtime test** in the dev client (`runClient`):
    watch for mixin apply failures, missing registries, recipe parse errors; test with Sodium and
    Farmer's Delight installed too.
@@ -169,6 +193,13 @@ Intended to be empty. Current entries:
   only Destroy's three smog tint resolvers, where the Embeddium mixin redirects all tints; the visible
   result (smog-tinted grass/foliage/water) is the same.
 - Pollution ponder storyboards are disabled until step 3 (temporary, marked `TODO(port)`).
+- **Upstream bug, now moot:** `CentrifugationRecipe.setAllowedBiomes` assigned its parameter to itself, so
+  biome limits on centrifugation never worked; biomes now come from the library base and work. No
+  centrifugation recipe sets biomes, so nothing changes in play.
+- Upstream quirk kept: `RefrigerantDummyFluidIngredient` never overrode `getType()`, so it reports itself
+  as a molecule-tag ingredient (its special JEI description is never used) — unchanged on purpose.
+- `FillMixedExplosiveItemRecipe.matches` passed `null` registries in 1.20.1; it passes the level's now
+  (1.21 needs them to read the Item's explosive inventory). Same result.
 
 ## Decisions
 
@@ -214,9 +245,12 @@ Intended to be empty. Current entries:
 | `7bfb29aa` | Block-entity capabilities → `DestroyCapabilities`; `BlockSource` record accessors |
 | `7bdf6d44` | Entity capabilities → attachments; **registered the author's missing registries** in the ctor |
 | `bd702b4b` | Mixture `MIXTURE` component; `ItemStackNBT`; fireworks/dye components; tick handlers back to 2x/tick; `EvaporatedFluid` key fix |
+| `244b5b16` | Recipes part 1 (mixture fluid ingredients, recipe types, recipe bases, builders, glassblowing serializer) |
+| `62c33e8d` | Recipes part 2 (per-level potion recipes, `RecipeHolder` lookups, `PotionBrewing$Mix` AT) |
+| (recipes 3 commit) | Fill-explosive + circuit pattern ingredient; registries threaded through mixed-explosive item helpers |
 | `127f23a1` | Farmer's Delight / Embeddium / Sodium compat mixins; **`DestroyMixinPlugin` package fixed** (was `com.destroy.mixin`, so compat mixins were never gated — would crash without the mod); water tint mixin retargeted to `ClientNeoForgeMod$1`; missing cartography mixins listed; `port-tools/`; this doc restructured |
 
-Error counts: 2,301 error lines (batch 1) → 2,178 javac → 2,050 → 1,940 → 1,892 → 1,718 → 1,621 → 1,502 → 1,501.
+Error counts: 2,301 error lines (batch 1) → 2,178 javac → 2,050 → 1,940 → 1,892 → 1,718 → 1,621 → 1,502 → 1,501 → 1,281 (recipes 1) → 1,217 (recipes 2) → 1,184.
 
 ## Verified API mappings (NeoForge 21.1.262 / MC 1.21.1 / Create 6.0.10 / library 1.21.1-1.5.11)
 

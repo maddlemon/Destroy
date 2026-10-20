@@ -91,6 +91,7 @@ public class Destroy {
         DestroyAttachmentTypes.register(modEventBus);
         DestroyDataComponentTypes.register(modEventBus);
         DestroyFluidIngredientTypes.register(modEventBus);
+        DestroyIngredientTypes.register(modEventBus);
         DestroyNumberProviderTypes.register();
         DestroyPollutionTypes.register();
         DestroySeismologyProviders.register();

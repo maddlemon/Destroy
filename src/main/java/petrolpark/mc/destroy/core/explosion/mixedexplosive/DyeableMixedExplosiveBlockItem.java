@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.core.explosion.mixedexplosive;
 
+import net.minecraft.core.HolderLookup;
 import net.minecraft.world.item.component.DyedItemColor;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.BlockPos;
@@ -38,19 +39,19 @@ public abstract class DyeableMixedExplosiveBlockItem extends BlockItem implement
         return 16;
     };
 
-    public ItemStack fromStructureInfo(StructureBlockInfo info) {
+    public ItemStack fromStructureInfo(StructureBlockInfo info, HolderLookup.Provider registries) {
         ItemStack stack = new ItemStack(this);
         setColor(stack, info.nbt().getInt("Color"));
         MixedExplosiveInventory inv = new MixedExplosiveInventory(getExplosiveInventorySize());
-        inv.deserializeNBT(info.nbt().getCompound("ExplosiveMix"));
-        setExplosiveInventory(stack, inv);
+        inv.deserializeNBT(registries, info.nbt().getCompound("ExplosiveMix"));
+        setExplosiveInventory(stack, inv, registries);
         return stack;
     };
 
-    public StructureBlockInfo toStructureInfo(BlockPos localPos, BlockState state, ItemStack stack) {
+    public StructureBlockInfo toStructureInfo(BlockPos localPos, BlockState state, ItemStack stack, HolderLookup.Provider registries) {
         CompoundTag tag = new CompoundTag();
         tag.putInt("Color", getColor(stack));
-        tag.put("ExplosiveMix", getExplosiveInventory(stack).serializeNBT());
+        tag.put("ExplosiveMix", getExplosiveInventory(stack, registries).serializeNBT(registries));
         return new StructureBlockInfo(localPos, state, tag);
     };
     

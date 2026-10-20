@@ -60,7 +60,7 @@ public class DestroyClientEvents {
         Minecraft mc = Minecraft.getInstance();
         ExplosiveProperties properties = null;
         if (event.getItemStack().getItem() instanceof IMixedExplosiveItem mixItem) {
-            properties = mixItem.getExplosiveInventory(event.getItemStack()).getExplosiveProperties().withConditions(mixItem.getApplicableExplosionConditions());
+            properties = mc.level == null ? null : mixItem.getExplosiveInventory(event.getItemStack(), mc.level.registryAccess()).getExplosiveProperties().withConditions(mixItem.getApplicableExplosionConditions());
         } else if (mc.screen instanceof MixedExplosiveScreen) {
             properties = ExplosiveProperties.ITEM_EXPLOSIVE_PROPERTIES.get(event.getItemStack().getItem());
         };

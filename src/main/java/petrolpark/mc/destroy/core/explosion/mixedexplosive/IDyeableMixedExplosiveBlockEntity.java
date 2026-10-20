@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.core.explosion.mixedexplosive;
 
+import net.minecraft.core.HolderLookup;
 import net.minecraft.world.item.component.DyedItemColor;
 import java.util.List;
 
@@ -36,15 +37,15 @@ public interface IDyeableMixedExplosiveBlockEntity extends IMixedExplosiveBlockE
     public int getColor();
 
     @Override
-    public default void onPlace(ItemStack blockItemStack) {
-        IMixedExplosiveBlockEntity.super.onPlace(blockItemStack);
+    public default void onPlace(ItemStack blockItemStack, HolderLookup.Provider registries) {
+        IMixedExplosiveBlockEntity.super.onPlace(blockItemStack, registries);
         if (blockItemStack.getItem() instanceof DyeableMixedExplosiveBlockItem dyeableItem) setColor(dyeableItem.getColor(blockItemStack));
     };
 
     @Override
-    public default ItemStack getFilledItemStack(ItemStack emptyItemStack) {
+    public default ItemStack getFilledItemStack(ItemStack emptyItemStack, HolderLookup.Provider registries) {
         if (emptyItemStack.getItem() instanceof DyeableMixedExplosiveBlockItem dyeableItem) dyeableItem.setColor(emptyItemStack, getColor());
-        return IMixedExplosiveBlockEntity.super.getFilledItemStack(emptyItemStack);
+        return IMixedExplosiveBlockEntity.super.getFilledItemStack(emptyItemStack, registries);
     };
 
     public default InteractionResult tryDye(ItemStack dyeStack, HitResult target, Level level, BlockPos pos, Player player) {

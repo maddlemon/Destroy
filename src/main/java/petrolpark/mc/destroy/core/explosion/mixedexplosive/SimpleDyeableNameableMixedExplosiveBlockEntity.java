@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.core.explosion.mixedexplosive;
 
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.HolderLookup;
 import java.util.List;
 
@@ -69,9 +70,9 @@ public abstract class SimpleDyeableNameableMixedExplosiveBlockEntity extends Sma
     };
 
     @Override
-    public void onPlace(ItemStack blockItemStack) {
-        IDyeableMixedExplosiveBlockEntity.super.onPlace(blockItemStack);
-        if (blockItemStack.hasCustomHoverName()) name = blockItemStack.getHoverName();
+    public void onPlace(ItemStack blockItemStack, HolderLookup.Provider registries) {
+        IDyeableMixedExplosiveBlockEntity.super.onPlace(blockItemStack, registries);
+        if (blockItemStack.has(DataComponents.CUSTOM_NAME)) name = blockItemStack.getHoverName();
     };
 
     @Override
@@ -120,9 +121,9 @@ public abstract class SimpleDyeableNameableMixedExplosiveBlockEntity extends Sma
     };
 
     @Override
-    public ItemStack getFilledItemStack(ItemStack emptyItemStack) {
-        ItemStack stack = IDyeableMixedExplosiveBlockEntity.super.getFilledItemStack(emptyItemStack);
-        if (name != null) stack.setHoverName(name);
+    public ItemStack getFilledItemStack(ItemStack emptyItemStack, HolderLookup.Provider registries) {
+        ItemStack stack = IDyeableMixedExplosiveBlockEntity.super.getFilledItemStack(emptyItemStack, registries);
+        if (name != null) stack.set(DataComponents.CUSTOM_NAME, name);
         return stack;
     };
 

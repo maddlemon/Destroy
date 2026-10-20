@@ -95,7 +95,7 @@ public class MixedExplosiveBlock extends PrimeableBombBlock<MixedExplosiveEntity
     @Override
     public void setPlacedBy(Level level, BlockPos pos, BlockState state, LivingEntity pPlacer, ItemStack stack) {
         super.setPlacedBy(level, pos, state, pPlacer, stack);
-        withBlockEntityDo(level, pos, be -> be.onPlace(stack));
+        withBlockEntityDo(level, pos, be -> be.onPlace(stack, level.registryAccess()));
     };
 
     @Override
@@ -118,7 +118,7 @@ public class MixedExplosiveBlock extends PrimeableBombBlock<MixedExplosiveEntity
     public List<ItemStack> getDrops(BlockState state, LootParams.Builder params) {
         BlockEntity be = params.getOptionalParameter(LootContextParams.BLOCK_ENTITY);
         if (!(be instanceof SimpleDyeableNameableMixedExplosiveBlockEntity ebe)) return Collections.emptyList();
-        return Collections.singletonList(ebe.getFilledItemStack(DestroyBlocks.CUSTOM_EXPLOSIVE_MIX.asStack()));
+        return Collections.singletonList(ebe.getFilledItemStack(DestroyBlocks.CUSTOM_EXPLOSIVE_MIX.asStack(), ebe.getLevel().registryAccess()));
     };
 
     @Override
@@ -133,8 +133,8 @@ public class MixedExplosiveBlock extends PrimeableBombBlock<MixedExplosiveEntity
 
     public ItemStack getCloneItemStack(BlockGetter level, BlockPos pos) {
         SimpleDyeableNameableMixedExplosiveBlockEntity be = getBlockEntity(level, pos);
-        if (be == null) return ItemStack.EMPTY;
-        return be.getFilledItemStack(DestroyBlocks.CUSTOM_EXPLOSIVE_MIX.asStack());
+        if (be == null || be.getLevel() == null) return ItemStack.EMPTY;
+        return be.getFilledItemStack(DestroyBlocks.CUSTOM_EXPLOSIVE_MIX.asStack(), be.getLevel().registryAccess());
     };
 
     public boolean propagatesSkylightDown(BlockState pState, BlockGetter pReader, BlockPos pPos) {

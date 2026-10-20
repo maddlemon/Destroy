@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.core.explosion.mixedexplosive;
 
+import net.minecraft.core.HolderLookup;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,12 +37,12 @@ public interface IMixedExplosiveBlockEntity extends MenuProvider, ClipboardClone
         return "";
     };
     
-    public default void onPlace(ItemStack blockItemStack) {
-        if (blockItemStack.getItem() instanceof IMixedExplosiveItem customMixItem) setExplosiveInventory(customMixItem.getExplosiveInventory(blockItemStack));
+    public default void onPlace(ItemStack blockItemStack, HolderLookup.Provider registries) {
+        if (blockItemStack.getItem() instanceof IMixedExplosiveItem customMixItem) setExplosiveInventory(customMixItem.getExplosiveInventory(blockItemStack, registries));
     };
 
-    public default ItemStack getFilledItemStack(ItemStack emptyItemStack) {
-        if (emptyItemStack.getItem() instanceof IMixedExplosiveItem customMixItem) customMixItem.setExplosiveInventory(emptyItemStack, getExplosiveInventory());
+    public default ItemStack getFilledItemStack(ItemStack emptyItemStack, HolderLookup.Provider registries) {
+        if (emptyItemStack.getItem() instanceof IMixedExplosiveItem customMixItem) customMixItem.setExplosiveInventory(emptyItemStack, getExplosiveInventory(), registries);
         return emptyItemStack;
     };
 

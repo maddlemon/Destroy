@@ -1,24 +1,41 @@
 package petrolpark.mc.destroy.content.processing.trypolithography.recipe;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSyntaxException;
-import petrolpark.mc.destroy.Destroy;
-import petrolpark.mc.destroy.content.processing.trypolithography.CircuitPatternItem;
+import java.util.Objects;
+import java.util.stream.Stream;
 
-import net.minecraft.network.FriendlyByteBuf;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+
+import petrolpark.mc.destroy.Destroy;
+import petrolpark.mc.destroy.DestroyIngredientTypes;
+import petrolpark.mc.destroy.content.processing.trypolithography.CircuitPatternItem;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.common.crafting.AbstractIngredient;
-import net.neoforged.neoforge.common.crafting.CraftingHelper;
-import net.neoforged.neoforge.common.crafting.IIngredientSerializer;
-import net.neoforged.neoforge.registries.NeoForgeRegistries;
+import net.neoforged.neoforge.common.crafting.ICustomIngredient;
+import net.neoforged.neoforge.common.crafting.IngredientType;
 
-public class CircuitPatternIngredient extends AbstractIngredient {
+/**
+ * An Item with a specific circuit pattern. JSON: {@code {"type": "destroy:circuit_pattern_item", "item": ..., "pattern": ...}}
+ * (same as 1.20.1). Use as a vanilla Ingredient with {@link #toVanilla()}.
+ */
+public class CircuitPatternIngredient implements ICustomIngredient {
 
-    public static final Serializer SERIALIZER = new Serializer();
+    public static final MapCodec<CircuitPatternIngredient> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+        BuiltInRegistries.ITEM.byNameCodec().validate(item -> item instanceof CircuitPatternItem ? DataResult.success(item) : DataResult.error(() -> "Circuit pattern item ingredients must be able to have circuit patterns")).fieldOf("item").forGetter(i -> i.item),
+        ResourceLocation.CODEC.fieldOf("pattern").forGetter(i -> i.patternRL)
+    ).apply(instance, CircuitPatternIngredient::new));
+
+    public static final StreamCodec<RegistryFriendlyByteBuf, CircuitPatternIngredient> STREAM_CODEC = StreamCodec.composite(
+        ByteBufCodecs.registry(net.minecraft.core.registries.Registries.ITEM), i -> i.item,
+        ResourceLocation.STREAM_CODEC, i -> i.patternRL,
+        CircuitPatternIngredient::new
+    );
 
     protected final CircuitPatternItem item;
     protected final ResourceLocation patternRL;
@@ -37,12 +54,12 @@ public class CircuitPatternIngredient extends AbstractIngredient {
     };
 
     @Override
-    public ItemStack[] getItems() {
+    public Stream<ItemStack> getItems() {
         Integer pattern = Destroy.CIRCUIT_PATTERN_HANDLER.getPattern(patternRL);
-        if (pattern == null) return new ItemStack[]{};
+        if (pattern == null) return Stream.empty();
         ItemStack stack = new ItemStack(item);
         CircuitPatternItem.putPattern(stack, pattern);
-        return new ItemStack[]{stack};
+        return Stream.of(stack);
     };
 
     @Override
@@ -51,48 +68,18 @@ public class CircuitPatternIngredient extends AbstractIngredient {
     };
 
     @Override
-    public boolean isEmpty() { return false; };
-
-    @Override
-    public IIngredientSerializer<CircuitPatternIngredient> getSerializer() {
-        return SERIALIZER;
+    public IngredientType<?> getType() {
+        return DestroyIngredientTypes.CIRCUIT_PATTERN_ITEM.get();
     };
 
     @Override
-    public JsonElement toJson() {
-        JsonObject json = new JsonObject();
-        json.addProperty("type", CraftingHelper.getID(SERIALIZER).toString());
-        json.addProperty("item", NeoForgeRegistries.ITEMS.getKey(item).toString());
-        json.addProperty("pattern", patternRL.toString());
-        return json;
+    public boolean equals(Object obj) {
+        return obj instanceof CircuitPatternIngredient other && other.item == item && other.patternRL.equals(patternRL);
     };
 
-    public static class Serializer implements IIngredientSerializer<CircuitPatternIngredient> {
-
-        @Override
-        public CircuitPatternIngredient parse(FriendlyByteBuf buffer) {
-            return new CircuitPatternIngredient(buffer.readRegistryIdUnsafe(NeoForgeRegistries.ITEMS), buffer.readResourceLocation());
-        };
-
-        @Override
-        public CircuitPatternIngredient parse(JsonObject json) {
-            if (json.has("item")) {
-                if (json.has("pattern")) {
-                    return new CircuitPatternIngredient(CraftingHelper.getItem(GsonHelper.getAsString(json, "item"), true), ResourceLocation.parse(GsonHelper.getAsString(json, "pattern")));
-                } else {
-                    throw new JsonSyntaxException("Must specify the ID of a circuit pattern");
-                }
-            } else {
-                throw new JsonSyntaxException("Must specify an item");
-            }
-        };
-
-        @Override
-        public void write(FriendlyByteBuf buffer, CircuitPatternIngredient ingredient) {
-            buffer.writeRegistryIdUnsafe(NeoForgeRegistries.ITEMS, ingredient.item);
-            buffer.writeResourceLocation(ingredient.patternRL);
-        };
-
+    @Override
+    public int hashCode() {
+        return Objects.hash(item, patternRL);
     };
-    
+
 };
