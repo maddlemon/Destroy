@@ -41,7 +41,6 @@ import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.event.ScreenEvent;
 import net.neoforged.neoforge.client.gui.overlay.ForgeGui;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
-import net.neoforged.neoforge.event.TickEvent.ClientTickEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 
@@ -67,10 +66,8 @@ public class ExtendedInventoryClientHandler {
      * <li>Consumes hotbar key presses
      * </ul>
      * <p> </p>
-     * @param event
      */
-    public void tick(ClientTickEvent event) {
-        if (event.phase != ClientTickEvent.Phase.START) return;
+    public void tick() {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null) return;
         ExtendedInventory inv = ExtendedInventory.get(mc.player);

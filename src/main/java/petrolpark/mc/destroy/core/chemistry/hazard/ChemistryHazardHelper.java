@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.core.chemistry.hazard;
 
+import petrolpark.mc.destroy.DestroyPollutionTypes;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
@@ -28,7 +29,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.event.TickEvent;
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.neoforge.event.entity.living.LivingEquipmentChangeEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -162,9 +163,9 @@ public class ChemistryHazardHelper {
 
     // Give cancer if unprotected in direct sunlight
     @SubscribeEvent
-    public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
-        Player player = event.player;
-        if (player.level().canSeeSky(player.blockPosition()) && !player.hasEffect(DestroyMobEffects.SUN_PROTECTION.get()) && player.getRandom().nextInt(PollutionType.OZONE_DEPLETION.max * 600) < PollutionHelper.getPollution(player.level(), player.blockPosition(), PollutionType.OZONE_DEPLETION)) player.addEffect(DestroyMobEffects.cancerInstance());
+    public static void onPlayerTick(PlayerTickEvent.Post event) {
+        Player player = event.getEntity();
+        if (player.level().canSeeSky(player.blockPosition()) && !player.hasEffect(DestroyMobEffects.SUN_PROTECTION.get()) && player.getRandom().nextInt(DestroyPollutionTypes.OZONE_DEPLETION.get().max * 600) < PollutionHelper.getPollution(player.level(), player.blockPosition(), DestroyPollutionTypes.OZONE_DEPLETION.get())) player.addEffect(DestroyMobEffects.cancerInstance());
     };
 
     /**

@@ -103,7 +103,7 @@ public class DestroyCreativeModeTabs {
 		return ITabEntry.LINE_BREAK;
 	};
 
-	private static final ITabEntry.Item i(ItemProviderEntry<?> item) {
+	private static final ITabEntry.Item i(ItemProviderEntry<?, ?> item) {
 		return new ITabEntry.Item(item::asStack);
 	};
 
@@ -115,15 +115,15 @@ public class DestroyCreativeModeTabs {
 		return new ITabEntry.ConditionalItem(() -> new ItemStack(NeoForgeRegistries.ITEMS.getDelegate(itemId).get().value()), () -> Mods.BIG_CANNONS.isLoaded() && NeoForgeRegistries.ITEMS.containsKey(itemId));
 	};
 
-	public static final ITabEntry.ConditionalItem c(ItemProviderEntry<?> item, Supplier<Boolean> condition) {
+	public static final ITabEntry.ConditionalItem c(ItemProviderEntry<?, ?> item, Supplier<Boolean> condition) {
 		return new ITabEntry.ConditionalItem(item::asStack, condition);
 	};
 
-	private static final ITabEntry.DuplicateItem r(ItemProviderEntry<?> item) {
+	private static final ITabEntry.DuplicateItem r(ItemProviderEntry<?, ?> item) {
 		return new ITabEntry.DuplicateItem(item::asStack);
 	};
 
-	private static final ITabEntry.DuplicateItem d(ItemProviderEntry<?> item) {
+	private static final ITabEntry.DuplicateItem d(ItemProviderEntry<?, ?> item) {
 		return new ITabEntry.DuplicateItem(item::asStack);
 	};
 

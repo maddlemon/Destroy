@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.core.pollution.pollutometer;
 
+import petrolpark.mc.destroy.DestroyPollutionTypes;
 import net.minecraft.core.HolderLookup;
 import java.util.List;
 
@@ -30,7 +31,7 @@ public class PollutometerBlockEntity extends SmartBlockEntity {
 
     public PollutometerBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
-        pollutionType = PollutionType.GREENHOUSE;
+        pollutionType = DestroyPollutionTypes.GREENHOUSE.get();
     };
 
     @Override

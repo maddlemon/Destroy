@@ -11,7 +11,7 @@ import petrolpark.mc.destroy.content.redstone.programmer.RedstoneProgrammerBlock
 
 import net.createmod.catnip.data.WorldAttached;
 import net.minecraft.world.level.LevelAccessor;
-import net.neoforged.neoforge.event.TickEvent;
+import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 
@@ -35,8 +35,8 @@ public class RedstoneProgrammerItemHandler {
     };
 
     @SubscribeEvent
-    public static final void onLevelTick(TickEvent.LevelTickEvent event) {
-        tick(event.level);
+    public static final void onLevelTick(LevelTickEvent.Post event) {
+        tick(event.getLevel());
     };
     
 };

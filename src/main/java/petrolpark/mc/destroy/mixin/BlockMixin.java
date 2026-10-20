@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.mixin;
 
+import petrolpark.mc.destroy.DestroyPollutionTypes;
 import java.util.List;
 
 import org.spongepowered.asm.mixin.Mixin;
@@ -28,7 +29,7 @@ public class BlockMixin {
         for (Pair<BlockState, BlockPos> pair : List.of(Pair.of(level.getBlockState(pos.above()), pos.above()), Pair.of(state, pos))) { // As only solid (non-plant) Blocks on the surface are checked for weather, check the Block above as well
             if (state.isAir()) continue;
             if (!(DestroyTags.Blocks.ACID_RAIN_DESTRUCTIBLE.matches(pair.getFirst().getBlock()) || DestroyTags.Blocks.ACID_RAIN_DIRT_REPLACEABLE.matches(pair.getFirst().getBlock()))) continue;
-            if (level.random.nextInt(PollutionType.ACID_RAIN.max) <= PollutionHelper.getPollution(level, pos, PollutionType.ACID_RAIN)) {
+            if (level.random.nextInt(DestroyPollutionTypes.ACID_RAIN.get().max) <= PollutionHelper.getPollution(level, pos, DestroyPollutionTypes.ACID_RAIN.get())) {
                 if (DestroyTags.Blocks.ACID_RAIN_DESTRUCTIBLE.matches(pair.getFirst().getBlock())) {
                     level.destroyBlock(pair.getSecond(), false);
                 } else if (DestroyTags.Blocks.ACID_RAIN_DIRT_REPLACEABLE.matches(pair.getFirst().getBlock()) && level.random.nextInt(10) == 0) {

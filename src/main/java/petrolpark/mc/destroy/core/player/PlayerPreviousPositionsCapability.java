@@ -24,7 +24,7 @@ import net.neoforged.neoforge.capabilities.CapabilityToken;
 import net.neoforged.neoforge.capabilities.ICapabilityProvider;
 import net.neoforged.neoforge.common.util.INBTSerializable;
 import net.neoforged.neoforge.common.util.LazyOptional;
-import net.neoforged.neoforge.event.TickEvent;
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 
@@ -123,8 +123,8 @@ public class PlayerPreviousPositionsCapability {
     };
 
     @SubscribeEvent
-    public static final void onPlayerTick(TickEvent.PlayerTickEvent event) {
-        Player player = event.player;
+    public static final void onPlayerTick(PlayerTickEvent.Post event) {
+        Player player = event.getEntity();
         if (!player.level().isClientSide()) player.getCapability(PlayerPreviousPositionsCapability.CAPABILITY).ifPresent((playerPreviousPositions -> {
             playerPreviousPositions.incrementTickCounter();
             if (playerPreviousPositions.hasBeenSecond()) playerPreviousPositions.recordPosition(player.blockPosition());

@@ -4,7 +4,6 @@ import com.mojang.datafixers.util.Either;
 import petrolpark.mc.destroy.Destroy;
 import petrolpark.mc.destroy.DestroyClient;
 import petrolpark.mc.destroy.util.DestroyLang;
-import petrolpark.mc.destroy.content.oil.seismology.SeismometerItemRenderer;
 import petrolpark.mc.destroy.content.tool.swissarmyknife.SwissArmyKnifeItem;
 import petrolpark.mc.destroy.core.block.entity.BlockEntityBehaviourRenderer;
 import petrolpark.mc.destroy.core.explosion.mixedexplosive.ExplosiveProperties;
@@ -20,7 +19,7 @@ import net.minecraft.world.item.Items;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.client.event.RenderTooltipEvent;
-import net.neoforged.neoforge.event.TickEvent;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -34,14 +33,14 @@ public class DestroyClientEvents {
      * @param event
      */
     @SubscribeEvent
-    public static final void onTick(TickEvent.ClientTickEvent event) {
-        if (event.phase == TickEvent.Phase.START) {
-            SeismometerItemRenderer.tick();
-            SwissArmyKnifeItem.clientPlayerTick();
-            DestroyClient.EXTENDED_INVENTORY_HANDLER.tick(event);
-        } else {
-            BlockEntityBehaviourRenderer.tick();
-        };
+    public static final void onTick(ClientTickEvent.Pre event) {
+        SwissArmyKnifeItem.clientPlayerTick();
+        DestroyClient.EXTENDED_INVENTORY_HANDLER.tick();
+    };
+
+    @SubscribeEvent
+    public static final void onTickPost(ClientTickEvent.Post event) {
+        BlockEntityBehaviourRenderer.tick();
     };
 
     /**

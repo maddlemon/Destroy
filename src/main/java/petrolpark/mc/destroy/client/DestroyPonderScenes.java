@@ -10,7 +10,6 @@ import petrolpark.mc.destroy.content.processing.trypolithography.Trypolithograph
 import petrolpark.mc.destroy.content.product.periodictable.PeriodicTableBlock;
 import petrolpark.mc.destroy.core.chemistry.ChemistryPonderScenes;
 import petrolpark.mc.destroy.core.explosion.ExplosivesPonderScenes;
-import petrolpark.mc.destroy.core.pollution.PollutionPonderScenes;
 import petrolpark.mc.destroy.mixin.accessor.PonderSceneRegistryAccessor;
 import com.simibubi.create.AllBlocks;
 import com.simibubi.create.Create;
@@ -27,11 +26,11 @@ import net.minecraft.resources.ResourceLocation;
 public class DestroyPonderScenes {
 
     private static PonderSceneRegistrationHelper<ResourceLocation> helper = null;
-    private static PonderSceneRegistrationHelper<ItemProviderEntry<?>> CREATE_HELPER = null;
+    private static PonderSceneRegistrationHelper<ItemProviderEntry<?, ?>> CREATE_HELPER = null;
 
     public static void register(PonderSceneRegistrationHelper<ResourceLocation> helper) {
         DestroyPonderScenes.helper = helper;
-        PonderSceneRegistrationHelper<ItemProviderEntry<?>>HELPER = helper.withKeyFunction(RegistryEntry::getId);
+        PonderSceneRegistrationHelper<ItemProviderEntry<?, ?>>HELPER = helper.withKeyFunction(RegistryEntry::getId);
         CREATE_HELPER = helper.withKeyFunction((s) -> ResourceLocation.tryParse(Create.ID));
 
         // Aging Barrel
@@ -40,8 +39,8 @@ public class DestroyPonderScenes {
 
         // Basin
         HELPER.forComponents(AllBlocks.BASIN)
-            .addStoryBoard("reactions", ChemistryPonderScenes::reactions, DestroyPonderTags.CHEMISTRY)
-            .addStoryBoard("pollution/basins_and_vats", PollutionPonderScenes::basinsAndVats);
+            .addStoryBoard("reactions", ChemistryPonderScenes::reactions, DestroyPonderTags.CHEMISTRY);
+            // TODO(port): re-enable once PollutionPonderScenes is ported (author's file is commented out) .addStoryBoard("pollution/basins_and_vats", PollutionPonderScenes::basinsAndVats);
 
         // Blacklight
         HELPER.forComponents(DestroyBlocks.BLACKLIGHT)
@@ -63,8 +62,8 @@ public class DestroyPonderScenes {
             .addStoryBoard("pollution/room_temperature", ChemistryPonderScenes::roomTemperature);
 
         // Catalytic Converter
-        HELPER.forComponents(DestroyBlocks.CATALYTIC_CONVERTER)
-            .addStoryBoard("pollution/catalytic_converter", PollutionPonderScenes::catalyticConverter);
+        // TODO(port): re-enable once PollutionPonderScenes is ported (author's file is commented out) HELPER.forComponents(DestroyBlocks.CATALYTIC_CONVERTER)
+            // TODO(port): re-enable once PollutionPonderScenes is ported (author's file is commented out) .addStoryBoard("pollution/catalytic_converter", PollutionPonderScenes::catalyticConverter);
 
         // Centrifuge
         HELPER.forComponents(DestroyBlocks.CENTRIFUGE)
@@ -104,8 +103,8 @@ public class DestroyPonderScenes {
 
         // Hyperaccumulating Fertilizer
         HELPER.forComponents(DestroyItems.HYPERACCUMULATING_FERTILIZER)
-            .addStoryBoard("processing/phytomining", ProcessingPonderScenes::phytomining)
-            .addStoryBoard("pollution/crop_growth_failure", PollutionPonderScenes::cropGrowthFailure);
+            .addStoryBoard("processing/phytomining", ProcessingPonderScenes::phytomining);
+            // TODO(port): re-enable once PollutionPonderScenes is ported (author's file is commented out) .addStoryBoard("pollution/crop_growth_failure", PollutionPonderScenes::cropGrowthFailure);
 
         // Circuit Mask and Keypunch
         HELPER.forComponents(DestroyItems.CIRCUIT_MASK, DestroyBlocks.KEYPUNCH)
@@ -115,8 +114,8 @@ public class DestroyPonderScenes {
 
         // Mechanical Mixer
         HELPER.forComponents(AllBlocks.MECHANICAL_MIXER)
-            .addStoryBoard("reactions", DestroyMiscPonderScenes::reactions, DestroyPonderTags.CHEMISTRY)
-            .addStoryBoard("pollution/basins_and_vats", PollutionPonderScenes::basinsAndVats);
+            .addStoryBoard("reactions", DestroyMiscPonderScenes::reactions, DestroyPonderTags.CHEMISTRY);
+            // TODO(port): re-enable once PollutionPonderScenes is ported (author's file is commented out) .addStoryBoard("pollution/basins_and_vats", PollutionPonderScenes::basinsAndVats);
 
         // Mechanical Sieve
         HELPER.forComponents(DestroyBlocks.MECHANICAL_SIEVE)
@@ -124,20 +123,20 @@ public class DestroyPonderScenes {
         
         // Pollution
         HELPER.forComponents(DestroyItems.POLLUTION_SYMBOL)
-            .addStoryBoard("pollution/tanks", PollutionPonderScenes::pipesAndTanks)
-            .addStoryBoard("pollution/basins_and_vats", PollutionPonderScenes::basinsAndVats)
-            .addStoryBoard("pollution/smog", PollutionPonderScenes::smog)
-            .addStoryBoard("pollution/crop_growth_failure", PollutionPonderScenes::cropGrowthFailure)
-            .addStoryBoard("pollution/fishing_failure", PollutionPonderScenes::fishingFailure)
-            .addStoryBoard("blank_3x3", PollutionPonderScenes::breedingFailure)
-            .addStoryBoard("pollution/smog", PollutionPonderScenes::villagerPriceIncrease)
-            .addStoryBoard("pollution/cancer", PollutionPonderScenes::cancer)
+            // TODO(port): re-enable once PollutionPonderScenes is ported (author's file is commented out) .addStoryBoard("pollution/tanks", PollutionPonderScenes::pipesAndTanks)
+            // TODO(port): re-enable once PollutionPonderScenes is ported (author's file is commented out) .addStoryBoard("pollution/basins_and_vats", PollutionPonderScenes::basinsAndVats)
+            // TODO(port): re-enable once PollutionPonderScenes is ported (author's file is commented out) .addStoryBoard("pollution/smog", PollutionPonderScenes::smog)
+            // TODO(port): re-enable once PollutionPonderScenes is ported (author's file is commented out) .addStoryBoard("pollution/crop_growth_failure", PollutionPonderScenes::cropGrowthFailure)
+            // TODO(port): re-enable once PollutionPonderScenes is ported (author's file is commented out) .addStoryBoard("pollution/fishing_failure", PollutionPonderScenes::fishingFailure)
+            // TODO(port): re-enable once PollutionPonderScenes is ported (author's file is commented out) .addStoryBoard("blank_3x3", PollutionPonderScenes::breedingFailure)
+            // TODO(port): re-enable once PollutionPonderScenes is ported (author's file is commented out) .addStoryBoard("pollution/smog", PollutionPonderScenes::villagerPriceIncrease)
+            // TODO(port): re-enable once PollutionPonderScenes is ported (author's file is commented out) .addStoryBoard("pollution/cancer", PollutionPonderScenes::cancer)
             .addStoryBoard("vat/uv", ChemistryPonderScenes::vatUVWithoutBlackLight)
-            .addStoryBoard("pollution/smog", PollutionPonderScenes::acidRain)
-            .addStoryBoard("pollution/room_temperature", ChemistryPonderScenes::roomTemperature)
-            .addStoryBoard("pollution/reduction", PollutionPonderScenes::reduction)
-            .addStoryBoard("blank_3x3", PollutionPonderScenes::lightning)
-            .addStoryBoard("pollution/catalytic_converter", PollutionPonderScenes::catalyticConverter);
+            // TODO(port): re-enable once PollutionPonderScenes is ported (author's file is commented out) .addStoryBoard("pollution/smog", PollutionPonderScenes::acidRain)
+            .addStoryBoard("pollution/room_temperature", ChemistryPonderScenes::roomTemperature);
+            // TODO(port): re-enable once PollutionPonderScenes is ported (author's file is commented out) .addStoryBoard("pollution/reduction", PollutionPonderScenes::reduction)
+            // TODO(port): re-enable once PollutionPonderScenes is ported (author's file is commented out) .addStoryBoard("blank_3x3", PollutionPonderScenes::lightning)
+            // TODO(port): re-enable once PollutionPonderScenes is ported (author's file is commented out) .addStoryBoard("pollution/catalytic_converter", PollutionPonderScenes::catalyticConverter);
 
         // Pumpjack
         HELPER.forComponents(DestroyBlocks.PUMPJACK)
@@ -177,7 +176,7 @@ public class DestroyPonderScenes {
             //.addStoryBoard("bunsen_burner", ChemistryScenes::bunsenBurner)
             .addStoryBoard("pollution/room_temperature", ChemistryPonderScenes::roomTemperature)
             .addStoryBoard("vat/pressure", ChemistryPonderScenes::vatPressure)
-            .addStoryBoard("pollution/basins_and_vats", PollutionPonderScenes::basinsAndVats)
+            // TODO(port): re-enable once PollutionPonderScenes is ported (author's file is commented out) .addStoryBoard("pollution/basins_and_vats", PollutionPonderScenes::basinsAndVats)
             .addStoryBoard("vat/reading", ChemistryPonderScenes::vatReading)
             .addStoryBoard("colorimeter", ChemistryPonderScenes::colorimeter)
             .addStoryBoard("vat/uv", ChemistryPonderScenes::vatUVWithBlackLight);

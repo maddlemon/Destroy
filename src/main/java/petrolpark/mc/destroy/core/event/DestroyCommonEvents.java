@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.core.event;
 
+import petrolpark.mc.destroy.DestroyPollutionTypes;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -104,7 +105,7 @@ import net.neoforged.neoforge.common.util.FakePlayer;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
-import net.neoforged.neoforge.event.TickEvent;
+import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.EntityTravelToDimensionEvent;
 import net.neoforged.neoforge.event.entity.living.BabyEntitySpawnEvent;
@@ -326,8 +327,8 @@ public class DestroyCommonEvents {
         };
 
         // Regenerate ozone
-        if (event.getEntity().getType() == EntityType.LIGHTNING_BOLT && PollutionHelper.pollutionEnabled() && DestroyAllConfigs.SERVER.pollution.lightningRegeneratesOzone.get()) {
-            PollutionHelper.changePollution(event.getLevel(), event.getEntity().getOnPos(), PollutionType.OZONE_DEPLETION, -50);
+        if (event.getEntity().getType() == EntityType.LIGHTNING_BOLT && PollutionHelper.isPollutionEnabled() && DestroyAllConfigs.SERVER.pollution.lightningRegeneratesOzone.get()) {
+            PollutionHelper.changePollution(event.getLevel(), event.getEntity().getOnPos(), DestroyPollutionTypes.OZONE_DEPLETION.get(), -50);
         };
     };
 
@@ -520,7 +521,7 @@ public class DestroyCommonEvents {
         };
 
         // Failure due to smog
-        if (!failure && PollutionHelper.pollutionEnabled() && DestroyAllConfigs.SERVER.pollution.breedingAffected.get() && event.getParentA().getRandom().nextInt(PollutionType.SMOG.max) <= PollutionHelper.getPollution(level, event.getParentA().getOnPos(), PollutionType.SMOG)) failure = true; // 0% chance of failure for 0 smog, 100% chance for full smog
+        if (!failure && PollutionHelper.isPollutionEnabled() && DestroyAllConfigs.SERVER.pollution.breedingAffected.get() && event.getParentA().getRandom().nextInt(DestroyPollutionTypes.SMOG.get().max) <= PollutionHelper.getPollution(level, event.getParentA().getOnPos(), DestroyPollutionTypes.SMOG.get())) failure = true; // 0% chance of failure for 0 smog, 100% chance for full smog
 
         if (failure) { 
             if (level instanceof ServerLevel serverLevel) {
@@ -535,10 +536,10 @@ public class DestroyCommonEvents {
      */
     @SubscribeEvent
     public static final void onCropGrowPre(CropGrowEvent.Pre event) {
-        if (!PollutionHelper.pollutionEnabled() || !DestroyAllConfigs.SERVER.pollution.growingAffected.get()) return;
+        if (!PollutionHelper.isPollutionEnabled() || !DestroyAllConfigs.SERVER.pollution.growingAffected.get()) return;
         if (!(event.getLevel() instanceof Level level)) return;
         BlockPos pos = event.getPos();
-        for (PollutionType pollutionType : new PollutionType[]{PollutionType.SMOG, PollutionType.GREENHOUSE, PollutionType.ACID_RAIN}) {
+        for (PollutionType pollutionType : new PollutionType[]{DestroyPollutionTypes.SMOG.get(), DestroyPollutionTypes.GREENHOUSE.get(), DestroyPollutionTypes.ACID_RAIN.get()}) {
             if (level.random.nextInt(pollutionType.max) <= PollutionHelper.getPollution(level, pos, pollutionType)) {
                 if (level instanceof ServerLevel serverLevel) serverLevel.sendParticles(PollutionHelper.cropGrowthFailureParticles(), pos.getX() + 0.5d, pos.getY() + level.random.nextDouble() * event.getState().getShape(level, pos).max(Axis.Y), pos.getZ() + 0.5d, 10, 0.25d, 0.25d, 0.25d, 0.02d);
                 event.setResult(Result.DENY);
@@ -552,10 +553,10 @@ public class DestroyCommonEvents {
      */
     @SubscribeEvent
     public static final void onBonemeal(BonemealEvent event) {
-        if (!PollutionHelper.pollutionEnabled() || !DestroyAllConfigs.SERVER.pollution.growingAffected.get() || !DestroyAllConfigs.SERVER.pollution.bonemealingAffected.get() || event.getStack().is(DestroyTags.Items.BONEMEAL_BYPASSES_POLLUTION.tag)) return;
+        if (!PollutionHelper.isPollutionEnabled() || !DestroyAllConfigs.SERVER.pollution.growingAffected.get() || !DestroyAllConfigs.SERVER.pollution.bonemealingAffected.get() || event.getStack().is(DestroyTags.Items.BONEMEAL_BYPASSES_POLLUTION.tag)) return;
         Level level = event.getLevel();
         BlockPos pos = event.getPos();
-        for (PollutionType pollutionType : new PollutionType[]{PollutionType.SMOG, PollutionType.GREENHOUSE, PollutionType.ACID_RAIN}) {
+        for (PollutionType pollutionType : new PollutionType[]{DestroyPollutionTypes.SMOG.get(), DestroyPollutionTypes.GREENHOUSE.get(), DestroyPollutionTypes.ACID_RAIN.get()}) {
             if (level.random.nextInt(pollutionType.max) <= PollutionHelper.getPollution(level, pos, pollutionType)) {
                 if (level instanceof ServerLevel serverLevel) serverLevel.sendParticles(PollutionHelper.cropGrowthFailureParticles(), pos.getX() + 0.5d, pos.getY() + level.random.nextDouble() * event.getBlock().getShape(level, pos).max(Axis.Y), pos.getZ() + 0.5d, 10, 0.25d, 0.25d, 0.25d, 0.02d);
                 event.setResult(Result.DENY);
@@ -569,23 +570,23 @@ public class DestroyCommonEvents {
      */
     @SubscribeEvent
     public static final void onSaplingGrowTree(SaplingGrowTreeEvent event) {
-        if (!(event.getLevel() instanceof Level level) || !PollutionHelper.pollutionEnabled() || !DestroyAllConfigs.SERVER.pollution.growingTreesDecreasesPollution.get()) return;
+        if (!(event.getLevel() instanceof Level level) || !PollutionHelper.isPollutionEnabled() || !DestroyAllConfigs.SERVER.pollution.growingTreesDecreasesPollution.get()) return;
         BlockPos pos = event.getPos();
-        if (level.random.nextInt(3) == 0) PollutionHelper.changePollution(level, pos, PollutionType.GREENHOUSE, -1);
-        if (level.random.nextInt(3) == 0) PollutionHelper.changePollution(level, pos, PollutionType.SMOG, -1);
-        if (level.random.nextInt(3) == 0) PollutionHelper.changePollution(level, pos, PollutionType.ACID_RAIN, -1);
+        if (level.random.nextInt(3) == 0) PollutionHelper.changePollution(level, pos, DestroyPollutionTypes.GREENHOUSE.get(), -1);
+        if (level.random.nextInt(3) == 0) PollutionHelper.changePollution(level, pos, DestroyPollutionTypes.SMOG.get(), -1);
+        if (level.random.nextInt(3) == 0) PollutionHelper.changePollution(level, pos, DestroyPollutionTypes.ACID_RAIN.get(), -1);
     };
 
     /**
      * Naturally decrease Pollution over time.
      */
     @SubscribeEvent
-    public static final void onLevelTick(TickEvent.LevelTickEvent event) {
-        Level level = event.level;
+    public static final void onLevelTick(LevelTickEvent.Post event) {
+        Level level = event.getLevel();
 
         // Global Pollution
         for (PollutionType pollutionType : PollutionType.values()) {
-            if (PollutionHelper.pollutionEnabled() && !pollutionType.local && level.random.nextFloat() <= DestroyAllConfigs.SERVER.pollution.pollutionDecreaseRates.get(pollutionType).getF()) PollutionHelper.changePollutionGlobal(event.level, pollutionType, -1);
+            if (PollutionHelper.isPollutionEnabled() && !pollutionType.local && level.random.nextFloat() <= DestroyAllConfigs.SERVER.pollution.pollutionDecreaseRates.get(pollutionType).getF()) PollutionHelper.changePollutionGlobal(level, pollutionType, -1);
         };
 
     };

@@ -42,7 +42,7 @@ public abstract class ServerLevelMixin extends Level {
         at = @At("RETURN")
     )
     public void inTickChunk(LevelChunk chunk, int randomTickSpeed, CallbackInfo ci) {
-        if (!PollutionHelper.pollutionEnabled()) return;
+        if (!PollutionHelper.isPollutionEnabled()) return;
         ChunkPos pos = chunk.getPos();
         chunk.getCapability(Pollution.CAPABILITY).ifPresent(pollution -> {
 

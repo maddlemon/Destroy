@@ -23,10 +23,8 @@ import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.LevelAccessor;
-import net.neoforged.neoforge.event.TickEvent.Phase;
-import net.neoforged.neoforge.event.TickEvent.PlayerTickEvent;
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.LogicalSide;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.items.ItemStackHandler;
 import net.neoforged.neoforge.items.SlotItemHandler;
@@ -215,8 +213,8 @@ public class RedstoneProgrammerMenu extends GhostItemMenu<RedstoneProgram> {
     private static WeakHashMap<ServerPlayer, Boolean> programmersPowered = new WeakHashMap<>();
 
     @SubscribeEvent
-    public static void onPlayerTick(PlayerTickEvent event) {
-        if (event.side == LogicalSide.SERVER && event.phase == Phase.END && event.player instanceof ServerPlayer player) {
+    public static void onPlayerTick(PlayerTickEvent.Post event) {
+        if (event.getEntity() instanceof ServerPlayer player) {
             if (player.containerMenu instanceof RedstoneProgrammerMenu menu) {
                 boolean currentPower = menu.contentHolder.hasPower();
                 Boolean oldPower = programmersPowered.get(player);

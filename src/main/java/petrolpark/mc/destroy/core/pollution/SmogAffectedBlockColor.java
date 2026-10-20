@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.core.pollution;
 
+import petrolpark.mc.destroy.DestroyPollutionTypes;
 import java.util.function.BiFunction;
 import java.util.function.IntSupplier;
 
@@ -84,7 +85,7 @@ public class SmogAffectedBlockColor implements BlockColor {
 
     public static int getColor(int originalColor, LazyOptional<Pollution> pollutionOp) {
         if (!pollutionOp.isPresent()) return originalColor;
-        return Color.mixColors(originalColor, brown, (float) pollutionOp.resolve().get().get(PollutionType.SMOG) / PollutionType.SMOG.max);
+        return Color.mixColors(originalColor, brown, (float) pollutionOp.resolve().get().get(DestroyPollutionTypes.SMOG.get()) / DestroyPollutionTypes.SMOG.get().max);
     };
     
     private static final int brown = 0xFF3F332A;

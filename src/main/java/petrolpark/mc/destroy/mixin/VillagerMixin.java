@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.mixin;
 
+import petrolpark.mc.destroy.DestroyPollutionTypes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.injection.At;
@@ -42,10 +43,10 @@ public class VillagerMixin {
      */
     @Inject(method = "updateSpecialPrices", at = @At(value = "RETURN"))
     public void inUpdateSpecialPrices(Player player, CallbackInfo ci) {
-        if (!PollutionHelper.pollutionEnabled() || !DestroyAllConfigs.SERVER.pollution.villagersIncreasePrices.get()) return;
+        if (!PollutionHelper.isPollutionEnabled() || !DestroyAllConfigs.SERVER.pollution.villagersIncreasePrices.get()) return;
         Villager thisVillager = (Villager)(Object)this;
         for (MerchantOffer trade : thisVillager.getOffers()) {
-            int change = (int)(50d * (double)PollutionHelper.getPollution(thisVillager.level(), thisVillager.getOnPos(), PollutionType.SMOG) / (double)PollutionType.SMOG.max);
+            int change = (int)(50d * (double)PollutionHelper.getPollution(thisVillager.level(), thisVillager.getOnPos(), DestroyPollutionTypes.SMOG.get()) / (double)DestroyPollutionTypes.SMOG.get().max);
             trade.addToSpecialPriceDiff(change);
         };
     };

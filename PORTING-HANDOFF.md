@@ -63,7 +63,22 @@ JAVA_HOME=$JDK ./gradlew compileJava --console=plain    # log to a file, run det
 
 | `(this commit)` | AT fix (above); Create 6 `ProcessingRecipeParams` import; `HolderLookup.Provider registries` added to all `SmartBlockEntity`/`BlockEntityBehaviour` `read`/`write`/`writeSafe` overrides + super/behaviour/`FluidTank` NBT calls inside them (28 files); `FluidStack.loadFluidStackFromNBT`/`writeToNBT` -> `parseOptional`/`saveOptional` in block entities; Blowpipe `readBlowing`/`writeBlowing` take a provider. Done from Maddie's Windows machine. |
 
-Latest compile (after this commit): **2,050 errors** (javac count; gradle prints each twice).
+| `(next commit)` | Tick events -> `ClientTickEvent.Pre/Post`, `PlayerTickEvent.Post`, `LevelTickEvent.Post` (all 9 files; `ExtendedInventoryClientHandler.tick()` no-arg; dropped duplicate `SeismometerItemRenderer.tick()` call, it self-subscribes now); old `PollutionType.SMOG/GREENHOUSE/ACID_RAIN/OZONE_DEPLETION` -> `DestroyPollutionTypes.X.get()`, `pollutionEnabled()` -> `isPollutionEnabled()`; pollution ponder storyboards disabled with `TODO(port)` (author's `PollutionPonderScenes` is fully commented out upstream); `ItemProviderEntry<?>` -> `<?, ?>`. |
+
+**Behaviour note (tick events):** Forge fired Player/Level tick events twice per tick (START+END).
+`ChemistryHazardHelper.onPlayerTick`, `PlayerCrouchingCapability`, `PlayerPreviousPositionsCapability`,
+`RedstoneProgrammerItemHandler.onLevelTick` and `DestroyCommonEvents.onLevelTick` never checked the
+phase, so they ran 2x/tick. They're now on `Post` only = 1x/tick: crouch/urinate counters, ozone-cancer
+roll, previous-position sampling and global pollution decay run at half their old rate. Subscribe to
+`Pre` too if the old rates matter.
+
+Latest compile: **1,940 errors**.
+
+Still TODO for pollution consumers (old enum API, needs redesign against the author's registry +
+data-map `PollutionType.Properties`): `pollutionType.local` / `.max`, `PollutionType.values()`,
+`PollutionHelper.pollute(...)` (10 sites), `changePollutionGlobal`, `getCropGrowthFailureParticles`.
+
+Previous compile (after the AT commit): **2,050 errors** (javac count; gradle prints each twice).
 Before: 2,178 (after batch 1, javac count). Remaining big buckets: `LazyOptional`/`Capability`
 (batch 3), `getOrCreateTag` (batch 3), packets (batch 3), Create `FluidIngredient` (batch 2).
 

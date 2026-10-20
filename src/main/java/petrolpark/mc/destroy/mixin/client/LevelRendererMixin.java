@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.mixin.client;
 
+import petrolpark.mc.destroy.DestroyPollutionTypes;
 import net.createmod.catnip.theme.Color;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -106,10 +107,10 @@ public class LevelRendererMixin {
     private Color getRainColor() {
         Pollution levelPollution = ClientLevelPollutionData.getLevelPollution();
         if (levelPollution == null) return new Color(0xFF3E5EB8);
-        return new Color(Color.mixColors(0xFF3E5EB8, 0xFF00FF00, (float)levelPollution.get(PollutionType.ACID_RAIN) / (float)PollutionType.ACID_RAIN.max));
+        return new Color(Color.mixColors(0xFF3E5EB8, 0xFF00FF00, (float)levelPollution.get(DestroyPollutionTypes.ACID_RAIN.get()) / (float)DestroyPollutionTypes.ACID_RAIN.get().max));
     };
 
     private static boolean rainColorAffected() {
-        return PollutionHelper.pollutionEnabled() && DestroyAllConfigs.SERVER.pollution.rainColorChanges.get();
+        return PollutionHelper.isPollutionEnabled() && DestroyAllConfigs.SERVER.pollution.rainColorChanges.get();
     };
 };

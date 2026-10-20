@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.core.chemistry.vat;
 
+import petrolpark.mc.destroy.DestroyPollutionTypes;
 import net.minecraft.core.HolderLookup;
 import java.text.DecimalFormat;
 import java.util.List;
@@ -376,7 +377,7 @@ public class VatSideBlockEntity extends CopycatBlockEntity implements IHaveLabGo
     public float getSkyUV() {
         if (!getLevel().canSeeSky(getBlockPos())) return 0f;
         float uvPower = 10f;
-        if (PollutionHelper.pollutionEnabled() && DestroyAllConfigs.SERVER.pollution.vatUVPowerAffected.get()) uvPower += 20f * (float)PollutionHelper.getPollution(getLevel(), getBlockPos(), PollutionType.OZONE_DEPLETION) / (float)PollutionType.OZONE_DEPLETION.max;
+        if (PollutionHelper.isPollutionEnabled() && DestroyAllConfigs.SERVER.pollution.vatUVPowerAffected.get()) uvPower += 20f * (float)PollutionHelper.getPollution(getLevel(), getBlockPos(), DestroyPollutionTypes.OZONE_DEPLETION.get()) / (float)DestroyPollutionTypes.OZONE_DEPLETION.get().max;
         return uvPower;
     };
 
