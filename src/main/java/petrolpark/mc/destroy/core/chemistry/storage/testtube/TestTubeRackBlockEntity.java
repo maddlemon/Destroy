@@ -56,13 +56,13 @@ public class TestTubeRackBlockEntity extends SmartBlockEntity implements ISpecia
     protected void read(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
         super.read(tag, registries, clientPacket);
         inv = new TestTubeRackInventory();
-        inv.deserializeNBT(tag.getCompound("Inventory"));
+        inv.deserializeNBT(registries, tag.getCompound("Inventory"));
     };
 
     @Override
     protected void write(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
         super.write(tag, registries, clientPacket);
-        tag.put("Inventory", inv.serializeNBT());
+        tag.put("Inventory", inv.serializeNBT(registries));
     };
     
     @OnlyIn(Dist.CLIENT)

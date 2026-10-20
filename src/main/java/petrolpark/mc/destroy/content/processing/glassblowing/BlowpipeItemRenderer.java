@@ -48,7 +48,7 @@ public class BlowpipeItemRenderer extends CustomRenderedItemModelRenderer {
 
         GlassblowingRecipe recipe = BlowpipeBlockEntity.readRecipe(mc.level, tag);
         FluidTank tank = new FluidTank(BlowpipeBlockEntity.TANK_CAPACITY);
-        tank.readFromNBT(tag.getCompound("Tank"));
+        BlowpipeItem.readTank(tank, tag.getCompound("Tank"));
         if (recipe == null) {
             ms.popPose();
             return;

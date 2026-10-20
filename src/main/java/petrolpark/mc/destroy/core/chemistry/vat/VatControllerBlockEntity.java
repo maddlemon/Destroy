@@ -297,7 +297,7 @@ public class VatControllerBlockEntity extends SmartBlockEntity implements IHaveL
         underDeconstruction = tag.getBoolean("UnderDeconstruction");
 
         // Inventory
-        inventory.deserializeNBT(tag.getCompound("Inventory"));
+        inventory.deserializeNBT(registries, tag.getCompound("Inventory"));
 
         // Mixture
         if (clientPacket) {
@@ -328,7 +328,7 @@ public class VatControllerBlockEntity extends SmartBlockEntity implements IHaveL
         tag.putBoolean("UnderDeconstruction", underDeconstruction);
 
         // Inventory
-        tag.put("Inventory", inventory.serializeNBT());
+        tag.put("Inventory", inventory.serializeNBT(registries));
         
         // Mixture
         if (!getLevel().isClientSide()) { // It thinks getLevel() might be null (it's not)

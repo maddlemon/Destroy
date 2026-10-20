@@ -1,21 +1,20 @@
 package petrolpark.mc.destroy.content.processing.discstamping;
 
-import petrolpark.mc.destroy.util.ItemStackNBT;
 import java.util.List;
 
 import javax.annotation.Nullable;
 
+import petrolpark.mc.destroy.DestroyDataComponentTypes;
 import petrolpark.mc.destroy.DestroyItems;
 import petrolpark.mc.destroy.core.item.WithSecondaryItem;
 import com.tterrag.registrate.util.nullness.NonnullType;
 
 import net.minecraft.ChatFormatting;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.RecordItem;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.world.level.Level;
 
 public class DiscStamperItem extends WithSecondaryItem {
@@ -25,15 +24,12 @@ public class DiscStamperItem extends WithSecondaryItem {
     };
 
     public static ItemStack getDisc(ItemStack stamper) {
-        if (ItemStackNBT.read(stamper).contains("Disc", Tag.TAG_COMPOUND)) {
-            return ItemStack.of(ItemStackNBT.read(stamper).getCompound("Disc"));
-        };
-        return ItemStack.EMPTY;
+        return stamper.getOrDefault(DestroyDataComponentTypes.DISC, ItemContainerContents.EMPTY).copyOne();
     };
 
     public static ItemStack of(ItemStack discStack) {
         ItemStack stack = DestroyItems.DISC_STAMPER.asStack();
-        ItemStackNBT.update(stack, customTag -> customTag.put("Disc", discStack.save(new CompoundTag())));
+        stack.set(DestroyDataComponentTypes.DISC, ItemContainerContents.fromItems(List.of(discStack)));
         return stack;
     };
 

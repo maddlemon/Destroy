@@ -14,7 +14,7 @@ import com.simibubi.create.content.redstone.link.RedstoneLinkNetworkHandler.Freq
 import com.simibubi.create.foundation.gui.menu.GhostItemMenu;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -40,7 +40,7 @@ public class RedstoneProgrammerMenu extends GhostItemMenu<RedstoneProgram> {
 
     private int offset = 0;
 
-    public RedstoneProgrammerMenu(MenuType<?> type, int id, Inventory inv, FriendlyByteBuf buf) {
+    public RedstoneProgrammerMenu(MenuType<?> type, int id, Inventory inv, RegistryFriendlyByteBuf buf) {
         super(type, id, inv, buf);
     };
 
@@ -53,7 +53,7 @@ public class RedstoneProgrammerMenu extends GhostItemMenu<RedstoneProgram> {
     };
 
     @Override
-    protected RedstoneProgram createOnClient(FriendlyByteBuf extraData) {
+    protected RedstoneProgram createOnClient(RegistryFriendlyByteBuf extraData) {
         DummyRedstoneProgram program = new DummyRedstoneProgram();
         program.read(extraData);
         program.powered = extraData.readBoolean();
@@ -204,7 +204,7 @@ public class RedstoneProgrammerMenu extends GhostItemMenu<RedstoneProgram> {
         };
 
         @Override
-        public void read(FriendlyByteBuf buf) {
+        public void read(RegistryFriendlyByteBuf buf) {
             super.read(buf);
         };
 

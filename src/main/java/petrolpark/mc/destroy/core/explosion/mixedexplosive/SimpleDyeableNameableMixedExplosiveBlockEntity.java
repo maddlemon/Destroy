@@ -85,9 +85,9 @@ public abstract class SimpleDyeableNameableMixedExplosiveBlockEntity extends Sma
     protected void read(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
         super.read(tag, registries, clientPacket);
         setColor(tag.getInt("Color"));
-        if (tag.contains("CustomName", Tag.TAG_STRING)) name = Component.Serializer.fromJson(tag.getString("CustomName"));
+        if (tag.contains("CustomName", Tag.TAG_STRING)) name = Component.Serializer.fromJson(tag.getString("CustomName"), registries);
         inv = createInv();
-        inv.deserializeNBT(tag.getCompound("ExplosiveMix"));
+        inv.deserializeNBT(registries, tag.getCompound("ExplosiveMix"));
         if (tag.contains("VibrationData", Tag.TAG_COMPOUND)) VibrationSystem.Data.CODEC.parse(new Dynamic<>(NbtOps.INSTANCE, tag.getCompound("VibrationData"))).resultOrPartial(Destroy.LOGGER::error).ifPresent(data -> vibrationData = data);
     };
 
@@ -95,8 +95,8 @@ public abstract class SimpleDyeableNameableMixedExplosiveBlockEntity extends Sma
     protected void write(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
         super.write(tag, registries, clientPacket);
         tag.putInt("Color", color);
-        if (name != null) tag.putString("CustomName", Component.Serializer.toJson(name));
-        tag.put("ExplosiveMix", inv.serializeNBT());
+        if (name != null) tag.putString("CustomName", Component.Serializer.toJson(name, registries));
+        tag.put("ExplosiveMix", inv.serializeNBT(registries));
         VibrationSystem.Data.CODEC.encodeStart(NbtOps.INSTANCE, vibrationData).resultOrPartial(Destroy.LOGGER::error).ifPresent(data -> tag.put("VibrationData", data));
     };
 
@@ -138,20 +138,20 @@ public abstract class SimpleDyeableNameableMixedExplosiveBlockEntity extends Sma
     };
 
     @Override
-    public boolean readFromClipboard(CompoundTag tag, Player player, Direction side, boolean simulate) {
-        boolean success = IDyeableMixedExplosiveBlockEntity.super.readFromClipboard(tag, player, side, simulate);
+    public boolean readFromClipboard(HolderLookup.Provider registries, CompoundTag tag, Player player, Direction side, boolean simulate) {
+        boolean success = IDyeableMixedExplosiveBlockEntity.super.readFromClipboard(registries, tag, player, side, simulate);
         if (tag.contains("Name", Tag.TAG_STRING)) {
-            if (!simulate) name = Component.Serializer.fromJson(tag.getString("Name"));
+            if (!simulate) name = Component.Serializer.fromJson(tag.getString("Name"), registries);
             return true;
         };
         return success;
     };
 
     @Override
-    public boolean writeToClipboard(CompoundTag tag, Direction side) {
-        boolean success = IDyeableMixedExplosiveBlockEntity.super.writeToClipboard(tag, side);
+    public boolean writeToClipboard(HolderLookup.Provider registries, CompoundTag tag, Direction side) {
+        boolean success = IDyeableMixedExplosiveBlockEntity.super.writeToClipboard(registries, tag, side);
         if (name != null) {
-            tag.putString("Name", Component.Serializer.toJson(name));
+            tag.putString("Name", Component.Serializer.toJson(name, registries));
             return true;
         };
         return success;

@@ -60,8 +60,8 @@ public interface IDyeableMixedExplosiveBlockEntity extends IMixedExplosiveBlockE
     };
 
     @Override
-    default boolean readFromClipboard(CompoundTag tag, Player player, Direction side, boolean simulate) {
-        boolean invCopied = IMixedExplosiveBlockEntity.super.readFromClipboard(tag, player, side, simulate);
+    default boolean readFromClipboard(HolderLookup.Provider registries, CompoundTag tag, Player player, Direction side, boolean simulate) {
+        boolean invCopied = IMixedExplosiveBlockEntity.super.readFromClipboard(registries, tag, player, side, simulate);
         if (tag.contains("Color", Tag.TAG_INT)) {
             if (!simulate) setColor(tag.getInt("Color"));
             return true;
@@ -70,8 +70,8 @@ public interface IDyeableMixedExplosiveBlockEntity extends IMixedExplosiveBlockE
     };
 
     @Override
-    default boolean writeToClipboard(CompoundTag tag, Direction side) {
-        IMixedExplosiveBlockEntity.super.writeToClipboard(tag, side);
+    default boolean writeToClipboard(HolderLookup.Provider registries, CompoundTag tag, Direction side) {
+        IMixedExplosiveBlockEntity.super.writeToClipboard(registries, tag, side);
         tag.putInt("Color", getColor());
         return true;
     };

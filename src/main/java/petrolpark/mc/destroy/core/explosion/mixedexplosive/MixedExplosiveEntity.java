@@ -49,7 +49,7 @@ public class MixedExplosiveEntity extends PrimedBombEntity implements IEntityWit
     protected void addAdditionalSaveData(CompoundTag compound) {
         super.addAdditionalSaveData(compound);
         compound.putInt("Color", color);
-        compound.put("Inventory", inv.serializeNBT());
+        compound.put("Inventory", inv.serializeNBT(registryAccess()));
     };
 
     @Override
@@ -57,7 +57,7 @@ public class MixedExplosiveEntity extends PrimedBombEntity implements IEntityWit
         super.readAdditionalSaveData(compound);
         color = compound.getInt("Color");
         inv = new MixedExplosiveInventory(DestroyAllConfigs.SERVER.blocks.customExplosiveMixSize.get());
-        inv.deserializeNBT(compound.getCompound("Inventory"));
+        inv.deserializeNBT(registryAccess(), compound.getCompound("Inventory"));
     };
 
     @Override

@@ -45,9 +45,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
-import net.neoforged.neoforge.capabilities.Capability;
-import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.capabilities.ICapabilityProvider;
 import net.neoforged.neoforge.common.util.FakePlayer;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
@@ -83,7 +80,7 @@ public class BlowpipeItem extends BlockItem implements CustomArmPoseItem {
         
         // Continuing blowing
         FluidTank tank = new FluidTank(BlowpipeBlockEntity.TANK_CAPACITY);
-        tank.readFromNBT(tag.getCompound("Tank"));
+        readTank(tank, tag.getCompound("Tank"));
         if (result.getResult() == InteractionResult.PASS && recipe != null && !tank.isEmpty()) { // Only begin if we have Fluid - the only Fluid we can have is the right one for the recipe
 
             if (progress > BlowpipeBlockEntity.BLOWING_DURATION) { // If done
@@ -100,6 +97,20 @@ public class BlowpipeItem extends BlockItem implements CustomArmPoseItem {
             }
         };
         return result;
+    };
+
+    /**
+     * Read the Blowpipe's tank from Item NBT, which is in {@link FluidTank#writeToNBT}'s layout (the Block Entity writes it that way)
+     * but has to be read without registry access.
+     */
+    public static void readTank(FluidTank tank, CompoundTag tankTag) {
+        tank.setFluid(ItemStackNBT.readFluid(tankTag, "Fluid"));
+    };
+
+    public static CompoundTag writeTank(FluidTank tank) {
+        CompoundTag tankTag = new CompoundTag();
+        if (!tank.isEmpty()) ItemStackNBT.writeFluid(tankTag, "Fluid", tank.getFluid());
+        return tankTag;
     };
 
     public static SizedFluidIngredient getFluidIngredient(CompoundTag tag) {
@@ -127,7 +138,7 @@ public class BlowpipeItem extends BlockItem implements CustomArmPoseItem {
             BlockEntity be = level.getBlockEntity(pos);
             if (be != null) {
                 FluidTank blowpipeTank = new FluidTank(BlowpipeBlockEntity.TANK_CAPACITY);
-                blowpipeTank.readFromNBT(tag.getCompound("Tank"));
+                readTank(blowpipeTank, tag.getCompound("Tank"));
                 if (blowpipeTank.isEmpty()) {
                     IFluidHandler fh = DestroyCapabilities.fluidHandler(be, face);
                     if (fh != null) {
@@ -136,7 +147,7 @@ public class BlowpipeItem extends BlockItem implements CustomArmPoseItem {
                             if (!ingredient.test(drained) || drained.getAmount() < ingredient.amount()) return InteractionResult.FAIL;
                             if (!simulate) {
                                 blowpipeTank.fill(drained, FluidAction.EXECUTE);
-                                tag.put("Tank", blowpipeTank.writeToNBT(new CompoundTag()));
+                                tag.put("Tank", writeTank(blowpipeTank));
                                 ItemStackNBT.set(stack, tag);
                                 return InteractionResult.SUCCESS;
                             };
@@ -154,7 +165,7 @@ public class BlowpipeItem extends BlockItem implements CustomArmPoseItem {
     public boolean finishBlowing(ItemStack stack, Level level, Player player) {
         CompoundTag tag = ItemStackNBT.read(stack);
         if (tag.getInt("Progress") < BlowpipeBlockEntity.BLOWING_DURATION) return false;
-        tag.put("Tank", new FluidTank(1000).writeToNBT(new CompoundTag())); // Empty the Tank
+        tag.put("Tank", writeTank(new FluidTank(1000))); // Empty the Tank
         tag.putInt("Progress", 0); // Reset progress
         tag.putInt("LastProgress", 0);
         ItemStackNBT.set(stack, tag);
@@ -169,7 +180,7 @@ public class BlowpipeItem extends BlockItem implements CustomArmPoseItem {
     public boolean onLeftClickEntity(ItemStack stack, Player player, Entity entity) {
         CompoundTag tag = ItemStackNBT.read(stack);
         FluidTank tank = new FluidTank(1000);
-        tank.readFromNBT(tag.getCompound("Tank"));
+        readTank(tank, tag.getCompound("Tank"));
         if (!tank.isEmpty() && (float)ItemStackNBT.read(stack).getInt("Progress") / (float)BlowpipeBlockEntity.BLOWING_DURATION < BlowpipeBlockEntity.BLOWING_TIME_PROPORTION) {
             entity.setSecondsOnFire(3);
         };
@@ -245,7 +256,7 @@ public class BlowpipeItem extends BlockItem implements CustomArmPoseItem {
         if (tag.getInt("Progress") == BlowpipeBlockEntity.BLOWING_DURATION) {
             tag.putInt("Progress", 0);
             tag.putInt("LastProgress", 0);
-            tag.put("Tank", new FluidTank(BlowpipeBlockEntity.TANK_CAPACITY).writeToNBT(new CompoundTag())); // Empty the Tank
+            tag.put("Tank", writeTank(new FluidTank(BlowpipeBlockEntity.TANK_CAPACITY))); // Empty the Tank
             ItemStackNBT.set(stack, tag);
         };
         return stack;
@@ -257,15 +268,10 @@ public class BlowpipeItem extends BlockItem implements CustomArmPoseItem {
         consumer.accept(SimpleCustomRenderer.create(this, new BlowpipeItemRenderer()));
     };
 
-    @Override
-    public @Nullable ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
-        return new BlowpipeSpoutFillingFluidHandler(stack);
-    };
-
     /**
      * Fluid Handler capability which only exists to allow Blowpipes to be filled by Spouts.
      */
-    protected static class BlowpipeSpoutFillingFluidHandler implements IFluidHandlerItem, ICapabilityProvider {
+    public static class BlowpipeSpoutFillingFluidHandler implements IFluidHandlerItem {
 
         protected final ItemStack stack;
 
@@ -273,11 +279,6 @@ public class BlowpipeItem extends BlockItem implements CustomArmPoseItem {
             this.stack = stack;
         };
         
-        @Override
-        public <T> @NotNull LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-            if (cap != Capabilities.FluidHandler.ITEM) return LazyOptional.empty();
-            return LazyOptional.of(() -> this).cast();
-        };
 
         @Override
         public int getTanks() {
@@ -287,7 +288,7 @@ public class BlowpipeItem extends BlockItem implements CustomArmPoseItem {
         @Override
         public @NotNull FluidStack getFluidInTank(int tankNo) {
             FluidTank tank = new FluidTank(getTankCapacity(0));
-            tank.readFromNBT(ItemStackNBT.read(stack).getCompound("Tank"));
+            readTank(tank, ItemStackNBT.read(stack).getCompound("Tank"));
             return tank.getFluid();
         };
 
@@ -307,11 +308,11 @@ public class BlowpipeItem extends BlockItem implements CustomArmPoseItem {
             SizedFluidIngredient ingredient = getFluidIngredient(tag);
             if (ingredient != null && ingredient.test(resource) && resource.getAmount() >= ingredient.amount()) {
                 FluidTank tank = new FluidTank(getTankCapacity(0));
-                tank.readFromNBT(tag.getCompound("Tank"));
+                readTank(tank, tag.getCompound("Tank"));
                 if (!tank.isEmpty()) return 0;
                 if (action.execute()) {
                     tank.fill(resource, FluidAction.EXECUTE);
-                    tag.put("Tank", tank.writeToNBT(new CompoundTag()));
+                    tag.put("Tank", writeTank(tank));
                     ItemStackNBT.set(stack, tag);
                 };
                 return ingredient.amount();

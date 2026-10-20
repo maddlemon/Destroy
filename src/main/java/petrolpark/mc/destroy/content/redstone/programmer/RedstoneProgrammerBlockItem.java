@@ -9,6 +9,7 @@ import petrolpark.mc.destroy.DestroyBlocks;
 import petrolpark.mc.destroy.core.block.IPickUpPutDownBlock;
 import com.simibubi.create.foundation.item.render.SimpleCustomRenderer;
 
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -77,7 +78,7 @@ public class RedstoneProgrammerBlockItem extends BlockItem {
             getProgram(stack, level, player).ifPresent(program -> {
                 if (!level.isClientSide()) program.load(); // This is a set so we're safe to repeatedly load
                 program.tick();
-                setProgram(stack, program);
+                setProgram(stack, program, level.registryAccess());
             });
         };
     };
@@ -92,13 +93,13 @@ public class RedstoneProgrammerBlockItem extends BlockItem {
         return !(from.getItem() instanceof RedstoneProgrammerBlockItem && to.getItem() instanceof RedstoneProgrammerBlockItem);
     };
 
-    public static void setProgram(ItemStack stack, RedstoneProgram program) {
-        ItemStackNBT.update(stack, customTag -> customTag.put("Program", program.write()));
+    public static void setProgram(ItemStack stack, RedstoneProgram program, HolderLookup.Provider registries) {
+        ItemStackNBT.update(stack, customTag -> customTag.put("Program", program.write(registries)));
     };
 
-    public static ItemStack withProgram(RedstoneProgram program) {
+    public static ItemStack withProgram(RedstoneProgram program, HolderLookup.Provider registries) {
         ItemStack stack = DestroyBlocks.REDSTONE_PROGRAMMER.asStack();
-        setProgram(stack, program);
+        setProgram(stack, program, registries);
         return stack;
     };
 
@@ -123,7 +124,7 @@ public class RedstoneProgrammerBlockItem extends BlockItem {
 
         ItemStackRedstoneProgram newProgram;
         if (!tag.contains("Program")) newProgram = new ItemStackRedstoneProgram(player);
-        else newProgram = RedstoneProgram.read(() -> new ItemStackRedstoneProgram(player), tag.getCompound("Program"));
+        else newProgram = RedstoneProgram.read(() -> new ItemStackRedstoneProgram(player), level.registryAccess(), tag.getCompound("Program"));
 
         if (level.isClientSide()) return Optional.of(newProgram); // For client-sided Redstone Programmers, create a new one every time its needed
 

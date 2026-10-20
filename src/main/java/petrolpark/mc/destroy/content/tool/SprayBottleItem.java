@@ -6,6 +6,7 @@ import javax.annotation.Nullable;
 import petrolpark.mc.destroy.DestroyItems;
 import petrolpark.mc.destroy.DestroySoundEvents;
 
+import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.core.dispenser.BlockSource;
 import net.minecraft.core.Direction;
 import net.minecraft.core.dispenser.OptionalDispenseItemBehavior;
@@ -15,7 +16,6 @@ import net.minecraft.world.entity.AreaEffectCloud;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.DispenserBlock;
@@ -52,8 +52,12 @@ public class SprayBottleItem extends Item {
     public void spawnEffectCloud(Level level, Vec3 position, @Nullable Player player) {
         AreaEffectCloud effectCloud = new AreaEffectCloud(level, position.x, position.y, position.z);
         if (player != null) effectCloud.setOwner(player);
-        effectCloud.setPotion(new Potion(effects));
-        for (MobEffectInstance instance : effects) effectCloud.addEffect(instance);
+        // 1.20.1 set a Potion made of these effects and also added them as custom effects, so the cloud applied each one twice:
+        // from the Potion at a quarter of the duration, then in full. Kept, without an unregistered Potion (which could not be saved).
+        PotionContents contents = PotionContents.EMPTY;
+        for (MobEffectInstance instance : effects) contents = contents.withEffectAdded(new MobEffectInstance(instance.getEffect(), instance.mapDuration(duration -> duration / 4), instance.getAmplifier(), instance.isAmbient(), instance.isVisible()));
+        for (MobEffectInstance instance : effects) contents = contents.withEffectAdded(instance);
+        effectCloud.setPotionContents(contents);
 
         effectCloud.setRadius(3f);
         effectCloud.setRadiusOnUse(-0.5f);

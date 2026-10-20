@@ -1,14 +1,21 @@
 package petrolpark.mc.destroy;
 
-import net.neoforged.neoforge.items.IItemHandler;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.core.Direction;
 import javax.annotation.Nullable;
+import net.minecraft.core.Direction;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.neoforged.neoforge.items.IItemHandler;
+import petrolpark.mc.destroy.content.processing.glassblowing.BlowpipeItem;
+import petrolpark.mc.destroy.core.chemistry.storage.ItemMixtureTank;
+import petrolpark.mc.destroy.core.chemistry.storage.PlaceableMixtureTankItem;
+import petrolpark.mc.destroy.core.chemistry.storage.testtube.TestTubeItem;
 
 /**
  * Block Entity capabilities. In NeoForge 1.21 these are registered per Block Entity type here, rather than by
@@ -40,6 +47,27 @@ public class DestroyCapabilities {
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, DestroyBlockEntityTypes.CUSTOM_EXPLOSIVE_MIX.get(), (be, side) -> be.getItemHandler(side));
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, DestroyBlockEntityTypes.TEST_TUBE_RACK.get(), (be, side) -> be.getItemHandler(side));
         event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, DestroyBlockEntityTypes.VAT_SIDE.get(), (be, side) -> be.getItemHandler(side));
+    };
+
+    /**
+     * Item capabilities (1.20.1 Items made these in {@code initCapabilities}): Mixture tanks for Placeable Mixture Tank Items (e.g. Measuring
+     * Cylinders) and Test Tubes, and the Blowpipe's handler that lets Spouts fill it.
+     */
+    @SubscribeEvent
+    public static final void registerItemCapabilities(RegisterCapabilitiesEvent event) {
+        final Item[] mixtureTankItems = BuiltInRegistries.ITEM.stream()
+            .filter(item -> item instanceof PlaceableMixtureTankItem<?> || item instanceof TestTubeItem)
+            .toArray(Item[]::new);
+        event.registerItem(Capabilities.FluidHandler.ITEM, (stack, context) -> new ItemMixtureTank(stack, fs -> {}), mixtureTankItems);
+        event.registerItem(Capabilities.FluidHandler.ITEM, (stack, context) -> new BlowpipeItem.BlowpipeSpoutFillingFluidHandler(stack), DestroyBlocks.BLOWPIPE.asItem());
+    };
+
+    /**
+     * The Mixture tank of an Item which stores Mixtures (replacement for 1.20.1's {@code getCapability(FLUID_HANDLER_ITEM).resolve().get()}).
+     */
+    @Nullable
+    public static ItemMixtureTank mixtureTank(ItemStack stack) {
+        return stack.getCapability(Capabilities.FluidHandler.ITEM) instanceof ItemMixtureTank tank ? tank : null;
     };
 
     /**

@@ -147,7 +147,7 @@ public class SidedScrollValueBehaviour extends BlockEntityBehaviour implements B
     };
 
 	@Override
-	public boolean readFromClipboard(CompoundTag tag, Player player, Direction side, boolean simulate) {
+	public boolean readFromClipboard(HolderLookup.Provider registries, CompoundTag tag, Player player, Direction side, boolean simulate) {
 		if (!acceptsValueSettings()) return false;
 		if (!tag.contains("Values")) return false;
 		if (simulate) return true;
@@ -160,7 +160,7 @@ public class SidedScrollValueBehaviour extends BlockEntityBehaviour implements B
 	};
 
 	@Override
-	public boolean writeToClipboard(CompoundTag tag, Direction side) {
+	public boolean writeToClipboard(HolderLookup.Provider registries, CompoundTag tag, Direction side) {
 		if (!acceptsValueSettings())
 			return false;
 		tag.putIntArray("Values", values);

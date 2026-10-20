@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy;
 
+import net.minecraft.world.item.component.ItemContainerContents;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.nbt.CompoundTag;
 import java.util.function.UnaryOperator;
@@ -44,6 +45,15 @@ public class DestroyDataComponentTypes {
     public static final DataComponentType<CompoundTag> MIXTURE_INGREDIENT_DISPLAY = register("mixture_ingredient_display", b -> b
         .persistent(CompoundTag.CODEC)
         .networkSynchronized(ByteBufCodecs.COMPOUND_TAG)
+    );
+
+    /**
+     * The music disc a Disc Stamper stamps (was the {@code "Disc"} NBT tag in 1.20.1). Held as one-slot container contents, as those
+     * (unlike Item Stacks) compare by value, so Disc Stampers with the same disc still stack and compare equal.
+     */
+    public static final DataComponentType<ItemContainerContents> DISC = register("disc", b -> b
+        .persistent(ItemContainerContents.CODEC)
+        .networkSynchronized(ItemContainerContents.STREAM_CODEC)
     );
 
     private static <T> DataComponentType<T> register(String name, UnaryOperator<DataComponentType.Builder<T>> builder) {

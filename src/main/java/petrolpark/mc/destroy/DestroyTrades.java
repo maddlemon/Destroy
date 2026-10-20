@@ -3,8 +3,8 @@ package petrolpark.mc.destroy;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
-import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.trading.MerchantOffer;
@@ -26,7 +26,7 @@ public class DestroyTrades {
             (trader, rand) -> new MerchantOffer(
                 new ItemStack(Items.GLASS_BOTTLE, 1),
                 ItemStack.EMPTY,
-                PotionUtils.setPotion(new ItemStack(Items.POTION, 1), Potions.WATER),
+                PotionContents.createItemStack(Items.POTION, Potions.WATER),
                 24,
                 2,
                 0.05f

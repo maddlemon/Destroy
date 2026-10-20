@@ -24,7 +24,7 @@ public class ContaminatedItemTooltipModifier implements TooltipModifier {
         CompoundTag tag = ItemStackNBT.read(context.getItemStack());
 
         if (tag.contains("ContaminatingFluid", Tag.TAG_COMPOUND)) {
-            FluidStack fluid = FluidStack.loadFluidStackFromNBT(tag.getCompound("ContaminatingFluid"));
+            FluidStack fluid = ItemStackNBT.readFluid(tag, "ContaminatingFluid");
             context.getToolTip().addAll(1, TooltipHelper.cutTextComponent(DestroyLang.translate("tooltip.contamination_description").component(), Screen.hasAltDown() ? DARK_GRAY_AND_WHITE: Palette.GRAY));
             if (!fluid.isEmpty()) {
                 if (Screen.hasAltDown()) {

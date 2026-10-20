@@ -91,7 +91,7 @@ public class SiphonBlockEntity extends SmartBlockEntity implements IHaveLabGoggl
 
         public SiphonFluidTankBehaviour() {
             super(GeniusFluidTankBehaviour.TYPE, SiphonBlockEntity.this, 1, DestroyAllConfigs.SERVER.blocks.siphonCapacity.get(), false);
-            capability = LazyOptional.of(() -> new SiphonFluidHandler(getPrimaryHandler()));
+            capability = new SiphonFluidHandler(getPrimaryHandler());
         };
 
         public class SiphonFluidHandler extends InternalFluidHandler {

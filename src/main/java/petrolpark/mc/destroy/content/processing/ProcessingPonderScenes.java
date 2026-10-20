@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.content.processing;
 
+import petrolpark.mc.destroy.content.processing.glassblowing.BlowpipeItem;
 import petrolpark.mc.destroy.util.ItemStackNBT;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import petrolpark.mc.destroy.DestroyCapabilities;
@@ -48,6 +49,7 @@ import net.createmod.ponder.api.scene.SceneBuilder;
 import net.createmod.ponder.api.scene.SceneBuildingUtil;
 import net.createmod.ponder.api.scene.Selection;
 import net.createmod.ponder.foundation.instruction.FadeOutOfSceneInstruction;
+import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
@@ -84,9 +86,9 @@ public class ProcessingPonderScenes {
 
     // Define coloured Fluids
     static {
-        PURPLE_FLUID = new FluidStack(PotionFluid.withEffects(1000, Potions.TURTLE_MASTER, List.of()), 1000);
-        BLUE_FLUID = new FluidStack(PotionFluid.withEffects(500, Potions.AWKWARD, List.of()), 1000);
-        RED_FLUID = new FluidStack(PotionFluid.withEffects(500, Potions.HEALING, List.of()), 1000);
+        PURPLE_FLUID = PotionFluid.of(1000, new PotionContents(Potions.TURTLE_MASTER), PotionFluid.BottleType.REGULAR); // 1.20.1 copied a potion Fluid Stack to 1000mB
+        BLUE_FLUID = PotionFluid.of(1000, new PotionContents(Potions.AWKWARD), PotionFluid.BottleType.REGULAR);
+        RED_FLUID = PotionFluid.of(1000, new PotionContents(Potions.HEALING), PotionFluid.BottleType.REGULAR);
     };
 
     private static FluidStack clearMixture(int amount) {
@@ -444,7 +446,7 @@ public class ProcessingPonderScenes {
         ItemStack filledPipe = DestroyBlocks.BLOWPIPE.asStack();
         FluidTank tank = new FluidTank(BlowpipeBlockEntity.TANK_CAPACITY);
         tank.fill(new FluidStack(DestroyFluids.MOLTEN_BOROSILICATE_GLASS.get(), 250), FluidAction.EXECUTE);
-        ItemStackNBT.update(filledPipe, customTag -> customTag.put("Tank", tank.writeToNBT(new CompoundTag())));
+        ItemStackNBT.update(filledPipe, customTag -> customTag.put("Tank", BlowpipeItem.writeTank(tank)));
         ItemStackNBT.update(filledPipe, customTag -> customTag.putString("Recipe", Destroy.asResource("glassblowing/round_bottomed_flask").toString()));
         return filledPipe;
     };
@@ -590,7 +592,7 @@ public class ProcessingPonderScenes {
         scene.idle(10);
         scene.world().showSection(util.select().fromTo(3, 1, 1, 4, 3, 1), Direction.SOUTH);
         scene.idle(10);
-        scene.world().modifyBlockEntityNBT(deployerS, DeployerBlockEntity.class, nbt -> nbt.put("HeldItem", DestroyBlocks.BLOWPIPE.asStack().serializeNBT()));
+        scene.world().modifyBlockEntityNBT(deployerS, DeployerBlockEntity.class, nbt -> nbt.put("HeldItem", DestroyBlocks.BLOWPIPE.asStack().saveOptional(scene.world().getHolderLookupProvider())));
         ElementLink<WorldSectionElement> deployerLink = scene.world().showIndependentSection(deployerS, Direction.DOWN);
         scene.idle(10);
         scene.world().showSection(util.select().position(basin), Direction.EAST);
@@ -605,7 +607,7 @@ public class ProcessingPonderScenes {
         scene.idle(20);
         scene.world().moveDeployer(deployer, 1, 20);
         scene.idle(20);
-        scene.world().modifyBlockEntityNBT(deployerS, DeployerBlockEntity.class, nbt -> nbt.put("HeldItem", filledPipe.serializeNBT()));
+        scene.world().modifyBlockEntityNBT(deployerS, DeployerBlockEntity.class, nbt -> nbt.put("HeldItem", filledPipe.saveOptional(scene.world().getHolderLookupProvider())));
         scene.world().modifyBlockEntity(basin, BasinBlockEntity.class, be -> { IFluidHandler fh = DestroyCapabilities.fluidHandler(be, null); if (fh != null) fh.drain(250, FluidAction.EXECUTE); });
         scene.idle(10);
         scene.world().moveDeployer(deployer, -1, 20);
@@ -647,7 +649,7 @@ public class ProcessingPonderScenes {
         scene.idle(20);
         scene.world().moveDeployer(deployer, 1, 20);
         scene.idle(20);
-        scene.world().modifyBlockEntityNBT(util.select().position(deployer), DeployerBlockEntity.class, nbt -> nbt.put("HeldItem", ItemStack.EMPTY.serializeNBT()));
+        scene.world().modifyBlockEntityNBT(util.select().position(deployer), DeployerBlockEntity.class, nbt -> nbt.put("HeldItem", ItemStack.EMPTY.saveOptional(scene.world().getHolderLookupProvider())));
         ElementLink<WorldSectionElement> pipeLink = scene.world().showIndependentSectionImmediately(pipeS);
         scene.idle(10);
         scene.world().moveDeployer(deployer, -1, 20);
@@ -666,7 +668,7 @@ public class ProcessingPonderScenes {
         scene.idle(10);
         scene.world().moveDeployer(deployer, 1, 10);
         scene.idle(10);
-        scene.world().modifyBlockEntityNBT(deployerS, DeployerBlockEntity.class, nbt -> nbt.put("HeldItem", filledPipe.serializeNBT()));
+        scene.world().modifyBlockEntityNBT(deployerS, DeployerBlockEntity.class, nbt -> nbt.put("HeldItem", filledPipe.saveOptional(scene.world().getHolderLookupProvider())));
         scene.addInstruction(new FadeOutOfSceneInstruction<>(0, Direction.DOWN, pipeLink));
         scene.world().moveDeployer(deployer, -1, 10);
         scene.idle(20);
@@ -684,7 +686,7 @@ public class ProcessingPonderScenes {
         scene.idle(20);
         scene.world().moveDeployer(deployer, 1, 20);
         scene.idle(20);
-        scene.world().modifyBlockEntityNBT(util.select().position(deployer), DeployerBlockEntity.class, nbt -> nbt.put("HeldItem", ItemStack.EMPTY.serializeNBT()));
+        scene.world().modifyBlockEntityNBT(util.select().position(deployer), DeployerBlockEntity.class, nbt -> nbt.put("HeldItem", ItemStack.EMPTY.saveOptional(scene.world().getHolderLookupProvider())));
         pipeLink = scene.world().showIndependentSectionImmediately(pipeS);
         scene.world().rotateSection(pipeLink, 0, 180d, 0, 0);
         scene.idle(10);

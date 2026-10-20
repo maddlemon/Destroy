@@ -377,7 +377,7 @@ public class DestroyCommonEvents {
                         if (level.isClientSide()) player.displayClientMessage(DestroyLang.translate("tooltip.redstone_programmer.add_frequency.failure.full").style(ChatFormatting.RED).component(), true); 
                     } else {
                         program.addBlankChannel(link.getNetworkKey());
-                        RedstoneProgrammerBlockItem.setProgram(stack, program);
+                        RedstoneProgrammerBlockItem.setProgram(stack, program, level.registryAccess());
                         event.setCancellationResult(InteractionResult.SUCCESS);
                         if (level.isClientSide()) player.displayClientMessage(DestroyLang.translate("tooltip.redstone_programmer.add_frequency.success", key.getFirst().getStack().getHoverName(), key.getSecond().getStack().getHoverName()).component(), true); 
                     };

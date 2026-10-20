@@ -7,7 +7,6 @@ import org.jetbrains.annotations.Nullable;
 import petrolpark.mc.destroy.core.block.IPickUpPutDownBlock;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -21,7 +20,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.capabilities.ICapabilityProvider;
 
 public abstract class PlaceableMixtureTankItem<T extends PlaceableMixtureTankBlock<?>> extends BlockItem implements IMixtureStorageItem {
 
@@ -77,9 +75,5 @@ public abstract class PlaceableMixtureTankItem<T extends PlaceableMixtureTankBlo
         addContentsDescription(stack, tooltip);
     };
 
-    @Override
-    public @Nullable ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
-        return new ItemMixtureTank(stack, fs  -> {});
-    };
     
 };

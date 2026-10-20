@@ -12,6 +12,7 @@ import com.simibubi.create.foundation.block.IBE;
 import com.simibubi.create.foundation.block.ProperWaterloggedBlock;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -99,7 +100,7 @@ public class RedstoneProgrammerBlock extends HorizontalDirectionalBlock implemen
             RedstoneProgrammerBlockItem.getProgram(stack, level, placer).ifPresent(program -> {
                 withBlockEntityDo(level, pos, be -> {
                     be.programmer.program.unload();
-                    be.programmer.program = RedstoneProgram.read(() -> be.programmer.new BehaviourRedstoneProgram(), program.write());
+                    be.programmer.program = RedstoneProgram.read(() -> be.programmer.new BehaviourRedstoneProgram(), level.registryAccess(), program.write(level.registryAccess()));
                     program.unload();
                 });
             });
@@ -110,14 +111,14 @@ public class RedstoneProgrammerBlock extends HorizontalDirectionalBlock implemen
     public List<ItemStack> getDrops(BlockState state, LootParams.Builder builder) {
         BlockEntity be = builder.getOptionalParameter(LootContextParams.BLOCK_ENTITY);
         RedstoneProgrammerBehaviour behaviour = BlockEntityBehaviour.get(be, RedstoneProgrammerBehaviour.TYPE);
-        if (behaviour != null) return List.of(RedstoneProgrammerBlockItem.withProgram(behaviour.program));
+        if (behaviour != null) return List.of(RedstoneProgrammerBlockItem.withProgram(behaviour.program, builder.getLevel().registryAccess()));
         return List.of();
     };
 
     @Override
-    public ItemStack getCloneItemStack(BlockState state, HitResult target, BlockGetter level, BlockPos pos, Player player) {
+    public ItemStack getCloneItemStack(BlockState state, HitResult target, LevelReader level, BlockPos pos, Player player) {
         RedstoneProgrammerBehaviour behaviour = BlockEntityBehaviour.get(level, pos, RedstoneProgrammerBehaviour.TYPE);
-        if (behaviour != null) return RedstoneProgrammerBlockItem.withProgram(behaviour.program);
+        if (behaviour != null) return RedstoneProgrammerBlockItem.withProgram(behaviour.program, level.registryAccess());
         return super.getCloneItemStack(state, target, level, pos, player);
     };
 

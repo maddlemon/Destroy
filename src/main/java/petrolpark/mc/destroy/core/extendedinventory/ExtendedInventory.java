@@ -266,12 +266,12 @@ public class ExtendedInventory extends Inventory {
 
     @Override
     public int findSlotMatchingItem(ItemStack stack) {
-        return findSlot(s -> !s.isEmpty() && ItemStack.isSameItemSameTags(s, stack));
+        return findSlot(s -> !s.isEmpty() && ItemStack.isSameItemSameComponents(s, stack));
     };
 
     @Override
     public int findSlotMatchingUnusedItem(ItemStack stack) {
-        return findSlot(s -> !s.isEmpty() && ItemStack.isSameItemSameTags(s, stack) && !s.isDamaged() && !s.isEnchanted() && !s.hasCustomHoverName());
+        return findSlot(s -> !s.isEmpty() && ItemStack.isSameItemSameComponents(s, stack) && !s.isDamaged() && !s.isEnchanted() && !s.hasCustomHoverName());
     };
 
     /**
@@ -449,8 +449,7 @@ public class ExtendedInventory extends Inventory {
             if (!stack.isEmpty()) {
                CompoundTag tag = new CompoundTag();
                tag.putInt("Slot", i + extraInventoryStart);
-               stack.save(tag);
-               listTag.add(tag);
+               listTag.add(stack.save(player.registryAccess(), tag));
             };
         };
 
@@ -468,7 +467,7 @@ public class ExtendedInventory extends Inventory {
                 int slotIndex = tag.getInt("Slot");
                 if (slotIndex >= extraInventoryStart) {
                     slotIndex -= extraInventoryStart;
-                    if (slotIndex < extraItems.size()) extraItems.set(slotIndex, ItemStack.of(tag));
+                    if (slotIndex < extraItems.size()) extraItems.set(slotIndex, ItemStack.parse(player.registryAccess(), tag).orElse(ItemStack.EMPTY));
                 };
             };
         };
@@ -507,7 +506,7 @@ public class ExtendedInventory extends Inventory {
 
     @Override
     public boolean contains(ItemStack stack) {
-        return findSlot(s -> ItemStack.isSameItemSameTags(s, stack)) != -1;
+        return findSlot(s -> ItemStack.isSameItemSameComponents(s, stack)) != -1;
     };
 
     @Override

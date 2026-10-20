@@ -117,9 +117,7 @@ public class ChemistryHazardHelper {
     public static void contaminate(ItemStack stack, FluidStack fluidStack) {
         if (Items.CONTAMINABLE.matches(stack.getItem())) {
             if (ItemStackNBT.read(stack).contains("ContaminatingFluid")) return;
-            CompoundTag fluidTag = new CompoundTag();
-            fluidStack.writeToNBT(fluidTag);
-            ItemStackNBT.update(stack, tag -> tag.put("ContaminatingFluid", fluidTag));
+            ItemStackNBT.update(stack, tag -> ItemStackNBT.writeFluid(tag, "ContaminatingFluid", fluidStack));
         };
     };
 
@@ -203,7 +201,7 @@ public class ChemistryHazardHelper {
         if (event.getSlot() == EquipmentSlot.MAINHAND || event.getSlot() == EquipmentSlot.OFFHAND || !ItemStackNBT.has(event.getFrom())) return;
         CompoundTag tag = ItemStackNBT.read(event.getFrom());
         if (tag.contains("ContaminatingFluid", Tag.TAG_COMPOUND)) {
-            ChemistryHazardHelper.damage(event.getEntity().level(), event.getEntity(), FluidStack.loadFluidStackFromNBT(tag.getCompound("ContaminatingFluid")), true);
+            ChemistryHazardHelper.damage(event.getEntity().level(), event.getEntity(), ItemStackNBT.readFluid(tag, "ContaminatingFluid"), true);
             ChemistryHazardHelper.decontaminate(event.getFrom());
         };
     };

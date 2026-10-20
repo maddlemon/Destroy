@@ -58,17 +58,17 @@ public class RedstoneProgrammerBehaviour extends BlockEntityBehaviour implements
     @Override
     public void read(CompoundTag nbt, HolderLookup.Provider registries, boolean clientPacket) {
         super.read(nbt, registries, clientPacket);
-        setProgram(nbt.getCompound("Program"));
+        setProgram(registries, nbt.getCompound("Program"));
     };
 
-    public void setProgram(CompoundTag tag) {
-        program = RedstoneProgram.read(BehaviourRedstoneProgram::new, tag);
+    public void setProgram(HolderLookup.Provider registries, CompoundTag tag) {
+        program = RedstoneProgram.read(BehaviourRedstoneProgram::new, registries, tag);
     };
 
     @Override
     public void write(CompoundTag nbt, HolderLookup.Provider registries, boolean clientPacket) {
         super.write(nbt, registries, clientPacket);
-        nbt.put("Program", program.write());
+        nbt.put("Program", program.write(registries));
     };
 
     public class BehaviourRedstoneProgram extends RedstoneProgram {
@@ -125,19 +125,19 @@ public class RedstoneProgrammerBehaviour extends BlockEntityBehaviour implements
     };
 
     @Override
-    public boolean writeToClipboard(CompoundTag tag, Direction side) {
-        tag.put("RedstoneProgram", program.write());
+    public boolean writeToClipboard(HolderLookup.Provider registries, CompoundTag tag, Direction side) {
+        tag.put("RedstoneProgram", program.write(registries));
         return true;
     };
 
     @Override
-    public boolean readFromClipboard(CompoundTag tag, Player player, Direction side, boolean simulate) {
+    public boolean readFromClipboard(HolderLookup.Provider registries, CompoundTag tag, Player player, Direction side, boolean simulate) {
         if (tag.contains("RedstoneProgram")) {
-            setProgram(tag.getCompound("RedstoneProgram"));
+            setProgram(registries, tag.getCompound("RedstoneProgram"));
             return true;
         };
         if (!tag.contains("First") || !tag.contains("Last")) return false;
-        Couple<Frequency> frequencies = Couple.create(Frequency.of(ItemStack.of(tag.getCompound("First"))), Frequency.of(ItemStack.of(tag.getCompound("Last"))));
+        Couple<Frequency> frequencies = Couple.create(Frequency.of(ItemStack.parseOptional(registries, tag.getCompound("First"))), Frequency.of(ItemStack.parseOptional(registries, tag.getCompound("Last"))));
         if (program.getChannels().stream().anyMatch(channel -> channel.networkKey.equals(frequencies))) return false;
         if (!simulate) program.addBlankChannel(frequencies);
         return true;

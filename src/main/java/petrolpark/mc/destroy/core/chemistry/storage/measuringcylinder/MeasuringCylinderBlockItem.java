@@ -35,7 +35,6 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.common.util.LazyOptional;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
@@ -52,9 +51,9 @@ public class MeasuringCylinderBlockItem extends PlaceableMixtureTankItem<Measuri
         if (stack.getItem() instanceof IMixtureStorageItem mixtureItem) {
             IFluidHandler otherTank = mixtureItem.getTank(level, pos, state, face, player, hand, stack, blockToItem);
             if (otherTank == null) return InteractionResult.PASS;
-            LazyOptional<IFluidHandlerItem> cap = stack.getCapability(Capabilities.FluidHandler.ITEM);
-            if (!cap.isPresent()) return InteractionResult.PASS;
-            ItemMixtureTank itemTank = (ItemMixtureTank)cap.resolve().get();
+            IFluidHandlerItem cap = stack.getCapability(Capabilities.FluidHandler.ITEM);
+            if (cap == null) return InteractionResult.PASS;
+            ItemMixtureTank itemTank = (ItemMixtureTank)cap;
             int maxTransfer = blockToItem ? otherTank.drain(itemTank.getRemainingSpace(), FluidAction.SIMULATE).getAmount() : otherTank.fill(itemTank.getFluid(), FluidAction.SIMULATE);
             if (maxTransfer == 0) return InteractionResult.FAIL;
 

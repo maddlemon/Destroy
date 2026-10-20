@@ -4,7 +4,8 @@ import petrolpark.mc.destroy.client.DestroyMenuTypes;
 import petrolpark.mc.destroy.core.explosion.mixedexplosive.ExplosiveProperties.ExplosivePropertyCondition;
 import com.simibubi.create.foundation.gui.menu.MenuBase;
  
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.ComponentSerialization;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -17,7 +18,7 @@ public class MixedExplosiveMenu extends MenuBase<IMixedExplosiveBlockEntity> {
 
     private int explosiveSlots = 0;
 
-    public MixedExplosiveMenu(MenuType<?> type, int id, Inventory playerInv, FriendlyByteBuf extraData) {
+    public MixedExplosiveMenu(MenuType<?> type, int id, Inventory playerInv, RegistryFriendlyByteBuf extraData) {
         super(type, id, playerInv, extraData);
     };
 
@@ -31,7 +32,7 @@ public class MixedExplosiveMenu extends MenuBase<IMixedExplosiveBlockEntity> {
     };
 
     @Override
-    protected IMixedExplosiveBlockEntity createOnClient(FriendlyByteBuf extraData) {
+    protected IMixedExplosiveBlockEntity createOnClient(RegistryFriendlyByteBuf extraData) {
         return new DummyCustomExplosiveMixBlockEntity(extraData);
     };
 
@@ -73,10 +74,10 @@ public class MixedExplosiveMenu extends MenuBase<IMixedExplosiveBlockEntity> {
         private MixedExplosiveInventory inv;
         private final ExplosivePropertyCondition[] conditions; // May contain null entries
 
-        protected DummyCustomExplosiveMixBlockEntity(FriendlyByteBuf buffer) {
-            this.name = buffer.readComponent();
+        protected DummyCustomExplosiveMixBlockEntity(RegistryFriendlyByteBuf buffer) {
+            this.name = ComponentSerialization.TRUSTED_STREAM_CODEC.decode(buffer);
             inv = new MixedExplosiveInventory(buffer.readVarInt());
-            inv.deserializeNBT(buffer.readNbt());
+            inv.deserializeNBT(buffer.registryAccess(), buffer.readNbt());
             int conditionCount = buffer.readVarInt();
             conditions = new ExplosivePropertyCondition[conditionCount];
             for (int i = 0; i < conditionCount; i++) conditions[i] = ExplosiveProperties.EXPLOSIVE_PROPERTY_CONDITIONS.get(buffer.readResourceLocation());

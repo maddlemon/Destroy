@@ -94,7 +94,7 @@ public class CircuitPunchingBehaviour extends BeltProcessingBehaviour {
         finished = tag.getBoolean("Finished");
         runningTicks = prevRunningTicks = tag.getInt("Ticks");
         if (clientPacket) {
-            particleItem = ItemStack.of(tag.getCompound("ParticleItem"));
+            particleItem = ItemStack.parseOptional(registries, tag.getCompound("ParticleItem"));
             spawnParticles();
         };
         super.read(tag, registries, clientPacket);
@@ -105,7 +105,7 @@ public class CircuitPunchingBehaviour extends BeltProcessingBehaviour {
         tag.putBoolean("Running", running);
         tag.putBoolean("Finished", finished);
         tag.putInt("Ticks", runningTicks);
-        if (clientPacket && !particleItem.isEmpty()) tag.put("ParticleItem", particleItem.serializeNBT());
+        if (clientPacket && !particleItem.isEmpty()) tag.put("ParticleItem", particleItem.saveOptional(registries));
         super.write(tag, registries, clientPacket);
     };
 

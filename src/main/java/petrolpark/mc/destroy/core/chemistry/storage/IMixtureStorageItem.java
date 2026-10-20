@@ -154,7 +154,7 @@ public interface IMixtureStorageItem {
      */
     public static InteractionResult defaultUseOn(IMixtureStorageItem item, UseOnContext context) {
         BlockState state = context.getLevel().getBlockState(context.getClickedPos());
-        InteractionResult result = item.tryEmpty(context.getItemInHand(), (ItemMixtureTank)context.getItemInHand().getCapability(Capabilities.FluidHandler.ITEM).resolve().get(), item.getTank(context.getLevel(), context.getClickedPos(), state, context.getClickedFace(), context.getPlayer(), context.getHand(), context.getItemInHand(), true), context.getPlayer().isCreative());
+        InteractionResult result = item.tryEmpty(context.getItemInHand(), DestroyCapabilities.mixtureTank(context.getItemInHand()), item.getTank(context.getLevel(), context.getClickedPos(), state, context.getClickedFace(), context.getPlayer(), context.getHand(), context.getItemInHand(), true), context.getPlayer().isCreative());
         item.afterEmpty(context.getLevel(), context.getClickedPos(), state, context.getClickedFace(), context.getPlayer(), context.getHand(), context.getItemInHand(), result);
         return result;
     };
@@ -171,7 +171,7 @@ public interface IMixtureStorageItem {
      * The typical behaviour for left-clicking with a Mixture container on a Block (filling the Item from the Block).
      */
     public static InteractionResult defaultAttack(IMixtureStorageItem item, Level level, BlockPos pos, BlockState state, Direction face, Player player, InteractionHand hand, ItemStack stack) {
-        InteractionResult result = item.tryFill(stack, (ItemMixtureTank)stack.getCapability(Capabilities.FluidHandler.ITEM).resolve().get(), item.getTank(level, pos, state, face, player, hand, stack, false));
+        InteractionResult result = item.tryFill(stack, DestroyCapabilities.mixtureTank(stack), item.getTank(level, pos, state, face, player, hand, stack, false));
         item.afterFill(level, pos, state, face, player, hand, stack, result);
         return result;
     };
@@ -193,11 +193,11 @@ public interface IMixtureStorageItem {
     };
 
     public default Optional<FluidStack> getContents(ItemStack itemStack) {
-        return itemStack.getCapability(Capabilities.FluidHandler.ITEM).map(tanks -> tanks.drain(getCapacity(itemStack), FluidAction.SIMULATE));
+        return Optional.ofNullable(itemStack.getCapability(Capabilities.FluidHandler.ITEM)).map(tanks -> tanks.drain(getCapacity(itemStack), FluidAction.SIMULATE));
     };
 
     public default void setContents(ItemStack itemStack, FluidStack fluidStack) {
-        itemStack.getCapability(Capabilities.FluidHandler.ITEM).ifPresent(tanks -> tanks.fill(fluidStack, FluidAction.EXECUTE));
+        Optional.ofNullable(itemStack.getCapability(Capabilities.FluidHandler.ITEM)).ifPresent(tanks -> tanks.fill(fluidStack, FluidAction.EXECUTE));
     };
 
     public Component getNameRegardlessOfFluid(ItemStack stack);

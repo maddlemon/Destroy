@@ -15,11 +15,12 @@ import com.simibubi.create.content.redstone.link.RedstoneLinkNetworkHandler;
 import com.simibubi.create.content.redstone.link.RedstoneLinkNetworkHandler.Frequency;
 
 import net.createmod.catnip.data.Couple;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.LevelAccessor;
@@ -211,7 +212,7 @@ public abstract class RedstoneProgram {
         };
     };
 
-    public CompoundTag write() {
+    public CompoundTag write(HolderLookup.Provider registries) {
         CompoundTag tag = new CompoundTag();
         tag.putInt("Mode", mode.ordinal());
         tag.putInt("TicksPerBeat", ticksPerBeat);
@@ -227,8 +228,8 @@ public abstract class RedstoneProgram {
 
         for (Channel channel : channels) {
             CompoundTag sequenceTag = new CompoundTag();
-            sequenceTag.put("FrequencyFirst", channel.networkKey.getFirst().getStack().save(new CompoundTag()));
-		    sequenceTag.put("FrequencyLast", channel.networkKey.getSecond().getStack().save(new CompoundTag()));
+            sequenceTag.put("FrequencyFirst", channel.networkKey.getFirst().getStack().saveOptional(registries));
+		    sequenceTag.put("FrequencyLast", channel.networkKey.getSecond().getStack().saveOptional(registries));
             sequenceTag.putIntArray("Sequence", getEncodedSequence(channel));
             sequencesTag.add(sequenceTag);
         };
@@ -238,7 +239,7 @@ public abstract class RedstoneProgram {
         return tag;
     };
 
-    public static <T extends RedstoneProgram> T read(Supplier<T> newProgram, CompoundTag tag) {
+    public static <T extends RedstoneProgram> T read(Supplier<T> newProgram, HolderLookup.Provider registries, CompoundTag tag) {
         T program = newProgram.get();
         program.mode = PlayMode.values()[tag.getInt("Mode")];
         program.ticksPerBeat = tag.getInt("TicksPerBeat");
@@ -257,8 +258,8 @@ public abstract class RedstoneProgram {
             program.channels.add(
                 program.new Channel(
                     Couple.create(
-                        Frequency.of(ItemStack.of(sequenceTag.getCompound("FrequencyFirst"))),
-                        Frequency.of(ItemStack.of(sequenceTag.getCompound("FrequencyLast")))
+                        Frequency.of(ItemStack.parseOptional(registries, sequenceTag.getCompound("FrequencyFirst"))),
+                        Frequency.of(ItemStack.parseOptional(registries, sequenceTag.getCompound("FrequencyLast")))
                     ),
                     sequence
                 )
@@ -268,7 +269,7 @@ public abstract class RedstoneProgram {
         return program;
     };
 
-    public final void write(FriendlyByteBuf buf) {
+    public final void write(RegistryFriendlyByteBuf buf) {
         buf.writeVarInt(mode.ordinal());
         buf.writeVarInt(ticksPerBeat);
         buf.writeVarInt(length);
@@ -280,13 +281,13 @@ public abstract class RedstoneProgram {
         buf.writeVarInt(linesPerBar);
         buf.writeVarInt(channels.size());
         for (Channel channel : channels) {
-            buf.writeItem(channel.networkKey.getFirst().getStack());
-            buf.writeItem(channel.networkKey.getSecond().getStack());
+            ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, channel.networkKey.getFirst().getStack());
+            ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, channel.networkKey.getSecond().getStack());
             buf.writeVarIntArray(getEncodedSequence(channel));
         };
     };
 
-    public void read(FriendlyByteBuf buf) {
+    public void read(RegistryFriendlyByteBuf buf) {
         mode = PlayMode.values()[buf.readVarInt()];
         ticksPerBeat = buf.readVarInt();
         length = buf.readVarInt();
@@ -299,7 +300,7 @@ public abstract class RedstoneProgram {
         int channels = buf.readVarInt();
         for (int i = 0; i < channels; i++) {
             this.channels.add(new Channel(
-                Couple.create(Frequency.of(buf.readItem()), Frequency.of(buf.readItem())),
+                Couple.create(Frequency.of(ItemStack.OPTIONAL_STREAM_CODEC.decode(buf)), Frequency.of(ItemStack.OPTIONAL_STREAM_CODEC.decode(buf))),
                 decodeSequence(length, buf.readVarIntArray())
             ));
         };

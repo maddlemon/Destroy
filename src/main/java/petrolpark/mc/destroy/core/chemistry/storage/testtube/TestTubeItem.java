@@ -9,12 +9,10 @@ import javax.annotation.Nullable;
 import petrolpark.mc.destroy.DestroyItems;
 import petrolpark.mc.destroy.core.chemistry.hazard.ChemistryHazardHelper;
 import petrolpark.mc.destroy.core.chemistry.storage.IMixtureStorageItem;
-import petrolpark.mc.destroy.core.chemistry.storage.ItemMixtureTank;
 import petrolpark.mc.destroy.core.item.ILayerTintsWithAlphaItem;
 import com.simibubi.create.foundation.item.render.SimpleCustomRenderer;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -30,7 +28,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
-import net.neoforged.neoforge.capabilities.ICapabilityProvider;
 import net.neoforged.neoforge.fluids.FluidStack;
 
 public class TestTubeItem extends Item implements ILayerTintsWithAlphaItem, IMixtureStorageItem {
@@ -93,11 +90,5 @@ public class TestTubeItem extends Item implements ILayerTintsWithAlphaItem, IMix
     public int getCapacity(ItemStack stack) {
         return CAPACITY;
     };
-
-    @Override
-    public @Nullable ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt) {
-        return new ItemMixtureTank(stack, fs -> {});
-    };
-
 
 };

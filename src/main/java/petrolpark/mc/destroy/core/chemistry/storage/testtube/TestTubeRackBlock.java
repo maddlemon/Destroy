@@ -125,7 +125,7 @@ public class TestTubeRackBlock extends Block implements IBE<TestTubeRackBlockEnt
         int tube = getTargetedTube(state, pos, player);
         if (tube == -1) return null;
         ItemStack tubeStack = be.inv.getStackInSlot(tube);
-        return tubeStack.getCapability(Capabilities.FluidHandler.ITEM).orElse(null);
+        return tubeStack.getCapability(Capabilities.FluidHandler.ITEM);
     };
     
 };

@@ -27,9 +27,9 @@ Library to the pack.
 
 ## START HERE — current state and next steps
 
-**State:** compile has **693 javac errors**. Steps 1–3 (recipes, packets, pollution / crude oil / seismology)
-are done at the code level — the only errors left in their files depend on later steps (see each step's
-status). Next: step 4 (item capabilities + leftover NBT).
+**State:** compile has **567 javac errors**. Steps 1–4 (recipes, packets, pollution / crude oil / seismology,
+item capabilities + NBT) are done at the code level — the only errors left in their files depend on later steps
+(see each step's status). Next: step 5 (remaining API changes).
 
 **Do next, in this order** (each is a self-contained batch; compile + commit after each):
 
@@ -129,13 +129,23 @@ status). Next: step 4 (item capabilities + leftover NBT).
    `DestroyLang.tooltip`, 4 lang keys, `ItemInHandRenderer` `MAP_*` AT entries. `OilPonderScenes` ported;
    `PollutionPonderScenes` ported from upstream `1.20.1` (already on Ponder 1.0) and its storyboards re-enabled.
    Left (later steps): pumpjack blocks' `codec()`/`use`/`playerWillDestroy` (step 5).
-4. **Item capabilities + leftover NBT.** `ItemMixtureTank`, Blowpipe spout handler, measuring
-   cylinder, test tube → `Capabilities.FluidHandler.ITEM` registered with `event.registerItem` in
-   `DestroyCapabilities` (handlers backed by `ItemStackNBT` / data components). Inventory
-   `serializeNBT()`/`deserializeNBT()` now take a `HolderLookup.Provider`. Potion fluids in
-   `CentrifugeBlockEntity` → `DataComponents.POTION_CONTENTS` + Create's bottle-type component.
-   `SequencedAssemblyRecipeMixin` must be rewritten against Create 6 (progress is a Create data
-   component now, not `"SequencedAssembly"` NBT).
+4. **Item capabilities + leftover NBT — DONE (code level).** Item Fluid Handlers are registered in
+   `DestroyCapabilities.registerItemCapabilities` (`ItemMixtureTank` for every `PlaceableMixtureTankItem` and
+   `TestTubeItem` — like 1.20.1, Balloons have none — and `BlowpipeItem.BlowpipeSpoutFillingFluidHandler` for the
+   Blowpipe); `initCapabilities` removed. A new handler is made per lookup and reads/writes the Item's custom data
+   (`"Fluid"`, as 1.20.1); use `DestroyCapabilities.mixtureTank(stack)`. Items have no registry access, so Fluid
+   Stacks in Item NBT go through `ItemStackNBT.readFluid/writeFluid` (plain `NbtOps`, enough for Destroy's Fluids;
+   used for `"Fluid"` and `"ContaminatingFluid"`) and the Blowpipe's `"Tank"` through `BlowpipeItem.readTank/writeTank`
+   (same layout as `FluidTank#writeToNBT`, which its Block Entity uses). Block Entity / Entity / menu inventories and
+   Item Stacks use the registries in scope (`serializeNBT(registries)`, `ItemStack.parseOptional/saveOptional`,
+   `player.registryAccess()`, `buffer.registryAccess()`, `scene.world().getHolderLookupProvider()` in Ponder).
+   Create 6 `ClipboardCloneable` methods take `HolderLookup.Provider` first. `RedstoneProgram.write/read` take
+   registries (Frequency stacks as `saveOptional`/`parseOptional`, like Create's links); its buffer form uses
+   `RegistryFriendlyByteBuf`. Disc Stamper's disc is the `destroy:disc` component (`ItemContainerContents`, so
+   stampers still compare equal). Potions: `PotionContents`, `Registries.POTION`, Create 6 `PotionFluid.of(...)`;
+   `SprayBottleItem` reproduces 1.20.1's doubled cloud effects (¼-duration copy + full) without an unregistered
+   Potion. `ItemStack.isSameItemSameTags` → `isSameItemSameComponents`; Component JSON with registries.
+   Left (step 5): `GasParticleData` / `BoilingFluidBubbleParticleData` (particle codecs, incl. their Fluid Stacks).
 5. **Remaining API changes** (smaller, scattered): MobEffect `applyEffectTick`/attribute-modifier
    signatures; `ToolActions` → `ItemAbilities`; `PlantType` gone; `RecordItem` → jukebox song
    components; Create 6 `DisplaySource` API; `DestroyCreativeModeTabs` (library `CustomTab` changed);
@@ -345,8 +355,9 @@ Intended to be empty. Current entries:
 | `6f5d02b0` | Packets: 21 packets → Catnip payloads in `DestroyPackets`, `DestroyMessages` deleted, 38 send sites → `CatnipServices.NETWORK`, `NetworkHooks` replaced, creative-slot mixin retargeted |
 | `d508622e` | Pollution: author's framework with 1.20.1 behaviour (configs, data maps, decay/spreading, sources, effects, temperature, radioactivity, client visuals), author's acid rain kept |
 | `4da3c6e7` | Crude oil + seismology: 1.20.1 behaviour plus the author's provider menu / error rate / quality; Oil and Pollution Ponder scenes ported and re-enabled |
+| _(this commit)_ | Item capabilities + leftover NBT: item Fluid Handlers via `RegisterCapabilitiesEvent`, registry-aware NBT, clipboard API, Redstone Programs, Disc Stamper component, potions |
 
-Error counts: 2,301 error lines (batch 1) → 2,178 javac → 2,050 → 1,940 → 1,892 → 1,718 → 1,621 → 1,502 → 1,501 → 1,281 (recipes 1) → 1,217 (recipes 2) → 1,184 → 1,071 (recipes 4) → 863 (packets) → 764 (pollution) → 693 (oil, seismology, Ponder).
+Error counts: 2,301 error lines (batch 1) → 2,178 javac → 2,050 → 1,940 → 1,892 → 1,718 → 1,621 → 1,502 → 1,501 → 1,281 (recipes 1) → 1,217 (recipes 2) → 1,184 → 1,071 (recipes 4) → 863 (packets) → 764 (pollution) → 693 (oil, seismology, Ponder) → 567 (item capabilities, NBT).
 
 ## Verified API mappings (NeoForge 21.1.262 / MC 1.21.1 / Create 6.0.10 / library 1.21.1-1.5.11)
 

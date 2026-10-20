@@ -1,5 +1,7 @@
 package petrolpark.mc.destroy.core.explosion.mixedexplosive;
 
+import net.minecraft.network.chat.ComponentSerialization;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.core.HolderLookup;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +13,6 @@ import com.simibubi.create.foundation.item.ItemHelper.ExtractionCountMode;
 
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -51,10 +52,10 @@ public interface IMixedExplosiveBlockEntity extends MenuProvider, ClipboardClone
         return MixedExplosiveMenu.create(containerId, playerInventory, this);
     };
 
-    public default void writeToBuffer(FriendlyByteBuf buffer) {
-        buffer.writeComponent(getDisplayName());
+    public default void writeToBuffer(RegistryFriendlyByteBuf buffer) {
+        ComponentSerialization.TRUSTED_STREAM_CODEC.encode(buffer, getDisplayName());
         buffer.writeVarInt(getExplosiveInventory().getSlots());
-        buffer.writeNbt(getExplosiveInventory().serializeNBT());
+        buffer.writeNbt(getExplosiveInventory().serializeNBT(buffer.registryAccess()));
         buffer.writeVarInt(getApplicableExplosionConditions().length);
         for (ExplosivePropertyCondition c : getApplicableExplosionConditions())
             buffer.writeResourceLocation(c.rl);
@@ -66,7 +67,7 @@ public interface IMixedExplosiveBlockEntity extends MenuProvider, ClipboardClone
     };
 
     @Override
-    default boolean readFromClipboard(CompoundTag tag, Player player, Direction side, boolean simulate) {
+    default boolean readFromClipboard(HolderLookup.Provider registries, CompoundTag tag, Player player, Direction side, boolean simulate) {
         if (tag.contains("TargetInventory")) {
             if (simulate) return true;
             
@@ -82,7 +83,7 @@ public interface IMixedExplosiveBlockEntity extends MenuProvider, ClipboardClone
             };
 
             ItemStackHandler targetInventory = new ItemStackHandler();
-            targetInventory.deserializeNBT(tag.getCompound("TargetInventory"));
+            targetInventory.deserializeNBT(registries, tag.getCompound("TargetInventory"));
 
             List<ItemStack> leftoverItems = new ArrayList<>();
 
@@ -92,7 +93,7 @@ public interface IMixedExplosiveBlockEntity extends MenuProvider, ClipboardClone
                 
                 // Adding from existing Stacks
                 for (ItemStack availableStack : oldItems) {
-                    if (ItemStack.isSameItemSameTags(availableStack, targetStack)) {
+                    if (ItemStack.isSameItemSameComponents(availableStack, targetStack)) {
 
                         int inserted = Math.max(availableStack.getCount(), targetStack.getCount());
                         ItemStack insertedStack = availableStack.copy();
@@ -111,7 +112,7 @@ public interface IMixedExplosiveBlockEntity extends MenuProvider, ClipboardClone
                 };
 
                 // Adding from the Player's inventory
-                ItemStack leftoverStack = ItemHandlerHelper.insertItem(inv, ItemHelper.extract(new PlayerMainInvWrapper(player.getInventory()), s -> ItemStack.isSameItemSameTags(s, targetStack), ExtractionCountMode.UPTO, targetStack.getCount(), false), false);
+                ItemStack leftoverStack = ItemHandlerHelper.insertItem(inv, ItemHelper.extract(new PlayerMainInvWrapper(player.getInventory()), s -> ItemStack.isSameItemSameComponents(s, targetStack), ExtractionCountMode.UPTO, targetStack.getCount(), false), false);
                 if (!leftoverStack.isEmpty()) { // If we couldn't fit it in, we'll need to give it back to the Player
                     leftoverItems.add(leftoverStack);
                     continue tryAddEachItem; 
@@ -128,8 +129,8 @@ public interface IMixedExplosiveBlockEntity extends MenuProvider, ClipboardClone
     };
 
     @Override
-    default boolean writeToClipboard(CompoundTag tag, Direction side) {
-        tag.put("TargetInventory", getExplosiveInventory().serializeNBT());
+    default boolean writeToClipboard(HolderLookup.Provider registries, CompoundTag tag, Direction side) {
+        tag.put("TargetInventory", getExplosiveInventory().serializeNBT(registries));
         return true;
     };
 };

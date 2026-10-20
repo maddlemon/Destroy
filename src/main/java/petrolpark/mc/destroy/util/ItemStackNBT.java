@@ -4,7 +4,10 @@ import java.util.function.Consumer;
 
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.fluids.FluidStack;
 import net.minecraft.world.item.component.CustomData;
 
 /**
@@ -45,5 +48,22 @@ public final class ItemStackNBT {
      */
     public static void set(ItemStack stack, CompoundTag tag) {
         CustomData.set(DataComponents.CUSTOM_DATA, stack, tag);
+    };
+
+    /**
+     * Read a Fluid Stack stored in Item NBT by {@link #writeFluid}. Items have no registry access, so this uses plain NBT; that is enough for
+     * Destroy's Fluids (the Fluid ID, the Mixture component and potion contents all serialize without registries).
+     * @return The Fluid Stack, or empty if there is none or it cannot be read
+     */
+    public static FluidStack readFluid(CompoundTag tag, String key) {
+        if (!tag.contains(key, Tag.TAG_COMPOUND)) return FluidStack.EMPTY;
+        return FluidStack.OPTIONAL_CODEC.parse(NbtOps.INSTANCE, tag.getCompound(key)).result().orElse(FluidStack.EMPTY);
+    };
+
+    /**
+     * Store a Fluid Stack in Item NBT (replaces 1.20.1's {@code FluidStack#writeToNBT}).
+     */
+    public static void writeFluid(CompoundTag tag, String key, FluidStack fluidStack) {
+        tag.put(key, FluidStack.OPTIONAL_CODEC.encodeStart(NbtOps.INSTANCE, fluidStack).result().orElseGet(CompoundTag::new));
     };
 };

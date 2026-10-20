@@ -148,7 +148,7 @@ public class AgeingBarrelBlockEntity extends SmartBlockEntity implements IHaveGo
     @Override
     protected void read(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket) {
         super.read(compound, registries, clientPacket);
-        inventory.deserializeNBT(compound.getCompound("Inventory"));
+        inventory.deserializeNBT(registries, compound.getCompound("Inventory"));
         timer = compound.getInt("Timer");
         totalTime = compound.getInt("TotalTime");
         // Storage of what's in the Tank is automatically covered in SmartBlockEntity
@@ -157,7 +157,7 @@ public class AgeingBarrelBlockEntity extends SmartBlockEntity implements IHaveGo
     @Override
     protected void write(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket) {
         super.write(compound, registries, clientPacket);
-        compound.put("Inventory", inventory.serializeNBT());
+        compound.put("Inventory", inventory.serializeNBT(registries));
         compound.putInt("Timer", timer);
         compound.putInt("TotalTime", totalTime);
         // Retrieval of what's in the Tank is automatically covered in SmartBlockEntity
