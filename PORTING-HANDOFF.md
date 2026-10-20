@@ -294,7 +294,7 @@ Intended to be empty. Current entries:
 | `89cfdbc6` | Fill-explosive + circuit pattern ingredient; registries threaded through mixed-explosive item helpers |
 | `127f23a1` | Farmer's Delight / Embeddium / Sodium compat mixins; **`DestroyMixinPlugin` package fixed** (was `com.destroy.mixin`, so compat mixins were never gated — would crash without the mod); water tint mixin retargeted to `ClientNeoForgeMod$1`; missing cartography mixins listed; `port-tools/`; this doc restructured |
 | `26b63081` | Recipes part 4: trypolithography + disc stamping recipes, sequenced assembly mixin, recipe consumers (sieve, dynamo, distillation, blowpipe, basin reactions, vat materials) |
-| _(this commit)_ | Packets: 21 packets → Catnip payloads in `DestroyPackets`, `DestroyMessages` deleted, 38 send sites → `CatnipServices.NETWORK`, `NetworkHooks` replaced, creative-slot mixin retargeted |
+| `6f5d02b0` | Packets: 21 packets → Catnip payloads in `DestroyPackets`, `DestroyMessages` deleted, 38 send sites → `CatnipServices.NETWORK`, `NetworkHooks` replaced, creative-slot mixin retargeted |
 
 Error counts: 2,301 error lines (batch 1) → 2,178 javac → 2,050 → 1,940 → 1,892 → 1,718 → 1,621 → 1,502 → 1,501 → 1,281 (recipes 1) → 1,217 (recipes 2) → 1,184 → 1,071 (recipes 4) → 863 (packets).
 
