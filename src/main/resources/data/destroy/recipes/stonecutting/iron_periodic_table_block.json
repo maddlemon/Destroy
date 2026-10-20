@@ -1,8 +1,0 @@
-{
-    "type": "minecraft:stonecutting",
-    "ingredient": {
-      "tag": "c:storage_blocks/iron"
-    },
-    "result": "destroy:iron_periodic_table_block",
-    "count": 1
-  }

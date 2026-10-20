@@ -26,6 +26,7 @@ import java.util.function.Supplier;
 
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.data.loading.DatagenModLoader;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
@@ -65,6 +66,8 @@ public class Destroy {
         IEventBus forgeEventBus = NeoForge.EVENT_BUS;
 
         REGISTRATE.registerEventListeners(modEventBus);
+        // Only data (loot tables, tags) is generated and committed, as in 1.20.1 - blockstates and models are hand-written - so don't let a block's unused blockstate generator abort datagen
+        if (DatagenModLoader.isRunningDataGen()) REGISTRATE.skipErrors(true);
 
         // Mod objects
         if (!datagen) DestroySoundEvents.prepare(); // Sound datagen is broken and I can't be bothered to fix it
@@ -100,9 +103,6 @@ public class Destroy {
         DestroySeismologyProviders.register();
         DestroyPackets.register(); // Payload types must exist before RegisterPayloadHandlersEvent, so not in common setup
 
-        // Events
-        NeoForge.EVENT_BUS.register(this);
-
         // Config
         DestroyAllConfigs.register(modLoadingContext, modContainer);
 
@@ -111,7 +111,7 @@ public class Destroy {
         modEventBus.addListener(Destroy::onRegister);
         if (!datagen) modEventBus.addListener(DestroySoundEvents::register);
         modEventBus.addListener(DestroyClient::clientInit);
-        modEventBus.addListener(EventPriority.LOWEST, Destroy::gatherData);
+        modEventBus.addListener(EventPriority.HIGHEST, Destroy::gatherData); // Before Registrate builds its generator, which then refuses new providers
 
         // Client
         unsafeRunClient(() -> () -> DestroyClient.clientCtor(modEventBus, forgeEventBus));

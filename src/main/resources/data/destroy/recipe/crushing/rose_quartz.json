@@ -1,0 +1,25 @@
+{
+    "type": "create:crushing",
+    "ingredients": [
+        {
+            "item": "create:rose_quartz"
+        }
+    ],
+    "results": [
+        {
+            "id": "destroy:silica",
+            "count": 1
+        },
+        {
+            "id": "destroy:silica",
+            "count": 1,
+            "chance": 0.25
+        },
+        {
+            "id": "minecraft:redstone",
+            "count": 4,
+            "chance": 0.5
+        }
+    ],
+    "processing_time": 100
+}

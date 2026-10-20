@@ -1,8 +1,0 @@
-{
-    "type": "minecraft:blasting",
-    "ingredient": {
-      "tag": "c:dusts/chromium"
-    },
-    "result": "destroy:chromium_ingot",
-    "cookingtime": 100
-  }

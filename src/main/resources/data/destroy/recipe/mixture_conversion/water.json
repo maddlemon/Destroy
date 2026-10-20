@@ -1,0 +1,27 @@
+{
+    "type": "destroy:mixture_conversion",
+    "ingredients": [
+        {
+            "type": "neoforge:single",
+            "fluid": "minecraft:water",
+            "amount": 1
+        }
+    ],
+    "results": [
+        {
+            "id": "destroy:mixture",
+            "amount": 1,
+            "components": {
+                "destroy:mixture": {
+                    "TranslationKey": "destroy.chemical.water",
+                    "Contents": [
+                        {
+                            "Molecule": "destroy:water",
+                            "Concentration": 55.555556
+                        }
+                    ]
+                }
+            }
+        }
+    ]
+}

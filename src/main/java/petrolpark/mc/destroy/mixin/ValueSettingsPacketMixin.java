@@ -2,8 +2,6 @@ package petrolpark.mc.destroy.mixin;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
 
 import petrolpark.mc.destroy.core.bettervaluesettings.BetterValueSettingsBehaviour;
 import petrolpark.mc.destroy.mixin.accessor.ValueSettingsPacketAccessor;
@@ -14,10 +12,8 @@ import com.simibubi.create.foundation.blockEntity.behaviour.ValueSettingsBehavio
 import com.simibubi.create.foundation.blockEntity.behaviour.ValueSettingsPacket;
 
 import net.minecraft.core.Direction;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.phys.BlockHitResult;
 
 @Mixin(value = ValueSettingsPacket.class, remap = false)
 public class ValueSettingsPacketMixin {
@@ -35,6 +31,8 @@ public class ValueSettingsPacketMixin {
 				continue;
 			if (!valueSettingsBehaviour.acceptsValueSettings())
 				continue;
+			if (((ValueSettingsPacketAccessor)this).getBehaviourIndex() != valueSettingsBehaviour.netId()) // Create 6: several Value Settings per Block Entity
+				continue;
 			if (hand != null) {
 				valueSettingsBehaviour.onShortInteract(player, hand, side, ((ValueSettingsPacketAccessor) this).getHitResult());
 			};
@@ -46,19 +44,5 @@ public class ValueSettingsPacketMixin {
 		}
 	}
 
-	@Redirect(method = "writeSettings",
-			at = @At(value = "INVOKE", target = "Lnet/minecraft/network/FriendlyByteBuf;writeBlockHitResult(Lnet/minecraft/world/phys/BlockHitResult;)V"),
-			remap = true) // Uses mc class, so remap required
-	protected void writeSafeBlockHitResult(FriendlyByteBuf buffer, BlockHitResult hitResult) {
-		buffer.writeBoolean(hitResult != null);
-		if (hitResult != null) buffer.writeBlockHitResult(hitResult);
-	}
-
-	@Redirect(method = "readSettings",
-			at = @At(value = "INVOKE", target = "Lnet/minecraft/network/FriendlyByteBuf;readBlockHitResult()Lnet/minecraft/world/phys/BlockHitResult;"),
-			remap = true) // Uses mc class, so remap required
-	protected BlockHitResult readSafeBlockHitResult(FriendlyByteBuf buffer) {
-		if(buffer.readBoolean()) return buffer.readBlockHitResult();
-		return null;
-	}
+	// 1.20.1 also redirected writeSettings/readSettings to allow a null Block Hit Result; Create 6's STREAM_CODEC already does that.
 };

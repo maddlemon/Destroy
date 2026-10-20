@@ -1,0 +1,20 @@
+{
+    "type": "create:milling",
+    "ingredients": [
+        {
+            "item": "destroy:baby_blue_crystal"
+        }
+    ],
+    "results": [
+        {
+            "id": "destroy:baby_blue_powder"
+        }
+    ],
+    "processing_time": 100,
+    "neoforge:conditions": [
+        {
+            "type": "petrolpark:config_bool",
+            "value": "destroy:common.enableBabyBlue"
+        }
+    ]
+}

@@ -1,0 +1,25 @@
+{
+    "type": "create:mixing",
+    "ingredients": [
+        {
+            "tag": "destroy:fertilizers"
+        },
+        {
+            "tag": "destroy:fertilizers"
+        },
+        {
+            "type": "destroy:mixture_fluid_with_salt",
+            "cation": "destroy:calcium_ion",
+            "anion": "destroy:cyanamide_ion",
+            "min_concentration": 3.0,
+            "max_concentration": 5.0,
+            "amount": 2
+        }
+    ],
+    "results": [
+        {
+            "id": "destroy:hyperaccumulating_fertilizer",
+            "count": 4
+        }
+    ]
+}

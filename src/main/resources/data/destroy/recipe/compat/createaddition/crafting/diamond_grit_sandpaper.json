@@ -1,0 +1,20 @@
+{
+    "type": "minecraft:crafting_shapeless",
+    "ingredients": [
+        {
+            "item": "destroy:nanodiamonds"
+        },
+        {
+            "item": "minecraft:paper"
+        }
+    ],
+    "result": {
+        "id": "createaddition:diamond_grit_sandpaper"
+    },
+    "neoforge:conditions": [
+        {
+            "type": "neoforge:mod_loaded",
+            "modid": "createaddition"
+        }
+    ]
+}

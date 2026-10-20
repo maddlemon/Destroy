@@ -1,0 +1,17 @@
+{
+    "type": "create:emptying",
+    "ingredients": [
+        {
+            "item": "destroy:undistilled_moonshine_bottle"
+        }
+    ],
+    "results": [
+        {
+            "id": "minecraft:glass_bottle"
+        },
+        {
+            "id": "destroy:undistilled_moonshine",
+            "amount": 250
+        }
+    ]
+}

@@ -1,0 +1,10 @@
+{
+    "type": "minecraft:smelting",
+    "ingredient": {
+        "tag": "c:dusts/zinc"
+    },
+    "result": {
+        "id": "create:zinc_ingot"
+    },
+    "cookingtime": 200
+}

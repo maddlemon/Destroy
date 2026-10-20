@@ -1,8 +1,0 @@
-{
-    "type": "minecraft:blasting",
-    "ingredient": {
-      "tag": "c:dusts/iron"
-    },
-    "result": "minecraft:iron_ingot",
-    "cookingtime": 100
-  }

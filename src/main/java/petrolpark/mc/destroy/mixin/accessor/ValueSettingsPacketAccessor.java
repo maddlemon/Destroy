@@ -48,4 +48,10 @@ public interface ValueSettingsPacketAccessor {
             remap = false
     )
     BlockHitResult getHitResult();
+
+    @Accessor(
+            value = "behaviourIndex",
+            remap = false
+    )
+    int getBehaviourIndex();
 };

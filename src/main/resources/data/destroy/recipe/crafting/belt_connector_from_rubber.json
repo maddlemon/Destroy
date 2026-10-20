@@ -1,0 +1,15 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "RRR"
+    ],
+    "key": {
+        "R": {
+            "tag": "destroy:plastics/rubber"
+        }
+    },
+    "result": {
+        "id": "create:belt_connector",
+        "count": 4
+    }
+}

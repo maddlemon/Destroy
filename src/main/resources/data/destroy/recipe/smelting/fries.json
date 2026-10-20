@@ -1,0 +1,10 @@
+{
+    "type": "minecraft:smelting",
+    "ingredient": {
+        "item": "destroy:raw_fries"
+    },
+    "result": {
+        "id": "destroy:fries"
+    },
+    "cookingtime": 200
+}

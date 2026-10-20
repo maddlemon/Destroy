@@ -1,0 +1,25 @@
+{
+    "type": "destroy:glassblowing",
+    "ingredients": [
+        {
+            "type": "neoforge:single",
+            "fluid": "destroy:molten_borosilicate_glass",
+            "amount": 250
+        }
+    ],
+    "results": [
+        {
+            "id": "destroy:measuring_cylinder"
+        }
+    ],
+    "shape": [
+        [
+            12,
+            2
+        ],
+        [
+            2,
+            3
+        ]
+    ]
+}

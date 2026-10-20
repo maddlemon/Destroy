@@ -1,0 +1,112 @@
+{
+    "type": "destroy:distillation",
+    "ingredients": [
+        {
+            "type": "neoforge:tag",
+            "tag": "destroy:crude_oil",
+            "amount": 100
+        }
+    ],
+    "results": [
+        {
+            "id": "destroy:mixture",
+            "amount": 9,
+            "components": {
+                "destroy:mixture": {
+                    "TranslationKey": "fluid.destroy.molten_sulfur",
+                    "Temperature": 388,
+                    "Contents": [
+                        {
+                            "Molecule": "destroy:octasulfur",
+                            "Concentration": 7.09217093
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "id": "destroy:mixture",
+            "amount": 24,
+            "components": {
+                "destroy:mixture": {
+                    "TranslationKey": "fluid.destroy.mixed_xylenes",
+                    "Temperature": 388,
+                    "Contents": [
+                        {
+                            "Molecule": "destroy:paraxylene",
+                            "Concentration": 2.03011668
+                        },
+                        {
+                            "Molecule": "destroy:metaxylene",
+                            "Concentration": 2.03011668
+                        },
+                        {
+                            "Molecule": "destroy:orthoxylene",
+                            "Concentration": 2.03011668
+                        },
+                        {
+                            "Molecule": "destroy:ethylbenzene",
+                            "Concentration": 2.03011668
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "id": "destroy:mixture",
+            "amount": 14,
+            "components": {
+                "destroy:mixture": {
+                    "Contents": [
+                        {
+                            "Molecule": "destroy:toluene",
+                            "Concentration": 9.358483194
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "id": "destroy:mixture",
+            "amount": 53,
+            "components": {
+                "destroy:mixture": {
+                    "Contents": [
+                        {
+                            "Molecule": "destroy:benzene",
+                            "Concentration": 11.22103592
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "id": "destroy:mixture",
+            "amount": 1000,
+            "components": {
+                "destroy:mixture": {
+                    "TranslationKey": "fluid.destroy.refinery_gas",
+                    "Contents": [
+                        {
+                            "Molecule": "destroy:methane",
+                            "Concentration": 0.0628342
+                        },
+                        {
+                            "Molecule": "destroy:ethene",
+                            "Concentration": 0.1885026
+                        },
+                        {
+                            "Molecule": "destroy:propene",
+                            "Concentration": 0.1256684
+                        },
+                        {
+                            "Molecule": "destroy:butadiene",
+                            "Concentration": 0.1256684
+                        }
+                    ]
+                }
+            }
+        }
+    ],
+    "heat_requirement": "heated"
+}

@@ -1,0 +1,24 @@
+{
+    "type": "minecraft:crafting_shapeless",
+    "ingredients": [
+        {
+            "tag": "minecraft:small_flowers"
+        },
+        {
+            "tag": "minecraft:small_flowers"
+        },
+        {
+            "tag": "minecraft:small_flowers"
+        },
+        {
+            "tag": "minecraft:small_flowers"
+        },
+        {
+            "item": "destroy:hyperaccumulating_fertilizer"
+        }
+    ],
+    "result": {
+        "id": "create:tree_fertilizer",
+        "count": 4
+    }
+}

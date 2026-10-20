@@ -1,0 +1,10 @@
+{
+    "type": "minecraft:smelting",
+    "ingredient": {
+        "tag": "c:dusts/chromium"
+    },
+    "result": {
+        "id": "destroy:chromium_ingot"
+    },
+    "cookingtime": 200
+}

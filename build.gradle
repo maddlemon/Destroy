@@ -53,10 +53,11 @@ neoForge {
         // This run config launches GameTestServer and runs all registered gametests, then exits.
         // By default, the server will crash when no gametests are provided.
         // The gametest system is also enabled by default for other run configs under the /test command.
-        // gameTestServer {
-        //     type = "gameTestServer"
-        //     systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
-        // }
+        // Also used as a data check: loads every datapack like a dedicated server (no EULA step), logs parse errors
+        gameTestServer {
+            type = "gameTestServer"
+            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+        }
 
         data {
             data()

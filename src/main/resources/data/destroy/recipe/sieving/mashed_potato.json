@@ -1,0 +1,20 @@
+{
+    "type": "destroy:sieving",
+    "ingredients": [
+        {
+            "item": "destroy:mashed_potato"
+        }
+    ],
+    "results": [
+        {
+            "id": "destroy:crushed_raw_rhodium",
+            "chance": 0.02
+        },
+        {
+            "id": "destroy:mashed_potato",
+            "chance": 0.4
+        }
+    ],
+    "processing_time": 50,
+    "first_time_lucky_key": "destroy:sieving/mashed_potato"
+}

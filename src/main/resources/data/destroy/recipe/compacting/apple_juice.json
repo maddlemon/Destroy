@@ -1,0 +1,22 @@
+{
+    "type": "create:compacting",
+    "ingredients": [
+        {
+            "type": "neoforge:single",
+            "fluid": "minecraft:water",
+            "amount": 250
+        },
+        {
+            "item": "minecraft:apple"
+        },
+        {
+            "item": "minecraft:sugar"
+        }
+    ],
+    "results": [
+        {
+            "id": "destroy:apple_juice",
+            "amount": 250
+        }
+    ]
+}

@@ -1,0 +1,27 @@
+{
+    "type": "create:mixing",
+    "ingredients": [
+        {
+            "item": "create:crushed_raw_iron"
+        },
+        {
+            "item": "destroy:polytetrafluoroethene"
+        },
+        {
+            "item": "minecraft:cocoa_beans"
+        },
+        {
+            "item": "destroy:butter"
+        },
+        {
+            "item": "create:cinder_flour"
+        }
+    ],
+    "results": [
+        {
+            "id": "destroy:thermite_brownie",
+            "count": 2
+        }
+    ],
+    "heat_requirement": "heated"
+}

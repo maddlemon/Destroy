@@ -1,0 +1,40 @@
+{
+    "type": "destroy:distillation",
+    "ingredients": [
+        {
+            "type": "neoforge:single",
+            "fluid": "destroy:moonshine",
+            "amount": 400
+        }
+    ],
+    "results": [
+        {
+            "id": "minecraft:water",
+            "amount": 200
+        },
+        {
+            "id": "destroy:mixture",
+            "amount": 200,
+            "components": {
+                "destroy:mixture": {
+                    "TranslationKey": "fluid.destroy.ethanol_distillate",
+                    "Contents": [
+                        {
+                            "Molecule": "destroy:water",
+                            "Concentration": 50.0
+                        },
+                        {
+                            "Molecule": "destroy:ethanol",
+                            "Concentration": 5.0
+                        },
+                        {
+                            "Molecule": "destroy:acetic_acid",
+                            "Concentration": 0.5
+                        }
+                    ]
+                }
+            }
+        }
+    ],
+    "heat_requirement": "heated"
+}

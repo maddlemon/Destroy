@@ -1,0 +1,32 @@
+{
+    "parent": "destroy:drunk",
+    "criteria": {
+        "hangover": {
+            "conditions": {},
+            "trigger": "destroy:hangover"
+        }
+    },
+    "display": {
+        "description": {
+            "color": "#DBA213",
+            "translate": "advancement.destroy.hangover.description"
+        },
+        "icon": {
+            "id": "minecraft:red_bed"
+        },
+        "title": {
+            "translate": "advancement.destroy.hangover"
+        }
+    },
+    "requirements": [
+        [
+            "hangover"
+        ]
+    ],
+    "neoforge:conditions": [
+        {
+            "type": "petrolpark:config_bool",
+            "value": "destroy:common.enableAlcohol"
+        }
+    ]
+}

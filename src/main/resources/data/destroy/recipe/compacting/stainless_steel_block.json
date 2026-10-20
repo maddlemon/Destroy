@@ -1,0 +1,16 @@
+{
+    "type": "create:compacting",
+    "ingredients": [
+        {
+            "type": "neoforge:single",
+            "fluid": "destroy:molten_stainless_steel",
+            "amount": 1000
+        }
+    ],
+    "results": [
+        {
+            "id": "destroy:stainless_steel_block"
+        }
+    ],
+    "heat_requirement": "cooled"
+}

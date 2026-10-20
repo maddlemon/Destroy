@@ -1,0 +1,19 @@
+{
+    "type": "create:mixing",
+    "ingredients": [
+        {
+            "item": "minecraft:magma_block"
+        },
+        {
+            "type": "neoforge:single",
+            "fluid": "destroy:cream",
+            "amount": 200
+        }
+    ],
+    "results": [
+        {
+            "id": "minecraft:magma_cream"
+        }
+    ],
+    "heat_requirement": "heated"
+}

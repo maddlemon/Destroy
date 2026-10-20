@@ -1,0 +1,32 @@
+{
+    "parent": "destroy:vat",
+    "criteria": {
+        "take": {
+            "conditions": {},
+            "trigger": "destroy:take_baby_blue"
+        }
+    },
+    "display": {
+        "description": {
+            "color": "#DBA213",
+            "translate": "advancement.destroy.baby_blue.description"
+        },
+        "icon": {
+            "id": "destroy:baby_blue_crystal"
+        },
+        "title": {
+            "translate": "advancement.destroy.baby_blue"
+        }
+    },
+    "requirements": [
+        [
+            "take"
+        ]
+    ],
+    "neoforge:conditions": [
+        {
+            "type": "petrolpark:config_bool",
+            "value": "destroy:common.enableBabyBlue"
+        }
+    ]
+}

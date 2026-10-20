@@ -1,8 +1,0 @@
-{
-    "type": "minecraft:smelting",
-    "ingredient": {
-      "tag": "c:dusts/palladium"
-    },
-    "result": "destroy:palladium_ingot",
-    "cookingtime": 200
-  }

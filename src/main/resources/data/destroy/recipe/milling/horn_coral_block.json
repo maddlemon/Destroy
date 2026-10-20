@@ -1,0 +1,20 @@
+{
+    "type": "create:milling",
+    "ingredients": [
+        {
+            "item": "minecraft:horn_coral_block"
+        }
+    ],
+    "results": [
+        {
+            "id": "destroy:chalk_dust",
+            "count": 4,
+            "chance": 0.5
+        },
+        {
+            "id": "minecraft:yellow_dye",
+            "count": 2
+        }
+    ],
+    "processing_time": 150
+}

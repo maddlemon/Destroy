@@ -1,0 +1,59 @@
+{
+    "type": "destroy:circuit_sequenced_assembly",
+    "ingredient": {
+        "item": "create:copper_sheet"
+    },
+    "transitional_item": {
+        "id": "destroy:unfinished_circuit_board"
+    },
+    "sequence": [
+        {
+            "type": "destroy:circuit_deploying",
+            "ingredients": [
+                {
+                    "tag": "c:plates/copper"
+                },
+                {
+                    "item": "destroy:circuit_mask"
+                }
+            ],
+            "results": [
+                {
+                    "id": "destroy:unfinished_circuit_board"
+                }
+            ]
+        },
+        {
+            "type": "create:filling",
+            "ingredients": [
+                {
+                    "item": "destroy:unfinished_circuit_board"
+                },
+                {
+                    "type": "destroy:mixture_fluid_with_salt",
+                    "cation": "destroy:copper_ii",
+                    "anion": "destroy:chloride",
+                    "min_concentration": 4.0,
+                    "max_concentration": 6.0,
+                    "amount": 1
+                }
+            ],
+            "results": [
+                {
+                    "id": "destroy:unfinished_circuit_board"
+                }
+            ]
+        }
+    ],
+    "results": [
+        {
+            "id": "destroy:circuit_board",
+            "chance": 1.0
+        },
+        {
+            "id": "destroy:ruined_circuit_board",
+            "chance": 9.0
+        }
+    ],
+    "loops": 1
+}

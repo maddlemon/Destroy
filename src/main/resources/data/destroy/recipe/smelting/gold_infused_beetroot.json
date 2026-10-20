@@ -1,0 +1,10 @@
+{
+    "type": "minecraft:smelting",
+    "ingredient": {
+        "item": "destroy:gold_infused_beetroot"
+    },
+    "result": {
+        "id": "destroy:gold_infused_beetroot_ashes"
+    },
+    "cookingtime": 200
+}

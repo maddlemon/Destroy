@@ -1,0 +1,21 @@
+{
+    "type": "destroy:distillation",
+    "ingredients": [
+        {
+            "type": "neoforge:single",
+            "fluid": "destroy:undistilled_moonshine",
+            "amount": 1000
+        }
+    ],
+    "results": [
+        {
+            "id": "minecraft:water",
+            "amount": 200
+        },
+        {
+            "id": "destroy:moonshine",
+            "amount": 800
+        }
+    ],
+    "heat_requirement": "heated"
+}

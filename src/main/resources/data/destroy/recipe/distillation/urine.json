@@ -1,0 +1,31 @@
+{
+    "type": "destroy:distillation",
+    "ingredients": [
+        {
+            "type": "neoforge:tag",
+            "tag": "destroy:urine",
+            "amount": 500
+        }
+    ],
+    "results": [
+        {
+            "id": "destroy:mixture",
+            "amount": 500,
+            "components": {
+                "destroy:mixture": {
+                    "Contents": [
+                        {
+                            "Molecule": "destroy:water",
+                            "Concentration": 55.555556
+                        },
+                        {
+                            "Molecule": "destroy:ammonia",
+                            "Concentration": 1.0
+                        }
+                    ]
+                }
+            }
+        }
+    ],
+    "heat_requirement": "heated"
+}

@@ -306,7 +306,7 @@ public class DestroyBlocks {
             .noOcclusion()
             .isSuffocating((state, level, pos) -> false)
         ).transform(TagGen.pickaxeOnly())
-        .blockstate(BlockStateGen.horizontalAxisBlockProvider(false))
+        .blockstate((c, p) -> {}) // Hand-written blockstate (assets/destroy/blockstates/pumpjack_cam.json); horizontalAxisBlockProvider can't cover its 3-value axis property
         .register();
 
     public static final BlockEntry<PumpjackStructuralBlock> PUMPJACK_STRUCTURAL = REGISTRATE.block("pumpjack_structure", PumpjackStructuralBlock::new)

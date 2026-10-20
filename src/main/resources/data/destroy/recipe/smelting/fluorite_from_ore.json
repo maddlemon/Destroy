@@ -1,0 +1,11 @@
+{
+    "type": "minecraft:smelting",
+    "ingredient": {
+        "item": "destroy:fluorite_ore"
+    },
+    "result": {
+        "id": "destroy:fluorite"
+    },
+    "experience": 0.0,
+    "cookingtime": 200
+}

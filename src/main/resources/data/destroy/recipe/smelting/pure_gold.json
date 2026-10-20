@@ -1,0 +1,10 @@
+{
+    "type": "minecraft:smelting",
+    "ingredient": {
+        "item": "destroy:pure_gold_dust"
+    },
+    "result": {
+        "id": "destroy:pure_gold_ingot"
+    },
+    "cookingtime": 200
+}

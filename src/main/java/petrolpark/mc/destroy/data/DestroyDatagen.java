@@ -19,7 +19,7 @@ import net.neoforged.neoforge.data.event.GatherDataEvent;
 import petrolpark.mc.destroy.Destroy;
 import petrolpark.mc.destroy.client.ponder.DestroyPonderPlugin;
 
-@EventBusSubscriber(modid = Destroy.MOD_ID)
+@EventBusSubscriber(modid = Destroy.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
 public class DestroyDatagen {
     
     @SubscribeEvent(priority = EventPriority.HIGHEST)

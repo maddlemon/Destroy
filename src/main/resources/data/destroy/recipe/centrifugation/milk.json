@@ -1,0 +1,21 @@
+{
+    "type": "destroy:centrifugation",
+    "ingredients": [
+        {
+            "type": "neoforge:single",
+            "fluid": "minecraft:milk",
+            "amount": 1000
+        }
+    ],
+    "results": [
+        {
+            "id": "destroy:cream",
+            "amount": 500
+        },
+        {
+            "id": "destroy:skimmed_milk",
+            "amount": 500
+        }
+    ],
+    "processing_time": 500
+}

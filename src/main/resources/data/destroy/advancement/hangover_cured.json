@@ -1,0 +1,32 @@
+{
+    "parent": "destroy:hangover",
+    "criteria": {
+        "cure": {
+            "conditions": {},
+            "trigger": "destroy:cure_hangover"
+        }
+    },
+    "display": {
+        "description": {
+            "color": "#DBA213",
+            "translate": "advancement.destroy.hangover_cured.description"
+        },
+        "icon": {
+            "id": "destroy:aspirin_syringe"
+        },
+        "title": {
+            "translate": "advancement.destroy.hangover_cured"
+        }
+    },
+    "requirements": [
+        [
+            "cure"
+        ]
+    ],
+    "neoforge:conditions": [
+        {
+            "type": "petrolpark:config_bool",
+            "value": "destroy:common.enableAlcohol"
+        }
+    ]
+}

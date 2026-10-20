@@ -1,0 +1,10 @@
+{
+    "type": "minecraft:blasting",
+    "ingredient": {
+        "tag": "c:dusts/rhodium"
+    },
+    "result": {
+        "id": "destroy:rhodium_ingot"
+    },
+    "cookingtime": 100
+}

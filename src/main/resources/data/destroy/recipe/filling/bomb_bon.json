@@ -1,0 +1,24 @@
+{
+    "type": "create:filling",
+    "ingredients": [
+        {
+            "item": "destroy:empty_bomb_bon"
+        },
+        {
+            "type": "neoforge:single",
+            "fluid": "destroy:moonshine",
+            "amount": 200
+        }
+    ],
+    "results": [
+        {
+            "id": "destroy:bomb_bon"
+        }
+    ],
+    "neoforge:conditions": [
+        {
+            "type": "petrolpark:config_bool",
+            "value": "destroy:common.enableAlcohol"
+        }
+    ]
+}

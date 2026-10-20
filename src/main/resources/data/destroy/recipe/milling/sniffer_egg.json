@@ -1,0 +1,16 @@
+{
+    "type": "create:milling",
+    "ingredients": [
+        {
+            "item": "minecraft:sniffer_egg"
+        }
+    ],
+    "results": [
+        {
+            "id": "destroy:chalk_dust",
+            "count": 5,
+            "chance": 0.5
+        }
+    ],
+    "processing_time": 150
+}

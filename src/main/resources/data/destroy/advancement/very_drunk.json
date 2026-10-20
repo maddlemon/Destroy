@@ -1,0 +1,33 @@
+{
+    "parent": "destroy:drunk",
+    "criteria": {
+        "drunk": {
+            "conditions": {},
+            "trigger": "destroy:very_drunk"
+        }
+    },
+    "display": {
+        "description": {
+            "color": "#DBA213",
+            "translate": "advancement.destroy.very_drunk.description"
+        },
+        "icon": {
+            "id": "destroy:moonshine_bottle"
+        },
+        "frame": "goal",
+        "title": {
+            "translate": "advancement.destroy.very_drunk"
+        }
+    },
+    "requirements": [
+        [
+            "drunk"
+        ]
+    ],
+    "neoforge:conditions": [
+        {
+            "type": "petrolpark:config_bool",
+            "value": "destroy:common.enableAlcohol"
+        }
+    ]
+}

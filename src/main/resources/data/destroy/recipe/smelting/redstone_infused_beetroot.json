@@ -1,0 +1,10 @@
+{
+    "type": "minecraft:smelting",
+    "ingredient": {
+        "item": "destroy:redstone_infused_beetroot"
+    },
+    "result": {
+        "id": "destroy:redstone_infused_beetroot_ashes"
+    },
+    "cookingtime": 200
+}

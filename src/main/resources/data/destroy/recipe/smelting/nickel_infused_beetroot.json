@@ -1,0 +1,10 @@
+{
+    "type": "minecraft:smelting",
+    "ingredient": {
+        "item": "destroy:nickel_infused_beetroot"
+    },
+    "result": {
+        "id": "destroy:nickel_infused_beetroot_ashes"
+    },
+    "cookingtime": 200
+}

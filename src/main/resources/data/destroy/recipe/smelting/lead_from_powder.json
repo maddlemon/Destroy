@@ -1,0 +1,10 @@
+{
+    "type": "minecraft:smelting",
+    "ingredient": {
+        "tag": "c:dusts/lead"
+    },
+    "result": {
+        "id": "destroy:lead_ingot"
+    },
+    "cookingtime": 200
+}

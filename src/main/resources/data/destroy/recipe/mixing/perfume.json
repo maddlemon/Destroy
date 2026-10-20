@@ -1,0 +1,28 @@
+{
+    "type": "create:mixing",
+    "ingredients": [
+        {
+            "tag": "minecraft:flowers"
+        },
+        {
+            "tag": "minecraft:flowers"
+        },
+        {
+            "type": "destroy:mixture_fluid_with_tagged_molecules",
+            "tag": "destroy:fragrant",
+            "amount": 50,
+            "concentration": 0.2
+        },
+        {
+            "type": "neoforge:single",
+            "fluid": "minecraft:water",
+            "amount": 200
+        }
+    ],
+    "results": [
+        {
+            "id": "destroy:perfume",
+            "amount": 250
+        }
+    ]
+}

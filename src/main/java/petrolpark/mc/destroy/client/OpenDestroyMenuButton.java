@@ -57,7 +57,7 @@ public class OpenDestroyMenuButton extends Button {
      * @param event
      */
     @SubscribeEvent
-    public static final void onGuiInit(ScreenEvent.Init event) {
+    public static final void onGuiInit(ScreenEvent.Init.Post event) { // As Create 6's OpenCreateMenuButton (NeoForge rejects the abstract Init)
         Screen gui = event.getScreen();
 
         MenuRows menu = null;

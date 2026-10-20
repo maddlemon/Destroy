@@ -29,7 +29,6 @@ import net.minecraft.client.renderer.texture.SpriteContents;
 import net.minecraft.client.renderer.texture.atlas.SpriteResourceLoader;
 import net.minecraft.client.renderer.texture.atlas.SpriteSource;
 import net.minecraft.client.renderer.texture.atlas.SpriteSourceType;
-import net.minecraft.client.renderer.texture.atlas.SpriteSources;
 import net.minecraft.client.renderer.texture.atlas.sources.LazyLoadedImage;
 import net.minecraft.client.renderer.texture.atlas.sources.PalettedPermutations;
 import net.minecraft.client.resources.metadata.animation.FrameSize;
@@ -39,6 +38,7 @@ import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceMetadata;
 import net.minecraft.util.GsonHelper;
+import net.neoforged.neoforge.client.event.RegisterSpriteSourceTypesEvent;
 
 public class DestroySpriteSource implements SpriteSource {
 
@@ -53,14 +53,11 @@ public class DestroySpriteSource implements SpriteSource {
         ARMOR_TRIMS;
 
         private final MapCodec<DestroySpriteSource> codec;
-        private final SpriteSourceType type;
+        private SpriteSourceType type; // Set by RegisterSpriteSourceTypesEvent (vanilla's SpriteSources.register only takes minecraft: ids in 1.21)
 
         Atlas() {
             codec = MapCodec.unit(() -> new DestroySpriteSource(this));
-            type = SpriteSources.register("destroy:"+Lang.asId(name()), codec);
         };
-
-        private static void register() {};
     };
 
     public DestroySpriteSource(Atlas atlas) {
@@ -173,8 +170,11 @@ public class DestroySpriteSource implements SpriteSource {
         return atlas.type;
     };
 
-    public static void register() {
-        Atlas.register();
+    /**
+     * Registers {@code destroy:blocks} and {@code destroy:armor_trims} (referenced by {@code assets/minecraft/atlases}).
+     */
+    public static void register(RegisterSpriteSourceTypesEvent event) {
+        for (Atlas atlas : Atlas.values()) atlas.type = event.register(Destroy.asResource(Lang.asId(atlas.name())), atlas.codec);
     };
 
 

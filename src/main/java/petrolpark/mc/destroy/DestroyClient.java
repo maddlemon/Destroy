@@ -30,7 +30,7 @@ public class DestroyClient {
     };
 
     public static void clientCtor(IEventBus modEventBus, IEventBus forgeEventBus) {
-        DestroySpriteSource.register();
+        modEventBus.addListener(DestroySpriteSource::register);
         DestroyPartials.init();
         modEventBus.addListener(DestroyParticleTypes::registerProviders);
     };

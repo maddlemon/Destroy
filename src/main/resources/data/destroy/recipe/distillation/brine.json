@@ -1,0 +1,55 @@
+{
+    "type": "destroy:distillation",
+    "ingredients": [
+        {
+            "type": "neoforge:single",
+            "fluid": "minecraft:water",
+            "amount": 1000
+        }
+    ],
+    "results": [
+        {
+            "id": "destroy:mixture",
+            "amount": 500,
+            "components": {
+                "destroy:mixture": {
+                    "TranslationKey": "fluid.destroy.brine",
+                    "Contents": [
+                        {
+                            "Molecule": "destroy:water",
+                            "Concentration": 55.555556
+                        },
+                        {
+                            "Molecule": "destroy:sodium_ion",
+                            "Concentration": 1.0
+                        },
+                        {
+                            "Molecule": "destroy:chloride",
+                            "Concentration": 1.0
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "id": "destroy:mixture",
+            "amount": 500,
+            "components": {
+                "destroy:mixture": {
+                    "TranslationKey": "fluid.destroy.distilled_water",
+                    "Contents": [
+                        {
+                            "Molecule": "destroy:water",
+                            "Concentration": 55.555556
+                        }
+                    ]
+                }
+            }
+        }
+    ],
+    "heat_requirement": "heated",
+    "biomes": [
+        "#minecraft:is_ocean",
+        "#minecraft:is_beach"
+    ]
+}
