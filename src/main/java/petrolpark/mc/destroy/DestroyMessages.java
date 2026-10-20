@@ -30,7 +30,7 @@ import petrolpark.mc.destroy.core.pollution.SyncChunkPollutionS2CPacket;
 import com.petrolpark.network.packet.C2SPacket;
 import com.petrolpark.network.packet.S2CPacket;
 
-import net.minecraft.core.BlockSource;
+import net.minecraft.core.dispenser.BlockSource;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;

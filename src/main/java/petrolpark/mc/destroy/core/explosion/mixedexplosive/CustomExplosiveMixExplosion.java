@@ -163,9 +163,9 @@ public class CustomExplosiveMixExplosion extends SmartExplosion {
     public void write(FriendlyByteBuf buffer) {
         properties.write(buffer);
         buffer.writeCollection(specialItems, FriendlyByteBuf::writeItem);
-        buffer.writeDouble(getPosition().x());
-        buffer.writeDouble(getPosition().y());
-        buffer.writeDouble(getPosition().z());
+        buffer.writeDouble(center().x());
+        buffer.writeDouble(center().y());
+        buffer.writeDouble(center().z());
     };
 
     public static class Serializer extends SmartExplosion.Serializer<CustomExplosiveMixExplosion> {

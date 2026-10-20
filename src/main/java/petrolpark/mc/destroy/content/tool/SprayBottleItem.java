@@ -5,7 +5,7 @@ import javax.annotation.Nullable;
 import petrolpark.mc.destroy.DestroyItems;
 import petrolpark.mc.destroy.DestroySoundEvents;
 
-import net.minecraft.core.BlockSource;
+import net.minecraft.core.dispenser.BlockSource;
 import net.minecraft.core.Direction;
 import net.minecraft.core.dispenser.OptionalDispenseItemBehavior;
 import net.minecraft.world.InteractionResult;

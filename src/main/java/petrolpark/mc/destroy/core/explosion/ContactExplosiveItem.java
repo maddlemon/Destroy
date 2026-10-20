@@ -1,6 +1,6 @@
 package petrolpark.mc.destroy.core.explosion;
 
-import net.minecraft.core.BlockSource;
+import net.minecraft.core.dispenser.BlockSource;
 import net.minecraft.core.dispenser.OptionalDispenseItemBehavior;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.Item;

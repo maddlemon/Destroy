@@ -9,7 +9,7 @@ public class SmartExplosionDamageSource extends DamageSource {
     public final SmartExplosion explosion;
 
     public SmartExplosionDamageSource(Holder<DamageType> type, SmartExplosion explosion) {
-        super(type, explosion.getDirectSourceEntity(), explosion.getIndirectSourceEntity(), explosion.getPosition());
+        super(type, explosion.getDirectSourceEntity(), explosion.getIndirectSourceEntity(), explosion.center());
         this.explosion = explosion;
     };
 

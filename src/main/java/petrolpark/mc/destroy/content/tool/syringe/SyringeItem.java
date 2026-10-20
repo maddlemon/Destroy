@@ -9,7 +9,7 @@ import com.simibubi.create.foundation.item.CustomUseEffectsItem;
 import com.simibubi.create.foundation.item.render.SimpleCustomRenderer;
 
 import net.createmod.catnip.data.TriState;
-import net.minecraft.core.BlockSource;
+import net.minecraft.core.dispenser.BlockSource;
 import net.minecraft.core.dispenser.OptionalDispenseItemBehavior;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;

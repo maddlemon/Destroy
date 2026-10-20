@@ -6,7 +6,7 @@ import petrolpark.mc.destroy.core.explosion.mixedexplosive.ISpecialEffectExplosi
 
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.BlockSource;
+import net.minecraft.core.dispenser.BlockSource;
 import net.minecraft.core.Direction;
 import net.minecraft.core.dispenser.OptionalDispenseItemBehavior;
 import net.minecraft.core.particles.ParticleOptions;
@@ -31,7 +31,7 @@ public class ConfettiItem extends Item implements ISpecialEffectExplosiveItem {
     @Override
     public void explode(SmartExplosion explosion, Level level, ObjectArrayList<BlockPos> toBlow, ItemStack specialItemStack) {
         for (int i = 0; i < 512; i++) {
-            level.addParticle(particleFactory.get(), explosion.getPosition().x, explosion.getPosition().y(), explosion.getPosition().z, -0.25d + level.random.nextDouble() * 0.5d, -0.25d + level.random.nextDouble() * 0.5d, -0.25d + level.random.nextDouble() * 0.5d);
+            level.addParticle(particleFactory.get(), explosion.center().x, explosion.center().y(), explosion.center().z, -0.25d + level.random.nextDouble() * 0.5d, -0.25d + level.random.nextDouble() * 0.5d, -0.25d + level.random.nextDouble() * 0.5d);
         };
     };
 

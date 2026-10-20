@@ -3,7 +3,7 @@ package petrolpark.mc.destroy.content.processing.phytomining;
 import petrolpark.mc.destroy.DestroyAdvancementTrigger;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.BlockSource;
+import net.minecraft.core.dispenser.BlockSource;
 import net.minecraft.core.Direction;
 import net.minecraft.core.dispenser.OptionalDispenseItemBehavior;
 import net.minecraft.tags.BlockTags;

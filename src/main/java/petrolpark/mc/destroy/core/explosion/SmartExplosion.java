@@ -85,7 +85,7 @@ public class SmartExplosion extends Explosion {
         explosion.explode();
         explosion.finalizeExplosion(level.isClientSide());
 
-        if (level instanceof ServerLevel serverLevel) for (ServerPlayer player : serverLevel.getPlayers(player -> player.distanceToSqr(explosion.getPosition()) < 4096d)) {
+        if (level instanceof ServerLevel serverLevel) for (ServerPlayer player : serverLevel.getPlayers(player -> player.distanceToSqr(explosion.center()) < 4096d)) {
             SmartExplosionS2CPacket.send(player, explosion);
         };
 
@@ -374,7 +374,7 @@ public class SmartExplosion extends Explosion {
     };
 
     public void write(FriendlyByteBuf buffer) {
-        new ClientboundExplodePacket(getPosition().x(), getPosition().y(), getPosition().z(), getRadius(), getToBlow(), null).write(buffer);
+        new ClientboundExplodePacket(center().x(), center().y(), center().z(), getRadius(), getToBlow(), null).write(buffer);
         buffer.writeFloat(irregularity);
     };
 

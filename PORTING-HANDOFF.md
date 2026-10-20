@@ -62,6 +62,39 @@ no-override 333, incompatible-types 185, bad-args 133, package-missing 99,
 private-access 85, ambiguous 59, no-suitable 53, not-abstract 43, static-ref 9,
 inaccessible 5, final-class 2, name-clash 2.
 
+## Open blocker: project access transformers are not applied at compile time
+
+Symptom: compile errors like `level has private access in Explosion` for members
+listed in `src/main/resources/META-INF/accesstransformer.cfg` (`Entity.position`,
+`Explosion.level/radius/toBlow/source/damageSource`, `Villager.gossips`, …).
+
+Found so far:
+
+- The old build.gradle used `accessTransformers { files('…') }`. `DataFileCollection`
+  (the MDG 2.0.74 type behind `accessTransformers`) has no `files()` method, so the
+  closure fell through to `Project.files()` and the AT file was **silently never
+  registered**. Fixed to `accessTransformers { from('src/main/resources/META-INF/accesstransformer.cfg') }`
+  — verified via an init script that `neoForge.accessTransformers.files` now contains
+  the file.
+- BUT after the fix + a full `./gradlew compileJava --rerun-tasks` (artifacts rebuilt
+  from scratch, `recompile` step re-ran in ~182 s), BOTH `build/moddev/artifacts/neoforge-21.1.262.jar`
+  and `neoforge-21.1.262-merged.jar` still have those members `private`, while
+  NeoForge's own ATs (e.g. `PrimedTnt.explode()` → `protected`) ARE applied.
+  `ModDevArtifactsWorkflow` bytecode does wire the extension's AT files into NFRT's
+  `CreateMinecraftArtifacts.getAccessTransformers()`, so the file reaches NFRT but the
+  recompiled output doesn't reflect it.
+- Not yet determined: whether NFRT skips invalid entries silently (several AT entries
+  target members that changed in 1.21.1 — e.g. `ShapedRecipe.matches(CraftingContainer,…)`),
+  whether `validateAccessTransformers` defaults to false, or whether the AT application
+  lives in an NFRT step that didn't re-run.
+
+Next steps to try: check `validateAccessTransformers`; prune AT entries whose members
+no longer exist in 1.21.1 (javap the merged jar to confirm each); look at the NFRT step
+list in the compile log for an AT-application step; as a fallback, refactor code to not
+need AT'd members (e.g. `SmartExplosion` can keep its own `level`/`radius` copies from
+its constructor instead of reading the private superclass fields). Note the AT file must
+still ship in the mod jar (`META-INF/accesstransformer.cfg`) for runtime application.
+
 ## Remaining work (Phase B)
 
 Quick mechanical first:
