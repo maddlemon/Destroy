@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.content.processing.trypolithography.recipe;
 
+import petrolpark.mc.destroy.util.ItemStackNBT;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -61,7 +62,7 @@ public class CircuitDeployerApplicationRecipe extends DeployerApplicationRecipe 
         public ItemStack[] getItems() {
             return Stream.of(parent.getItems()).map(stack -> {
                 stack = stack.copy();
-                stack.getOrCreateTag().putBoolean("HideContaminants", true);
+                ItemStackNBT.update(stack, customTag -> customTag.putBoolean("HideContaminants", true));
                 CircuitPatternItem.putPattern(stack, EXAMPLE_PATTERN);
                 return stack;
             }).toArray(i -> new ItemStack[i]);

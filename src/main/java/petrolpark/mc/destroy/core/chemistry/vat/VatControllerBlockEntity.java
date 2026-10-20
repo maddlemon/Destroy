@@ -646,7 +646,7 @@ public class VatControllerBlockEntity extends SmartBlockEntity implements IHaveL
         if (getGasTank().isEmpty()) {
             return getLiquidTank().getFluidAmount() == getLiquidTank().getCapacity() ? 0f : -AIR_PRESSURE; // Return 0 for a vacuum, and normal air pressure for a full Vat
         };
-        return LegacyReaction.GAS_CONSTANT * 1000f * getTemperature() * ReadOnlyMixture.readNBT(ReadOnlyMixture::new, getGasTank().getFluid().getOrCreateChildTag("Mixture")).getTotalConcentration() - AIR_PRESSURE;
+        return LegacyReaction.GAS_CONSTANT * 1000f * getTemperature() * ReadOnlyMixture.readNBT(ReadOnlyMixture::new, MixtureFluid.getMixtureTag(getGasTank().getFluid())).getTotalConcentration() - AIR_PRESSURE;
     };
 
     /**
@@ -798,7 +798,7 @@ public class VatControllerBlockEntity extends SmartBlockEntity implements IHaveL
          */
         protected FluidStack drainGasTankWithMolarDensity(int amount, double molarDensity, FluidAction action) {
             if (vatControllerGetter.get() == null || vatControllerGetter.get().getGasTankContents().isEmpty()) return FluidStack.EMPTY;
-            LegacyMixture mixture = LegacyMixture.readNBT(vatControllerGetter.get().getGasTankContents().getOrCreateChildTag("Mixture"));
+            LegacyMixture mixture = LegacyMixture.readNBT(MixtureFluid.getMixtureTag(vatControllerGetter.get().getGasTankContents()));
 
             double scaleFactor = mixture.getTotalConcentration() / molarDensity;
             int amountToDrain = Math.min((int)Math.ceil(scaleFactor * amount), amount); // Round up

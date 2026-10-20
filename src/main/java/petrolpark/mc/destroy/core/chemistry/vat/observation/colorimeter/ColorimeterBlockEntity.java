@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.core.chemistry.vat.observation.colorimeter;
 
+import petrolpark.mc.destroy.chemistry.minecraft.MixtureFluid;
 import net.minecraft.core.HolderLookup;
 import java.text.DecimalFormat;
 import java.util.Collections;
@@ -132,7 +133,7 @@ public class ColorimeterBlockEntity extends SmartBlockEntity {
             redstoneMonitor.quantityObserved = Optional.of(() -> {
                 FluidStack mixtureStack = (observingGas ? vat.get().getGasTankContents() : vat.get().getLiquidTankContents());
                 if (DestroyFluids.isMixture(mixtureStack)) {
-                    ReadOnlyMixture mixture = ReadOnlyMixture.readNBT(ReadOnlyMixture::new, mixtureStack.getOrCreateChildTag("Mixture"));
+                    ReadOnlyMixture mixture = ReadOnlyMixture.readNBT(ReadOnlyMixture::new, MixtureFluid.getMixtureTag(mixtureStack));
                     return mixture.getConcentrationOf(molecule);
                 };
                 return 0f;
@@ -159,7 +160,7 @@ public class ColorimeterBlockEntity extends SmartBlockEntity {
             return Collections.singletonList(
                 DestroyLang.builder()
                     .add(context.sourceConfig().getBoolean("ShowSpeciesName") ? cbe.molecule.getName(!context.sourceConfig().getBoolean("MoleculeNameType")).copy().append(" ") : Component.literal(""))
-                    .add(DestroyLang.quantity(ReadOnlyMixture.readNBT(ReadOnlyMixture::new, fluid.getOrCreateChildTag("Mixture")).getConcentrationOf(cbe.molecule), false, df))
+                    .add(DestroyLang.quantity(ReadOnlyMixture.readNBT(ReadOnlyMixture::new, MixtureFluid.getMixtureTag(fluid)).getConcentrationOf(cbe.molecule), false, df))
                     .component() 
             );
         };

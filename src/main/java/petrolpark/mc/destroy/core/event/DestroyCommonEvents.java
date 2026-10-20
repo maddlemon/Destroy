@@ -531,8 +531,17 @@ public class DestroyCommonEvents {
      * Naturally decrease Pollution over time.
      */
     @SubscribeEvent
-    public static final void onLevelTick(LevelTickEvent.Post event) {
-        Level level = event.getLevel();
+    public static final void onLevelTickPre(LevelTickEvent.Pre event) {
+        onLevelTick(event.getLevel());
+    };
+
+    // Forge fired this tick event at both START and END and the handler ignored the phase, so it ran twice per tick. Kept that way to match 1.20.1.
+    @SubscribeEvent
+    public static final void onLevelTickPost(LevelTickEvent.Post event) {
+        onLevelTick(event.getLevel());
+    };
+
+    public static final void onLevelTick(Level level) {
 
         // Global Pollution
         for (PollutionType pollutionType : PollutionType.values()) {

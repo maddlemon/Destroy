@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.content.processing.glassblowing;
 
+import petrolpark.mc.destroy.util.ItemStackNBT;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -54,7 +55,7 @@ public class BlowpipeBlock extends DirectionalBlock implements IBE<BlowpipeBlock
         super.setPlacedBy(level, pos, state, placer, stack);
         AbstractRememberPlacerBehaviour.setPlacedBy(level, pos, placer);
         withBlockEntityDo(level, pos, be -> {
-            be.readBlowing(stack.getOrCreateTag(), level.registryAccess());
+            be.readBlowing(ItemStackNBT.read(stack), level.registryAccess());
         });
     };
 
@@ -103,7 +104,7 @@ public class BlowpipeBlock extends DirectionalBlock implements IBE<BlowpipeBlock
 
     public ItemStack getItemStack(BlockEntity be) {
         ItemStack stack = DestroyBlocks.BLOWPIPE.asStack();
-        if (be instanceof BlowpipeBlockEntity blowpipe) blowpipe.writeBlowing(stack.getOrCreateTag(), blowpipe.getLevel().registryAccess(), true);
+        if (be instanceof BlowpipeBlockEntity blowpipe) ItemStackNBT.update(stack, tag -> blowpipe.writeBlowing(tag, blowpipe.getLevel().registryAccess(), true));
         return stack;
     };
 

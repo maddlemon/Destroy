@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.core.chemistry;
 
+import petrolpark.mc.destroy.util.ItemStackNBT;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +40,7 @@ public class MoleculeDisplayItem extends Item {
 
     public static ItemStack with(LegacySpecies molecule) {
         ItemStack stack = new ItemStack(DestroyItems.MOLECULE_DISPLAY.get(), 1);
-        stack.getOrCreateTag().putString("Molecule", molecule.getFullID());
+        ItemStackNBT.update(stack, customTag -> customTag.putString("Molecule", molecule.getFullID()));
         return stack;
     };
 
@@ -52,7 +53,7 @@ public class MoleculeDisplayItem extends Item {
 
     private static LegacySpecies getMolecule(ItemStack itemStack) {
         if (!DestroyItems.MOLECULE_DISPLAY.isIn(itemStack)) return null;
-        return LegacySpecies.getMolecule(itemStack.getOrCreateTag().getString("Molecule"));
+        return LegacySpecies.getMolecule(ItemStackNBT.read(itemStack).getString("Molecule"));
     };
 
     public static List<Component> getLore(LegacySpecies molecule) {

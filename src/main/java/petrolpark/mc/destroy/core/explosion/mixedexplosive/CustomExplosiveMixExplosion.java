@@ -1,5 +1,7 @@
 package petrolpark.mc.destroy.core.explosion.mixedexplosive;
 
+import net.minecraft.world.item.component.FireworkExplosion;
+import net.minecraft.core.component.DataComponents;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -12,8 +14,6 @@ import petrolpark.mc.destroy.core.explosion.mixedexplosive.ExplosiveProperties.E
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -96,16 +96,14 @@ public class CustomExplosiveMixExplosion extends SmartExplosion {
     @Override
     public void effects(boolean clientSide) {
         super.effects(clientSide);
-        ListTag fireworkExplosionsTag = new ListTag();
+        List<FireworkExplosion> fireworkExplosions = new ArrayList<>();
         if (clientSide) for (ItemStack stack : specialItems) {
-            if (stack.getItem() instanceof FireworkStarItem) fireworkExplosionsTag.add(stack.getTagElement("Explosion"));
-            else if (stack.getItem() instanceof ISpecialEffectExplosiveItem specialItem) specialItem.explode(this, level, toBlow, stack);
+            if (stack.getItem() instanceof FireworkStarItem) {
+                FireworkExplosion explosion = stack.get(DataComponents.FIREWORK_EXPLOSION);
+                if (explosion != null) fireworkExplosions.add(explosion);
+            } else if (stack.getItem() instanceof ISpecialEffectExplosiveItem specialItem) specialItem.explode(this, level, toBlow, stack);
         };
-        if (!fireworkExplosionsTag.isEmpty()) {
-            CompoundTag fireworkTag = new CompoundTag();
-            fireworkTag.put("Explosions", fireworkExplosionsTag);
-            level.createFireworks(x, y, z, 0d, 0d, 0d, fireworkTag);
-        };
+        if (!fireworkExplosions.isEmpty()) level.createFireworks(x, y, z, 0d, 0d, 0d, fireworkExplosions);
     };
 
     public static class DamageCalculator extends ExplosionDamageCalculator {

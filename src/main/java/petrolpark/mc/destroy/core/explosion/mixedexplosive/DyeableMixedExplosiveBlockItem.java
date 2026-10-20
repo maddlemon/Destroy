@@ -1,25 +1,36 @@
 package petrolpark.mc.destroy.core.explosion.mixedexplosive;
 
+import net.minecraft.world.item.component.DyedItemColor;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.DyeableLeatherItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate.StructureBlockInfo;
  
-public abstract class DyeableMixedExplosiveBlockItem extends BlockItem implements DyeableLeatherItem, IMixedExplosiveItem {
+/**
+ * Dyeable like leather armour: in 1.21 the colour is the {@code minecraft:dyed_color} component, and crafting-grid dyeing comes from the
+ * {@code minecraft:dyeable} item tag (the item is tagged in {@code DestroyBlocks}).
+ */
+public abstract class DyeableMixedExplosiveBlockItem extends BlockItem implements IMixedExplosiveItem {
+
+    public static final int DEFAULT_COLOR = 0xFFFFFF;
 
     public DyeableMixedExplosiveBlockItem(Block block, Properties properties) {
         super(block, properties);
     };
 
-    @Override
-    public int getColor(ItemStack pStack) {
-        CompoundTag compoundtag = pStack.getTagElement("display");
-        return compoundtag != null && compoundtag.contains("color", Tag.TAG_INT) ? compoundtag.getInt("color") : 0xFFFFFF;
+    /**
+     * @return The RGB colour of this Stack (no alpha)
+     */
+    public int getColor(ItemStack stack) {
+        return DyedItemColor.getOrDefault(stack, DEFAULT_COLOR);
+    };
+
+    public void setColor(ItemStack stack, int color) {
+        stack.set(DataComponents.DYED_COLOR, new DyedItemColor(color, true));
     };
 
     @Override

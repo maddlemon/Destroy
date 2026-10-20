@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.content.redstone.programmer;
 
+import petrolpark.mc.destroy.util.ItemStackNBT;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -93,7 +94,7 @@ public class RedstoneProgrammerBlockItem extends BlockItem {
     };
 
     public static void setProgram(ItemStack stack, RedstoneProgram program) {
-        stack.getOrCreateTag().put("Program", program.write());
+        ItemStackNBT.update(stack, customTag -> customTag.put("Program", program.write()));
     };
 
     public static ItemStack withProgram(RedstoneProgram program) {
@@ -111,18 +112,19 @@ public class RedstoneProgrammerBlockItem extends BlockItem {
      */
     public static Optional<RedstoneProgram> getProgram(ItemStack item, LevelAccessor level, LivingEntity player) {
         if (!(item.getItem() instanceof RedstoneProgrammerBlockItem) || player == null) return Optional.empty();
-        CompoundTag tag = item.getOrCreateTag();
+        CompoundTag tag = ItemStackNBT.read(item);
         UUID uuid = null;
         if (tag.contains("UUID")) {
             uuid = tag.getUUID("UUID");
         } else {
             uuid = UUID.randomUUID();
-            tag.putUUID("UUID", uuid);
+            UUID newUUID = uuid;
+            ItemStackNBT.update(item, t -> t.putUUID("UUID", newUUID));
         };
 
         ItemStackRedstoneProgram newProgram;
         if (!tag.contains("Program")) newProgram = new ItemStackRedstoneProgram(player);
-        else newProgram = RedstoneProgram.read(() -> new ItemStackRedstoneProgram(player), item.getOrCreateTag().getCompound("Program"));
+        else newProgram = RedstoneProgram.read(() -> new ItemStackRedstoneProgram(player), tag.getCompound("Program"));
 
         if (level.isClientSide()) return Optional.of(newProgram); // For client-sided Redstone Programmers, create a new one every time its needed
 

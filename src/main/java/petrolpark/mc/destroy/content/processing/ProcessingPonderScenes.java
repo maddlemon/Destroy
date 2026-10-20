@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.content.processing;
 
+import petrolpark.mc.destroy.util.ItemStackNBT;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import petrolpark.mc.destroy.DestroyCapabilities;
 import java.util.List;
@@ -443,8 +444,8 @@ public class ProcessingPonderScenes {
         ItemStack filledPipe = DestroyBlocks.BLOWPIPE.asStack();
         FluidTank tank = new FluidTank(BlowpipeBlockEntity.TANK_CAPACITY);
         tank.fill(new FluidStack(DestroyFluids.MOLTEN_BOROSILICATE_GLASS.get(), 250), FluidAction.EXECUTE);
-        filledPipe.getOrCreateTag().put("Tank", tank.writeToNBT(new CompoundTag()));
-        filledPipe.getOrCreateTag().putString("Recipe", Destroy.asResource("glassblowing/round_bottomed_flask").toString());
+        ItemStackNBT.update(filledPipe, customTag -> customTag.put("Tank", tank.writeToNBT(new CompoundTag())));
+        ItemStackNBT.update(filledPipe, customTag -> customTag.putString("Recipe", Destroy.asResource("glassblowing/round_bottomed_flask").toString()));
         return filledPipe;
     };
 
@@ -502,11 +503,12 @@ public class ProcessingPonderScenes {
             int j = i;
             scene.world().modifyEntity(playerElement, e -> {
                 if (!(e instanceof Player player)) return;
-                CompoundTag tag = player.getItemInHand(InteractionHand.MAIN_HAND).getOrCreateTag();
-                tag.putBoolean("Blowing", j < (int)(BlowpipeBlockEntity.BLOWING_TIME_PROPORTION * (float)BlowpipeBlockEntity.BLOWING_DURATION));
-                int progress = tag.getInt("Progress");
-                tag.putInt("LastProgress", progress);
-                tag.putInt("Progress", progress + 1);
+                ItemStackNBT.update(player.getItemInHand(InteractionHand.MAIN_HAND), tag -> {
+                    tag.putBoolean("Blowing", j < (int)(BlowpipeBlockEntity.BLOWING_TIME_PROPORTION * (float)BlowpipeBlockEntity.BLOWING_DURATION));
+                    int progress = tag.getInt("Progress");
+                    tag.putInt("LastProgress", progress);
+                    tag.putInt("Progress", progress + 1);
+                });
             });
             scene.idle(1);
         };

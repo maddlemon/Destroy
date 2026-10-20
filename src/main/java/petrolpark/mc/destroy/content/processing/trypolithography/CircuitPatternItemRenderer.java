@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.content.processing.trypolithography;
 
+import petrolpark.mc.destroy.util.ItemStackNBT;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -58,7 +59,7 @@ public class CircuitPatternItemRenderer extends CustomRenderedItemModelRenderer 
         Minecraft mc = Minecraft.getInstance();
 
         if (transformType == PetrolparkItemDisplayContexts.BELT) {
-            if (stack.getOrCreateTag().contains("Flipped")) TransformStack.of(ms).rotateYDegrees(180);
+            if (ItemStackNBT.read(stack).contains("Flipped")) TransformStack.of(ms).rotateYDegrees(180);
         };
 
         ItemRenderer itemRenderer = mc.getItemRenderer();

@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.content.tool.syringe;
 
+import petrolpark.mc.destroy.util.ItemStackNBT;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import com.simibubi.create.foundation.item.render.CustomRenderedItemModel;
@@ -39,7 +40,7 @@ public class SyringeItemRenderer extends CustomRenderedItemModelRenderer {
 
         ms.pushPose();
 
-        if (isFirstPersonAnimation && stack.getOrCreateTag().contains("Injecting")) {
+        if (isFirstPersonAnimation && ItemStackNBT.read(stack).contains("Injecting")) {
 
             float time = (float) player.getUseItemRemainingTicks() - partialTicks + 1.0F;
             float progress = (stack.getUseDuration() - time) / stack.getUseDuration();

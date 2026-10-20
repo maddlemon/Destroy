@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.content.processing.cooler;
 
+import petrolpark.mc.destroy.chemistry.minecraft.MixtureFluid;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.minecraft.core.HolderLookup;
 import java.util.List;
@@ -90,7 +91,7 @@ public class CoolerBlockEntity extends SmartBlockEntity implements IHaveGoggleIn
         if (DestroyFluids.isMixture(fluidStack)) {
 
             int amount = fluidStack.getAmount();
-            ReadOnlyMixture mixture = ReadOnlyMixture.readNBT(ReadOnlyMixture::new, fluidStack.getOrCreateChildTag("Mixture"));
+            ReadOnlyMixture mixture = ReadOnlyMixture.readNBT(ReadOnlyMixture::new, MixtureFluid.getMixtureTag(fluidStack));
 
             float totalMolesPerBucket = 0f;
             float totalRefrigerantMolesPerBucket = 0f;

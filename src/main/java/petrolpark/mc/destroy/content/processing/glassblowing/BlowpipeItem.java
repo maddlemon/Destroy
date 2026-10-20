@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.content.processing.glassblowing;
 
+import petrolpark.mc.destroy.util.ItemStackNBT;
 import petrolpark.mc.destroy.DestroyCapabilities;
 import java.util.List;
 import java.util.function.Consumer;
@@ -64,7 +65,7 @@ public class BlowpipeItem extends BlockItem implements CustomArmPoseItem {
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
-        CompoundTag tag = stack.getOrCreateTag();
+        CompoundTag tag = ItemStackNBT.read(stack);
         int progress = tag.getInt("Progress");
 
         GlassblowingRecipe recipe = BlowpipeBlockEntity.readRecipe(level, tag);
@@ -108,7 +109,7 @@ public class BlowpipeItem extends BlockItem implements CustomArmPoseItem {
     public InteractionResult useOn(UseOnContext context) {
         Level level = context.getLevel();
         ItemStack stack = context.getItemInHand();
-        CompoundTag tag = stack.getOrCreateTag();
+        CompoundTag tag = ItemStackNBT.read(stack);
         FluidIngredient ingredient = getFluidIngredient(tag);
         if (ingredient != null) {
             BlockPos pos = context.getClickedPos();
@@ -126,6 +127,7 @@ public class BlowpipeItem extends BlockItem implements CustomArmPoseItem {
                             if (!simulate) {
                                 blowpipeTank.fill(drained, FluidAction.EXECUTE);
                                 tag.put("Tank", blowpipeTank.writeToNBT(new CompoundTag()));
+                                ItemStackNBT.set(stack, tag);
                                 return InteractionResult.SUCCESS;
                             };
                         };
@@ -140,11 +142,12 @@ public class BlowpipeItem extends BlockItem implements CustomArmPoseItem {
     };
 
     public boolean finishBlowing(ItemStack stack, Level level, Player player) {
-        CompoundTag tag = stack.getOrCreateTag();
+        CompoundTag tag = ItemStackNBT.read(stack);
         if (tag.getInt("Progress") < BlowpipeBlockEntity.BLOWING_DURATION) return false;
         tag.put("Tank", new FluidTank(1000).writeToNBT(new CompoundTag())); // Empty the Tank
         tag.putInt("Progress", 0); // Reset progress
         tag.putInt("LastProgress", 0);
+        ItemStackNBT.set(stack, tag);
         GlassblowingRecipe recipe = BlowpipeBlockEntity.readRecipe(level, tag);
         List<ItemStack> results = recipe.rollResults();
         level.playSound(null, player.getOnPos(), SoundEvents.GLASS_BREAK, SoundSource.PLAYERS);
@@ -154,10 +157,10 @@ public class BlowpipeItem extends BlockItem implements CustomArmPoseItem {
 
     @Override
     public boolean onLeftClickEntity(ItemStack stack, Player player, Entity entity) {
-        CompoundTag tag = stack.getOrCreateTag();
+        CompoundTag tag = ItemStackNBT.read(stack);
         FluidTank tank = new FluidTank(1000);
         tank.readFromNBT(tag.getCompound("Tank"));
-        if (!tank.isEmpty() && (float)stack.getOrCreateTag().getInt("Progress") / (float)BlowpipeBlockEntity.BLOWING_DURATION < BlowpipeBlockEntity.BLOWING_TIME_PROPORTION) {
+        if (!tank.isEmpty() && (float)ItemStackNBT.read(stack).getInt("Progress") / (float)BlowpipeBlockEntity.BLOWING_DURATION < BlowpipeBlockEntity.BLOWING_TIME_PROPORTION) {
             entity.setSecondsOnFire(3);
         };
         return false;
@@ -180,11 +183,12 @@ public class BlowpipeItem extends BlockItem implements CustomArmPoseItem {
 
     @Override
     public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
-        CompoundTag tag = stack.getOrCreateTag();
+        CompoundTag tag = ItemStackNBT.read(stack);
         if (BlowpipeBlockEntity.readRecipe(level, tag) == null) {
             tag.putInt("Progress", 0);
             tag.putInt("LastProgress", 0);
             tag.putBoolean("Blowing", false);
+            ItemStackNBT.set(stack, tag);
             return;
         };
 
@@ -210,27 +214,29 @@ public class BlowpipeItem extends BlockItem implements CustomArmPoseItem {
                 DestroyAdvancementTrigger.BLOWPIPE.award(level, player);
             }
         }
+        ItemStackNBT.set(stack, tag);
     };
 
     @Override
     public @Nullable ArmPose getArmPose(ItemStack stack, AbstractClientPlayer player, InteractionHand hand) {
-        if (!player.swinging && stack.getOrCreateTag().getBoolean("Blowing")) return ArmPose.SPYGLASS;
+        if (!player.swinging && ItemStackNBT.read(stack).getBoolean("Blowing")) return ArmPose.SPYGLASS;
         return null;
     };
 
     @Override
     public int getUseDuration(ItemStack stack) {
-        return BlowpipeBlockEntity.BLOWING_DURATION + TIME_TO_MOVE_TO_MOUTH - stack.getOrCreateTag().getInt("Progress");
+        return BlowpipeBlockEntity.BLOWING_DURATION + TIME_TO_MOVE_TO_MOUTH - ItemStackNBT.read(stack).getInt("Progress");
     };
 
     @Override
     public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity livingEntity) {
         super.finishUsingItem(stack, level, livingEntity);
-        CompoundTag tag = stack.getOrCreateTag();
+        CompoundTag tag = ItemStackNBT.read(stack);
         if (tag.getInt("Progress") == BlowpipeBlockEntity.BLOWING_DURATION) {
             tag.putInt("Progress", 0);
             tag.putInt("LastProgress", 0);
             tag.put("Tank", new FluidTank(BlowpipeBlockEntity.TANK_CAPACITY).writeToNBT(new CompoundTag())); // Empty the Tank
+            ItemStackNBT.set(stack, tag);
         };
         return stack;
     };
@@ -271,7 +277,7 @@ public class BlowpipeItem extends BlockItem implements CustomArmPoseItem {
         @Override
         public @NotNull FluidStack getFluidInTank(int tankNo) {
             FluidTank tank = new FluidTank(getTankCapacity(0));
-            tank.readFromNBT(stack.getOrCreateTag().getCompound("Tank"));
+            tank.readFromNBT(ItemStackNBT.read(stack).getCompound("Tank"));
             return tank.getFluid();
         };
 
@@ -287,7 +293,7 @@ public class BlowpipeItem extends BlockItem implements CustomArmPoseItem {
 
         @Override
         public int fill(FluidStack resource, FluidAction action) {
-            CompoundTag tag = stack.getOrCreateTag();
+            CompoundTag tag = ItemStackNBT.read(stack);
             FluidIngredient ingredient = getFluidIngredient(tag);
             if (ingredient != null && ingredient.test(resource) && resource.getAmount() >= ingredient.getRequiredAmount()) {
                 FluidTank tank = new FluidTank(getTankCapacity(0));
@@ -296,6 +302,7 @@ public class BlowpipeItem extends BlockItem implements CustomArmPoseItem {
                 if (action.execute()) {
                     tank.fill(resource, FluidAction.EXECUTE);
                     tag.put("Tank", tank.writeToNBT(new CompoundTag()));
+                    ItemStackNBT.set(stack, tag);
                 };
                 return ingredient.getRequiredAmount();
             };

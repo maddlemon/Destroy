@@ -199,6 +199,7 @@ public class DestroyBlocks {
         .properties(p -> p
             .mapColor(MapColor.SNOW)
         ).item(MixedExplosiveBlockItem::new)
+        .tag(ItemTags.DYEABLE) // Dyeable in the crafting grid (was implied by DyeableLeatherItem in 1.20.1)
         .onRegister(registerPrimeableBombDispenserBehaviour())
         .build()
         .register();

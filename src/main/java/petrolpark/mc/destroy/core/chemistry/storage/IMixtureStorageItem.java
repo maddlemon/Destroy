@@ -226,7 +226,7 @@ public interface IMixtureStorageItem {
 
             tooltip.add(Component.literal(""));
         
-            CompoundTag mixtureTag = fluidStack.getOrCreateTag().getCompound("Mixture");
+            CompoundTag mixtureTag = MixtureFluid.getMixtureTag(fluidStack);
             if (!mixtureTag.isEmpty()) { // If this is a Mixture
                 ReadOnlyMixture mixture = ReadOnlyMixture.readNBT(ClientMixture::new, mixtureTag);
 

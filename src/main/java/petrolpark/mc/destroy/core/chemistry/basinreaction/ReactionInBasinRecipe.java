@@ -73,7 +73,7 @@ public class ReactionInBasinRecipe extends BasinRecipe {
             LegacyMixture mixture;
             if (DestroyFluids.isMixture(fluidStack)) {
                 // True Mixtures
-                mixture = LegacyMixture.readNBT(fluidStack.getOrCreateTag().getCompound("Mixture"));
+                mixture = LegacyMixture.readNBT(MixtureFluid.getMixtureTag(fluidStack));
                 containsRawMixtures = true;
             } else {
                 // Non-Mixture -> Mixture conversions
@@ -87,7 +87,7 @@ public class ReactionInBasinRecipe extends BasinRecipe {
                     canReact = false;
                     break;
                 } else {
-                    mixture = LegacyMixture.readNBT(recipe.getFluidResults().get(0).getOrCreateTag().getCompound("Mixture"));
+                    mixture = LegacyMixture.readNBT(MixtureFluid.getMixtureTag(recipe.getFluidResults().get(0)));
                 };
             };
 

@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.content.processing.trypolithography;
 
+import petrolpark.mc.destroy.util.ItemStackNBT;
 import petrolpark.mc.destroy.DestroyItems;
 import petrolpark.mc.destroy.content.processing.trypolithography.keypunch.KeypunchBlockEntity;
 import petrolpark.mc.library.util.BinaryMatrix4x4;
@@ -308,7 +309,7 @@ public class TrypolithographyPonderScenes {
 
         scene.world().modifyEntities(ItemEntity.class, Entity::discard);
         ItemStack circuit1Flipped = circuit1.copy();
-        circuit1Flipped.getOrCreateTag().putBoolean("Flipped", true);
+        ItemStackNBT.update(circuit1Flipped, customTag -> customTag.putBoolean("Flipped", true));
         scene.idle(5);
         scene.world().removeItemsFromBelt(rightBelt);
         scene.idle(5);

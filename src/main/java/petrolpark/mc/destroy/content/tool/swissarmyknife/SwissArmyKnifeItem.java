@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.content.tool.swissarmyknife;
 
+import petrolpark.mc.destroy.util.ItemStackNBT;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.Set;
@@ -223,14 +224,16 @@ public class SwissArmyKnifeItem extends DiggerItem {
 
     @Nullable
     public static Tool getTool(ItemStack stack) {
-        CompoundTag tag = stack.getOrCreateTag();
+        CompoundTag tag = ItemStackNBT.read(stack);
         if (!tag.contains("ActiveTool")) return null;
         return Tool.values()[tag.getInt("ActiveTool")];
     };
 
     public static void putTool(ItemStack stack, @Nullable Tool tool) {
-        stack.removeTagKey("ActiveTool");
-        if (tool != null) stack.getOrCreateTag().putInt("ActiveTool", tool.ordinal());
+        ItemStackNBT.update(stack, customTag -> {
+            customTag.remove("ActiveTool");
+            if (tool != null) customTag.putInt("ActiveTool", tool.ordinal());
+        });
     };
 
     @OnlyIn(Dist.CLIENT)

@@ -35,7 +35,13 @@ public class RedstoneProgrammerItemHandler {
     };
 
     @SubscribeEvent
-    public static final void onLevelTick(LevelTickEvent.Post event) {
+    public static final void onLevelTickPre(LevelTickEvent.Pre event) {
+        tick(event.getLevel());
+    };
+
+    // Forge fired this tick event at both START and END and the handler ignored the phase, so it ran twice per tick. Kept that way to match 1.20.1.
+    @SubscribeEvent
+    public static final void onLevelTickPost(LevelTickEvent.Post event) {
         tick(event.getLevel());
     };
     

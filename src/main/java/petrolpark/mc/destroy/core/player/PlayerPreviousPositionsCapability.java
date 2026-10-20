@@ -112,8 +112,17 @@ public class PlayerPreviousPositionsCapability implements INBTSerializable<Compo
     };
 
     @SubscribeEvent
-    public static final void onPlayerTick(PlayerTickEvent.Post event) {
-        Player player = event.getEntity();
+    public static final void onPlayerTickPre(PlayerTickEvent.Pre event) {
+        onPlayerTick(event.getEntity());
+    };
+
+    // Forge fired this tick event at both START and END and the handler ignored the phase, so it ran twice per tick. Kept that way to match 1.20.1.
+    @SubscribeEvent
+    public static final void onPlayerTickPost(PlayerTickEvent.Post event) {
+        onPlayerTick(event.getEntity());
+    };
+
+    public static final void onPlayerTick(Player player) {
         if (!player.level().isClientSide()) PlayerPreviousPositionsCapability.of(player).ifPresent((playerPreviousPositions -> {
             playerPreviousPositions.incrementTickCounter();
             if (playerPreviousPositions.hasBeenSecond()) playerPreviousPositions.recordPosition(player.blockPosition());

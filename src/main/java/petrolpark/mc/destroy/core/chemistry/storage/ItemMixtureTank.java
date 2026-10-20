@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.core.chemistry.storage;
 
+import petrolpark.mc.destroy.util.ItemStackNBT;
 import java.util.function.Consumer;
 
 import org.jetbrains.annotations.NotNull;
@@ -30,7 +31,7 @@ public class ItemMixtureTank extends GeniusFluidTank implements ICapabilityProvi
         if (!(container.getItem() instanceof IMixtureStorageItem item)) throw new IllegalArgumentException(container.getItem().getDescriptionId()+" cannot store Mixtures");
         capacity = item.getCapacity(container);
         this.container = container;
-        fluid = FluidStack.loadFluidStackFromNBT(container.getOrCreateTag().getCompound("Fluid"));
+        fluid = FluidStack.loadFluidStackFromNBT(ItemStackNBT.read(container).getCompound("Fluid"));
     };
 
     public int getRemainingSpace() {
@@ -40,13 +41,13 @@ public class ItemMixtureTank extends GeniusFluidTank implements ICapabilityProvi
     @Override
     public void setFluid(FluidStack stack) {
         super.setFluid(stack);
-        getContainer().getOrCreateTag().put("Fluid", stack.writeToNBT(new CompoundTag()));
+        ItemStackNBT.update(getContainer(), customTag -> customTag.put("Fluid", stack.writeToNBT(new CompoundTag())));
     };
 
     @Override
     protected void onContentsChanged() {
         super.onContentsChanged();
-        getContainer().getOrCreateTag().put("Fluid", fluid.writeToNBT(new CompoundTag()));
+        ItemStackNBT.update(getContainer(), customTag -> customTag.put("Fluid", fluid.writeToNBT(new CompoundTag())));
     };
 
     @Override

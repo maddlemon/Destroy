@@ -82,13 +82,13 @@ public class VatFluidTankBehaviour extends GeniusFluidTankBehaviour {
 
         FluidStack liquidStack = getLiquidHandler().getFluid();
         if (!liquidStack.isEmpty()) {
-            mixtures.put(LegacyMixture.readNBT(liquidStack.getOrCreateChildTag("Mixture")), liquidStack.getAmount() / 1000d);
+            mixtures.put(LegacyMixture.readNBT(MixtureFluid.getMixtureTag(liquidStack)), liquidStack.getAmount() / 1000d);
             totalVolume += liquidStack.getAmount();  
         };
 
         FluidStack gasStack = getGasHandler().getFluid();
         if (!gasStack.isEmpty()) {
-            mixtures.put(LegacyMixture.readNBT(gasStack.getOrCreateChildTag("Mixture")), gasStack.getAmount() / 1000d);
+            mixtures.put(LegacyMixture.readNBT(MixtureFluid.getMixtureTag(gasStack)), gasStack.getAmount() / 1000d);
             totalVolume += gasStack.getAmount();
         };
 
@@ -104,14 +104,14 @@ public class VatFluidTankBehaviour extends GeniusFluidTankBehaviour {
 
         FluidStack liquidStack = getLiquidHandler().getFluid();
         if (!liquidStack.isEmpty()) {
-            ReadOnlyMixture liquidMixture = ReadOnlyMixture.readNBT(ReadOnlyMixture::new, liquidStack.getOrCreateChildTag("Mixture"));
+            ReadOnlyMixture liquidMixture = ReadOnlyMixture.readNBT(ReadOnlyMixture::new, MixtureFluid.getMixtureTag(liquidStack));
             liquidMixture.getContents(false).forEach(molecule -> moleculesAndMoles.merge(molecule, liquidMixture.getConcentrationOf(molecule) * liquidStack.getAmount(), (f1, f2) -> f1 + f2));
             totalVolume += liquidStack.getAmount();  
         };
 
         FluidStack gasStack = getGasHandler().getFluid();
         if (!gasStack.isEmpty()) {
-            ReadOnlyMixture gasMixture = ReadOnlyMixture.readNBT(ReadOnlyMixture::new, gasStack.getOrCreateChildTag("Mixture"));
+            ReadOnlyMixture gasMixture = ReadOnlyMixture.readNBT(ReadOnlyMixture::new, MixtureFluid.getMixtureTag(gasStack));
             gasMixture.getContents(false).forEach(molecule -> moleculesAndMoles.merge(molecule, gasMixture.getConcentrationOf(molecule) * gasStack.getAmount(), (f1, f2) -> f1 + f2));
             totalVolume += gasStack.getAmount();
         };
@@ -159,7 +159,7 @@ public class VatFluidTankBehaviour extends GeniusFluidTankBehaviour {
         if (getGasHandler().isEmpty()) return;
         double freeSpace = vatCapacity - getLiquidHandler().getFluidAmount();
         double gasVolume = getGasHandler().getFluidAmount();
-        LegacyMixture mixture =  LegacyMixture.readNBT(getGasHandler().getFluid().getOrCreateChildTag("Mixture"));
+        LegacyMixture mixture =  LegacyMixture.readNBT(MixtureFluid.getMixtureTag(getGasHandler().getFluid()));
         mixture.scale((float)(freeSpace / gasVolume));
         getGasHandler().setFluid(MixtureFluid.of((int)freeSpace, mixture));
     };
@@ -176,7 +176,7 @@ public class VatFluidTankBehaviour extends GeniusFluidTankBehaviour {
 
             boolean simulate = action == FluidAction.SIMULATE;
 
-            Phases phases = LegacyMixture.readNBT(resource.getOrCreateChildTag("Mixture")).separatePhases(resource.getAmount());
+            Phases phases = LegacyMixture.readNBT(MixtureFluid.getMixtureTag(resource)).separatePhases(resource.getAmount());
             double amountScale = 1d;
  
             if (phases.liquidVolume() > getLiquidHandler().getSpace() - 1) {
@@ -196,7 +196,7 @@ public class VatFluidTankBehaviour extends GeniusFluidTankBehaviour {
 
                 if (!getGasHandler().isEmpty()) {
                     FluidStack existingGas = getGasHandler().getFluid();
-                    mixtures.put(LegacyMixture.readNBT(existingGas.getOrCreateChildTag("Mixture")), (double)existingGas.getAmount());
+                    mixtures.put(LegacyMixture.readNBT(MixtureFluid.getMixtureTag(existingGas)), (double)existingGas.getAmount());
                     combinedVolume += existingGas.getAmount();
                 };
 

@@ -1,5 +1,8 @@
 package petrolpark.mc.destroy.chemistry.minecraft;
 
+import net.minecraft.world.level.material.Fluid;
+import petrolpark.mc.destroy.DestroyDataComponentTypes;
+import net.minecraft.nbt.CompoundTag;
 import javax.annotation.Nullable;
 
 import petrolpark.mc.destroy.DestroyFluids;
@@ -11,7 +14,6 @@ import com.simibubi.create.AllFluids.TintedFluidType;
 import com.simibubi.create.content.fluids.VirtualFluid;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.BlockAndTintGetter;
@@ -46,7 +48,7 @@ public class MixtureFluid extends VirtualFluid {
 
     public static FluidStack gasOf(FluidStack stack) {
         if (!DestroyFluids.isMixture(stack)) return FluidStack.EMPTY;
-        ReadOnlyMixture mixture = ReadOnlyMixture.readNBT(ReadOnlyMixture::new, stack.getOrCreateChildTag("Mixture"));
+        ReadOnlyMixture mixture = ReadOnlyMixture.readNBT(ReadOnlyMixture::new, MixtureFluid.getMixtureTag(stack));
         FluidStack gasStack = new FluidStack(DestroyFluids.GAS_MIXTURE.get(), stack.getAmount());
         addMixtureToFluidStack(gasStack, mixture);
         return gasStack;
@@ -60,7 +62,7 @@ public class MixtureFluid extends VirtualFluid {
      */
     public static FluidStack of(int amount, ReadOnlyMixture mixture, @Nullable String translationKey) {
         if (amount == 0) return FluidStack.EMPTY;
-        FluidStack fluidStack = new FluidStack(DestroyFluids.MIXTURE.getSource(), amount);
+        FluidStack fluidStack = new FluidStack((Fluid) DestroyFluids.MIXTURE.getSource(), amount);
         if (translationKey != null) mixture.setTranslationKey(translationKey);
         addMixtureToFluidStack(fluidStack, mixture);
         return fluidStack;
@@ -77,11 +79,24 @@ public class MixtureFluid extends VirtualFluid {
 
     public static FluidStack addMixtureToFluidStack(FluidStack fluidStack, ReadOnlyMixture mixture) {
         if (mixture.isEmpty()) {
-            fluidStack.removeChildTag("Mixture");
+            fluidStack.remove(DestroyDataComponentTypes.MIXTURE);
             return fluidStack;
         };
-        fluidStack.getOrCreateTag().put("Mixture", mixture.writeNBT());
+        fluidStack.set(DestroyDataComponentTypes.MIXTURE, mixture.writeNBT());
         return fluidStack;
+    };
+
+    /**
+     * The serialized Mixture on this Fluid Stack, or an empty tag if there is none
+     * (replaces 1.20.1's {@code getOrCreateChildTag("Mixture")}). Do not modify the returned tag.
+     */
+    public static CompoundTag getMixtureTag(FluidStack fluidStack) {
+        CompoundTag tag = fluidStack.get(DestroyDataComponentTypes.MIXTURE);
+        return tag == null ? new CompoundTag() : tag;
+    };
+
+    public static boolean hasMixtureTag(FluidStack fluidStack) {
+        return fluidStack.has(DestroyDataComponentTypes.MIXTURE);
     };
 
     public static class MixtureFluidType extends TintedFluidType {
@@ -103,15 +118,15 @@ public class MixtureFluid extends VirtualFluid {
 
         @Override
         public Component getDescription(FluidStack stack) {
-            return ReadOnlyMixture.readNBT(ClientMixture::new, stack.getChildTag("Mixture")).getName();
+            return ReadOnlyMixture.readNBT(ClientMixture::new, MixtureFluid.getMixtureTag(stack)).getName();
         };
 
     };
 
     public static int getTintColor(FluidStack stack) {
         if (stack.isEmpty()) return 0x00FFFFFF; // Transparent
-        if (!stack.getOrCreateTag().contains("Mixture", Tag.TAG_COMPOUND)) return -1;
-        return ReadOnlyMixture.readNBT(ClientMixture::new, stack.getChildTag("Mixture")).getColor();
+        if (!MixtureFluid.hasMixtureTag(stack)) return -1;
+        return ReadOnlyMixture.readNBT(ClientMixture::new, MixtureFluid.getMixtureTag(stack)).getColor();
     };
 
     

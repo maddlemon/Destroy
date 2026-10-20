@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.content.processing.trypolithography;
 
+import petrolpark.mc.destroy.util.ItemStackNBT;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -43,7 +44,7 @@ public class CircuitMaskItem extends CircuitPatternItem {
 
     public static List<UUID> getContaminants(ItemStack stack) {
         List<UUID> previousPunches = new ArrayList<>(3);
-        stack.getOrCreateTag().getList("PunchedBy", Tag.TAG_INT_ARRAY).forEach(uuidTag -> {
+        ItemStackNBT.read(stack).getList("PunchedBy", Tag.TAG_INT_ARRAY).forEach(uuidTag -> {
             previousPunches.add(NbtUtils.loadUUID(uuidTag));
         });
         return previousPunches;
@@ -51,7 +52,7 @@ public class CircuitMaskItem extends CircuitPatternItem {
     
     public static ItemStack contaminate(ItemStack stack, UUID uuid) {
         stack = stack.copy();
-        CompoundTag tag = stack.getOrCreateTag();
+        CompoundTag tag = ItemStackNBT.read(stack);
         List<UUID> previousPunches = getContaminants(stack);
         if (previousPunches.contains(uuid)) return stack;
         if (previousPunches.size() >= 3) return DestroyItems.RUINED_CIRCUIT_MASK.asStack();
@@ -59,16 +60,15 @@ public class CircuitMaskItem extends CircuitPatternItem {
         ListTag newPunches = new ListTag();
         previousPunches.forEach(id -> newPunches.add(NbtUtils.createUUID(id)));
         tag.put("PunchedBy", newPunches);
-        stack.setTag(tag);
+        ItemStackNBT.set(stack, tag);
         return stack;
     };
     
     @Override
     public void launch(DirectionalTransportedItemStack stack, Direction launchDirection) {
         // If it is 'flipped', the Item has been rotated around 180 the north-south axis before being rotated around the up-down axis
-        CompoundTag tag = stack.stack.getOrCreateTag();
-        boolean alreadyFlipped = tag.contains("Flipped");
-        tag.remove("Flipped"); 
+        boolean alreadyFlipped = ItemStackNBT.read(stack.stack).contains("Flipped");
+        ItemStackNBT.update(stack.stack, tag -> tag.remove("Flipped"));
 
         Rotation rotation = stack.getRotation();
         if (
@@ -78,15 +78,15 @@ public class CircuitMaskItem extends CircuitPatternItem {
             stack.rotate(Rotation.CLOCKWISE_180); // Fix the Rotation if certain orientations are flipped over certain axes
         };
 
-        if (!alreadyFlipped) tag.putBoolean("Flipped", true);
+        if (!alreadyFlipped) ItemStackNBT.update(stack.stack, tag -> tag.putBoolean("Flipped", true));
         super.launch(stack, launchDirection);
     };
 
     @Override
     public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
         super.inventoryTick(stack, level, entity, slotId, isSelected);
-        stack.getOrCreateTag().remove("Flipped");
-        stack.getOrCreateTag().remove("RotationWhileFlying");
+        ItemStackNBT.update(stack, customTag -> customTag.remove("Flipped"));
+        ItemStackNBT.update(stack, customTag -> customTag.remove("RotationWhileFlying"));
 
         if (level.isClientSide() && isSelected && entity instanceof Player player && player.isCrouching()) {
             Direction direction = player.getDirection();
@@ -98,7 +98,7 @@ public class CircuitMaskItem extends CircuitPatternItem {
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(ItemStack stack, Level level, List<Component> tooltipComponents, TooltipFlag isAdvanced) {
         super.appendHoverText(stack, level, tooltipComponents, isAdvanced);
-        if (stack.getOrCreateTag().contains("HideContaminants")) return;
+        if (ItemStackNBT.read(stack).contains("HideContaminants")) return;
 
         if(level == null) // Fixes a crash caused by Jade
             level = Minecraft.getInstance().level;

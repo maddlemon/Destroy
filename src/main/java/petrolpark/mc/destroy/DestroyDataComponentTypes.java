@@ -1,5 +1,7 @@
 package petrolpark.mc.destroy;
 
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.nbt.CompoundTag;
 import java.util.function.UnaryOperator;
 
 import org.jetbrains.annotations.ApiStatus;
@@ -23,6 +25,16 @@ public class DestroyDataComponentTypes {
     public static final DataComponentType<Seismograph> SEISMOGRAPH = register("seismograph", b -> b
         .persistent(Seismograph.CODEC)
         .networkSynchronized(Seismograph.STREAM_CODEC)
+    );
+
+    /**
+     * The serialized {@link petrolpark.mc.destroy.chemistry.legacy.LegacyMixture Mixture} of a Mixture Fluid Stack (was the
+     * {@code "Mixture"} child NBT tag in 1.20.1). Treat the stored tag as immutable: always {@code set} a new one.
+     * Access through {@link petrolpark.mc.destroy.chemistry.minecraft.MixtureFluid#getMixtureTag} and friends.
+     */
+    public static final DataComponentType<CompoundTag> MIXTURE = register("mixture", b -> b
+        .persistent(CompoundTag.CODEC)
+        .networkSynchronized(ByteBufCodecs.COMPOUND_TAG)
     );
 
     private static <T> DataComponentType<T> register(String name, UnaryOperator<DataComponentType.Builder<T>> builder) {

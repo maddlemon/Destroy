@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.core.explosion.mixedexplosive;
 
+import net.minecraft.world.item.component.DyedItemColor;
 import java.util.List;
 
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -11,7 +12,6 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeItem;
-import net.minecraft.world.item.DyeableLeatherItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.HitResult;
@@ -38,20 +38,20 @@ public interface IDyeableMixedExplosiveBlockEntity extends IMixedExplosiveBlockE
     @Override
     public default void onPlace(ItemStack blockItemStack) {
         IMixedExplosiveBlockEntity.super.onPlace(blockItemStack);
-        if (blockItemStack.getItem() instanceof DyeableLeatherItem dyeableItem) setColor(dyeableItem.getColor(blockItemStack));
+        if (blockItemStack.getItem() instanceof DyeableMixedExplosiveBlockItem dyeableItem) setColor(dyeableItem.getColor(blockItemStack));
     };
 
     @Override
     public default ItemStack getFilledItemStack(ItemStack emptyItemStack) {
-        if (emptyItemStack.getItem() instanceof DyeableLeatherItem dyeableItem) dyeableItem.setColor(emptyItemStack, getColor());
+        if (emptyItemStack.getItem() instanceof DyeableMixedExplosiveBlockItem dyeableItem) dyeableItem.setColor(emptyItemStack, getColor());
         return IMixedExplosiveBlockEntity.super.getFilledItemStack(emptyItemStack);
     };
 
     public default InteractionResult tryDye(ItemStack dyeStack, HitResult target, Level level, BlockPos pos, Player player) {
         if (!(dyeStack.getItem() instanceof DyeItem dyeItem)) return InteractionResult.PASS;
         ItemStack stack = level.getBlockState(pos).getCloneItemStack(target, level, pos, player);
-        if (stack.getItem() instanceof DyeableLeatherItem dyeableItem) {
-            setColor(dyeableItem.getColor(DyeableLeatherItem.dyeArmor(stack, List.of(dyeItem))));
+        if (stack.getItem() instanceof DyeableMixedExplosiveBlockItem dyeableItem) {
+            setColor(dyeableItem.getColor(DyedItemColor.applyDyes(stack, List.of(dyeItem))));
             if (!player.isCreative()) dyeStack.shrink(1);
             return InteractionResult.sidedSuccess(level.isClientSide());
         };

@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.core.chemistry.vat;
 
+import petrolpark.mc.destroy.chemistry.minecraft.MixtureFluid;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -180,7 +181,7 @@ public class VatScreen extends AbstractSimiScreen {
             } default: {
                 if (fluid != null) {
                     amount = fluid.getAmount();
-                    if (DestroyFluids.isMixture(fluid)) mixture = ReadOnlyMixture.readNBT(ClientMixture::new, fluid.getOrCreateChildTag("Mixture"));
+                    if (DestroyFluids.isMixture(fluid)) mixture = ReadOnlyMixture.readNBT(ClientMixture::new, MixtureFluid.getMixtureTag(fluid));
                 };
             };
         };

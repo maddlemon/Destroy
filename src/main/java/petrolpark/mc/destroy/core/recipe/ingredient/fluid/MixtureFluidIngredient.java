@@ -33,7 +33,7 @@ public abstract class MixtureFluidIngredient<T extends MixtureFluidIngredient<T>
     @Override
     protected boolean testInternal(FluidStack fluidStack) {
         if (!(fluidStack.getFluid().getFluidType() == DestroyFluids.MIXTURE.getType())) return false; // If it's not a Mixture
-        CompoundTag mixtureTag = fluidStack.getChildTag("Mixture");
+        CompoundTag mixtureTag = MixtureFluid.getMixtureTag(fluidStack);
         if (mixtureTag.isEmpty()) return false; // If this Mixture Fluid has no associated Mixture
         return testMixture(LegacyMixture.readNBT(mixtureTag));
     };

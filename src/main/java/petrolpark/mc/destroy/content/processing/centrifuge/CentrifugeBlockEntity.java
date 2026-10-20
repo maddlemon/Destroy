@@ -228,7 +228,7 @@ public class CentrifugeBlockEntity extends KineticBlockEntity implements IDirect
             if (DestroyFluids.isMixture(getInputTank().getFluid())) { // If there are Fluids to Centrifuge
 
                 boolean debug = false;
-                LegacyMixture mixture = LegacyMixture.readNBT(getInputTank().getFluid().getOrCreateChildTag("Mixture"));
+                LegacyMixture mixture = LegacyMixture.readNBT(MixtureFluid.getMixtureTag(getInputTank().getFluid()));
 
                 if (mixture == null) return;
                 if (!(DestroyFluids.isMixture(getDenseOutputTank().getFluid()) || getDenseOutputTank().isEmpty()) || !(DestroyFluids.isMixture(getLightOutputTank().getFluid()) || getLightOutputTank().isEmpty())) return; // Don't go any further if either output tank can't take Mixture

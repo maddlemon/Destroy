@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.content.processing.trypolithography.keypunch;
 
+import petrolpark.mc.destroy.util.ItemStackNBT;
 import net.minecraft.core.HolderLookup;
 import java.util.List;
 import java.util.UUID;
@@ -84,7 +85,7 @@ public class KeypunchBlockEntity extends KineticBlockEntity implements ICircuitP
         int pattern = CircuitPatternItem.getPattern(stack);
 
         int positionToPunch = BinaryMatrix4x4.rotate(getActualPosition(), input.getRotation());
-        if (stack.getOrCreateTag().contains("Flipped")) positionToPunch = BinaryMatrix4x4.flip(positionToPunch);
+        if (ItemStackNBT.read(stack).contains("Flipped")) positionToPunch = BinaryMatrix4x4.flip(positionToPunch);
 
         if (BinaryMatrix4x4.is1(pattern, positionToPunch)) return false;
 

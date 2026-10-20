@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.content.processing.discstamping;
 
+import petrolpark.mc.destroy.util.ItemStackNBT;
 import java.util.List;
 
 import javax.annotation.Nullable;
@@ -24,15 +25,15 @@ public class DiscStamperItem extends WithSecondaryItem {
     };
 
     public static ItemStack getDisc(ItemStack stamper) {
-        if (stamper.getOrCreateTag().contains("Disc", Tag.TAG_COMPOUND)) {
-            return ItemStack.of(stamper.getOrCreateTag().getCompound("Disc"));
+        if (ItemStackNBT.read(stamper).contains("Disc", Tag.TAG_COMPOUND)) {
+            return ItemStack.of(ItemStackNBT.read(stamper).getCompound("Disc"));
         };
         return ItemStack.EMPTY;
     };
 
     public static ItemStack of(ItemStack discStack) {
         ItemStack stack = DestroyItems.DISC_STAMPER.asStack();
-        stack.getOrCreateTag().put("Disc", discStack.save(new CompoundTag()));
+        ItemStackNBT.update(stack, customTag -> customTag.put("Disc", discStack.save(new CompoundTag())));
         return stack;
     };
 

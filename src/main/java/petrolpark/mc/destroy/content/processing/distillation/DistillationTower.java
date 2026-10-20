@@ -151,8 +151,8 @@ public class DistillationTower {
         // Mixtures
         FluidStack fluidStack = getControllerBubbleCap().getTank().getFluid();
         if (fluidStack.isEmpty()) return false;
-        if (DestroyFluids.isMixture(fluidStack.getFluid()) && fluidStack.getOrCreateTag().contains("Mixture", Tag.TAG_COMPOUND)) {
-            ReadOnlyMixture mixture = ReadOnlyMixture.readNBT(ReadOnlyMixture::new, fluidStack.getOrCreateTag().getCompound("Mixture"));
+        if (DestroyFluids.isMixture(fluidStack.getFluid()) && MixtureFluid.hasMixtureTag(fluidStack)) {
+            ReadOnlyMixture mixture = ReadOnlyMixture.readNBT(ReadOnlyMixture::new, MixtureFluid.getMixtureTag(fluidStack));
             List<FluidStack> fractions = getFractionsOfMixture(mixture, fluidStack.getAmount(), getHeight() - 1);
             if (fractions.size() <= 1) return false; // If the only result is the residue, there is no point distilling
             for (boolean simulate : Iterate.trueAndFalse) {

@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.core.explosion.mixedexplosive;
 
+import net.minecraft.core.component.DataComponents;
 import java.util.function.Consumer;
 
 import petrolpark.mc.destroy.DestroyBlocks;
@@ -22,8 +23,8 @@ public class MixedExplosiveBlockItem extends DyeableMixedExplosiveBlockItem {
 
     public static ItemStack getExampleItemStack() {
         ItemStack stack = DestroyBlocks.CUSTOM_EXPLOSIVE_MIX.asStack();
-        stack.getOrCreateTagElement("display").putInt("color", 0x85B09A);
-        stack.setHoverName(Component.literal("MIX"));
+        if (stack.getItem() instanceof DyeableMixedExplosiveBlockItem item) item.setColor(stack, 0x85B09A);
+        stack.set(DataComponents.CUSTOM_NAME, Component.literal("MIX"));
         return stack;
     };
 

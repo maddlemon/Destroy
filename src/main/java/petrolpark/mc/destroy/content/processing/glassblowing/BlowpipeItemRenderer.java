@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.content.processing.glassblowing;
 
+import petrolpark.mc.destroy.util.ItemStackNBT;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.simibubi.create.foundation.item.render.CustomRenderedItemModel;
 import com.simibubi.create.foundation.item.render.CustomRenderedItemModelRenderer;
@@ -24,7 +25,7 @@ public class BlowpipeItemRenderer extends CustomRenderedItemModelRenderer {
         Minecraft mc = Minecraft.getInstance();
         ItemRenderer itemRenderer = mc.getItemRenderer();
         float partialTicks = AnimationTickHolder.getPartialTicks();
-        CompoundTag tag = stack.getOrCreateTag();
+        CompoundTag tag = ItemStackNBT.read(stack);
 
         ms.pushPose();
         if (tag.getBoolean("Blowing")) {

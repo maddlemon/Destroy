@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.core.chemistry;
 
+import petrolpark.mc.destroy.chemistry.minecraft.MixtureFluid;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,7 +48,7 @@ public abstract class MixtureContentsDisplaySource extends DisplaySource {
         FluidStack fluidStack = getFluidStack(context);
         if (fluidStack == null || fluidStack.isEmpty()) return tooltip;
 
-        CompoundTag mixtureTag = fluidStack.getOrCreateTag().getCompound("Mixture");
+        CompoundTag mixtureTag = MixtureFluid.getMixtureTag(fluidStack);
         if (mixtureTag.isEmpty()) { // If this is not a Mixture
             name = fluidStack.getDisplayName().copy();
         } else { // If this is a Mixture

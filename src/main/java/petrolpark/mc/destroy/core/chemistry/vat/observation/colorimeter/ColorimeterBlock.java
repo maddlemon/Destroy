@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.core.chemistry.vat.observation.colorimeter;
 
+import petrolpark.mc.destroy.chemistry.minecraft.MixtureFluid;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -77,7 +78,7 @@ public class ColorimeterBlock extends HorizontalDirectionalBlock implements IBE<
             });
 
             for (FluidStack fluid : fluids) {
-                if (DestroyFluids.isMixture(fluid)) species.addAll(ReadOnlyMixture.readNBT(ReadOnlyMixture::new, fluid.getOrCreateChildTag("Mixture")).getContents(false));
+                if (DestroyFluids.isMixture(fluid)) species.addAll(ReadOnlyMixture.readNBT(ReadOnlyMixture::new, MixtureFluid.getMixtureTag(fluid)).getContents(false));
             };
 
             Destroy.unsafeRunClient(() -> () -> openScreen(be, species, player));

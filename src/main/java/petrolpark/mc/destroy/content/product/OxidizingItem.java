@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.content.product;
 
+import petrolpark.mc.destroy.util.ItemStackNBT;
 import java.util.function.Supplier;
 
 import com.petrolpark.item.decay.ConfiguredDecayingItem;
@@ -36,7 +37,7 @@ public class OxidizingItem extends ConfiguredDecayingItem {
 
     public void checkForWater(ItemStack stack, Entity entity, boolean rainSensitive) {
         if (entity.isInWaterOrBubble() || (entity.isInWaterRainOrBubble() && (rainSensitive || (entity instanceof LivingEntity livingEntity && livingEntity.getOffhandItem() == stack)))) {
-            IDecayingItem.extendLifetime(stack, (int)-IDecayingItem.getRemainingTime(this, stack, stack.getOrCreateTag())); // Instantly rust
+            IDecayingItem.extendLifetime(stack, (int)-IDecayingItem.getRemainingTime(this, stack, ItemStackNBT.read(stack))); // Instantly rust
         };
     };
     

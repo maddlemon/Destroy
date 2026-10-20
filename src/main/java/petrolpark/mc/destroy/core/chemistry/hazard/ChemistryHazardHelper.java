@@ -1,5 +1,7 @@
 package petrolpark.mc.destroy.core.chemistry.hazard;
 
+import petrolpark.mc.destroy.util.ItemStackNBT;
+import petrolpark.mc.destroy.chemistry.minecraft.MixtureFluid;
 import petrolpark.mc.destroy.DestroyPollutionTypes;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,7 +50,7 @@ public class ChemistryHazardHelper {
      */
     public static void damage(Level level, LivingEntity entity, FluidStack stack, boolean skinContact) {
         if (!DestroyFluids.isMixture(stack)) return;
-        ReadOnlyMixture mixture = ReadOnlyMixture.readNBT(ReadOnlyMixture::new, stack.getOrCreateChildTag("Mixture"));
+        ReadOnlyMixture mixture = ReadOnlyMixture.readNBT(ReadOnlyMixture::new, MixtureFluid.getMixtureTag(stack));
         if (mixture.isEmpty()) return;
 
         boolean burning = mixture.getConcentrationOf(DestroyMolecules.PROTON) > 0.01f || mixture.getConcentrationOf(DestroyMolecules.HYDROXIDE) > 0.01f;
@@ -114,16 +116,15 @@ public class ChemistryHazardHelper {
     
     public static void contaminate(ItemStack stack, FluidStack fluidStack) {
         if (Items.CONTAMINABLE.matches(stack.getItem())) {
-            CompoundTag tag = stack.getOrCreateTag();
-            if (tag.contains("ContaminatingFluid")) return;
+            if (ItemStackNBT.read(stack).contains("ContaminatingFluid")) return;
             CompoundTag fluidTag = new CompoundTag();
             fluidStack.writeToNBT(fluidTag);
-            tag.put("ContaminatingFluid", fluidTag);
+            ItemStackNBT.update(stack, tag -> tag.put("ContaminatingFluid", fluidTag));
         };
     };
 
     public static void decontaminate(ItemStack stack) {
-        stack.getOrCreateTag().remove("ContaminatingFluid");
+        ItemStackNBT.update(stack, customTag -> customTag.remove("ContaminatingFluid"));
     };
 
     public static enum Protection {
@@ -163,8 +164,17 @@ public class ChemistryHazardHelper {
 
     // Give cancer if unprotected in direct sunlight
     @SubscribeEvent
-    public static void onPlayerTick(PlayerTickEvent.Post event) {
-        Player player = event.getEntity();
+    public static void onPlayerTickPre(PlayerTickEvent.Pre event) {
+        onPlayerTick(event.getEntity());
+    };
+
+    // Forge fired this tick event at both START and END and the handler ignored the phase, so it ran twice per tick. Kept that way to match 1.20.1.
+    @SubscribeEvent
+    public static void onPlayerTickPost(PlayerTickEvent.Post event) {
+        onPlayerTick(event.getEntity());
+    };
+
+    public static void onPlayerTick(Player player) {
         if (player.level().canSeeSky(player.blockPosition()) && !player.hasEffect(DestroyMobEffects.SUN_PROTECTION) && player.getRandom().nextInt(DestroyPollutionTypes.OZONE_DEPLETION.get().max * 600) < PollutionHelper.getPollution(player.level(), player.blockPosition(), DestroyPollutionTypes.OZONE_DEPLETION.get())) player.addEffect(DestroyMobEffects.cancerInstance());
     };
 
@@ -190,8 +200,8 @@ public class ChemistryHazardHelper {
      */
     @SubscribeEvent
     public static final void onLivingEquipmentChange(LivingEquipmentChangeEvent event) {
-        if (event.getSlot() == EquipmentSlot.MAINHAND || event.getSlot() == EquipmentSlot.OFFHAND || !event.getFrom().hasTag()) return;
-        CompoundTag tag = event.getFrom().getTag();
+        if (event.getSlot() == EquipmentSlot.MAINHAND || event.getSlot() == EquipmentSlot.OFFHAND || !ItemStackNBT.has(event.getFrom())) return;
+        CompoundTag tag = ItemStackNBT.read(event.getFrom());
         if (tag.contains("ContaminatingFluid", Tag.TAG_COMPOUND)) {
             ChemistryHazardHelper.damage(event.getEntity().level(), event.getEntity(), FluidStack.loadFluidStackFromNBT(tag.getCompound("ContaminatingFluid")), true);
             ChemistryHazardHelper.decontaminate(event.getFrom());

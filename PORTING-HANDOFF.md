@@ -65,7 +65,7 @@ JAVA_HOME=$JDK ./gradlew compileJava --console=plain    # log to a file, run det
 
 | `955c7499` | Tick events -> `ClientTickEvent.Pre/Post`, `PlayerTickEvent.Post`, `LevelTickEvent.Post` (all 9 files; `ExtendedInventoryClientHandler.tick()` no-arg; dropped duplicate `SeismometerItemRenderer.tick()` call, it self-subscribes now); old `PollutionType.SMOG/GREENHOUSE/ACID_RAIN/OZONE_DEPLETION` -> `DestroyPollutionTypes.X.get()`, `pollutionEnabled()` -> `isPollutionEnabled()`; pollution ponder storyboards disabled with `TODO(port)` (author's `PollutionPonderScenes` is fully commented out upstream); `ItemProviderEntry<?>` -> `<?, ?>`. |
 
-**Behaviour note (tick events):** Forge fired Player/Level tick events twice per tick (START+END).
+**Behaviour note (tick events) — superseded, now restored to 2x/tick:** Forge fired Player/Level tick events twice per tick (START+END).
 `ChemistryHazardHelper.onPlayerTick`, `PlayerCrouchingCapability`, `PlayerPreviousPositionsCapability`,
 `RedstoneProgrammerItemHandler.onLevelTick` and `DestroyCommonEvents.onLevelTick` never checked the
 phase, so they ran 2x/tick. They're now on `Post` only = 1x/tick: crouch/urinate counters, ozone-cancer
@@ -78,7 +78,31 @@ roll, previous-position sampling and global pollution decay run at half their ol
 
 | (attachments commit) | Batch 3b — **entity capabilities -> data attachments**: `EntityChemicalPoison`, `PlayerBabyBlueAddiction`, `PlayerCrouching`, `PlayerNovelCompoundsSynthesized`, `PlayerPreviousPositions` keep their class (now `INBTSerializable<CompoundTag>`), registered in `DestroyAttachmentTypes` via `AttachmentType.serializable(...)` under the old capability ids; `Provider` classes and the `onAttachCapabilities*` handlers deleted. Access via `X.of(entity)` -> `Optional<X>` (empty for non-players / non-living, same as the old attach rules), so `ifPresent`/`map` call sites only changed receiver. Not `copyOnDeath`: the existing `PlayerEvent.Clone` handler still does the config-dependent copying. **Also fixed: `Destroy` ctor never registered `DestroyAttachmentTypes`, `DestroyDataComponentTypes`, `DestroyNumberProviderTypes`, `DestroyPollutionTypes`, `DestroySeismologyProviders`** (lost when the 1.20.1 `Destroy.java` was restored over the author's) — added, and `DestroyPackets.register()` moved from common setup to the ctor like the author's. |
 
-Latest compile: **1,621 errors**.
+| (components commit) | Batch 3c (part) — **NBT -> data components**. Fluids: new `DestroyDataComponentTypes.MIXTURE` (`CompoundTag`) replaces the FluidStack `"Mixture"` child tag; all access via `MixtureFluid.getMixtureTag/hasMixtureTag/addMixtureToFluidStack` (~30 sites). Items: `util/ItemStackNBT` bridges the old `getOrCreateTag()` keys onto vanilla `minecraft:custom_data` (same keys; MC's 1.20->1.21 fixer also moves old item NBT there) — `read` returns a copy, writes go through `update`/`set`, multi-line blocks got explicit `set` after each write. Fireworks recipe + mixed-explosive firework effect -> `Fireworks`/`FireworkExplosion` components (recipe also ported to `CraftingInput`). Explosive dyeing -> `DyedItemColor` + `minecraft:dyeable` item tag (tagged in `DestroyBlocks` and in generated tags) + ARGB-opaque item tint. **Tick handlers restored to 2x/tick** (Pre + Post) to match 1.20.1 exactly. **Bug fix:** `ExtendedBasinBehaviour` now reads the `"EvaporatedFluid"` key it writes. |
+
+Latest compile: **1,502 errors**.
+
+**Goal (from Maddie): behave as close to the original 1.20.1 mod as possible, with no regressions.**
+So: no intentional behaviour changes; anything that has to differ gets written down here.
+
+**Decision change: JEI compat is required.** Restore `compat/jei` (45 files) and the 7 `compat.jei.*`
+mixins from upstream `1.20.1` and port to JEI 19 *after* the core recipe classes compile (the categories
+depend on them). JEI is already a dependency in build.gradle.
+
+**Data migration step (after recipe codecs are ported, before runtime testing):** the resource
+migration missed MC 1.21's singular data folders — `data/*/recipes|advancements|loot_tables|structures`
+must become `recipe|advancement|loot_table|structure` (also in `src/generated`), or none of it loads.
+Recipe JSON must then match the new codecs: Create 6 style (`"type": "neoforge:single"` fluid
+ingredients, `{"id", "amount"}` fluid results, snake_case keys like `heat_requirement`), and mixture
+fluid results' `"nbt": {"Mixture": …}` -> `"components": {"destroy:mixture": …}`.
+
+Other NBT leftovers: potion fluids in `CentrifugeBlockEntity` (Create 6 uses `POTION_CONTENTS` +
+Create's bottle-type component), `MixtureFluidIngredient` (with the fluid-ingredient rework),
+`SequencedAssemblyRecipeMixin` (Create 6 keeps sequenced-assembly progress in its own data component,
+so the mixin must be rewritten against Create 6's code), and item capabilities (`ItemMixtureTank`,
+Blowpipe spout handler, measuring cylinder, test tube) -> `Capabilities.FluidHandler.ITEM` via
+`event.registerItem`. Typed components for hot item keys (Blowpipe, Swiss Army Knife, Circuit Mask)
+are optional cleanup later.
 
 Capability work still TODO (batch 3b/3c): the 5 player/entity capabilities -> attachments
 (see below), old `Pollution.CAPABILITY` / `ChunkCrudeOil.Provider.CHUNK_CRUDE_OIL` consumers ->
@@ -96,8 +120,8 @@ Previous compile (after the AT commit): **2,050 errors** (javac count; gradle pr
 Before: 2,178 (after batch 1, javac count). Remaining big buckets: `LazyOptional`/`Capability`
 (batch 3), `getOrCreateTag` (batch 3), packets (batch 3), Create `FluidIngredient` (batch 2).
 
-Upstream bug spotted (left as-is): `ExtendedBasinBehaviour` writes `"EvaporatedFluid"` but
-reads `"EvaporatedFluidStack"`, so the evaporated fluid never survives a reload.
+Upstream bug (fixed in the components commit): `ExtendedBasinBehaviour` wrote `"EvaporatedFluid"` but
+read `"EvaporatedFluidStack"`, so the evaporated fluid never survived a reload.
 
 Previous count (after batch 1): **2301 error lines**. Mix: cannot-find-symbol 1205,
 no-override 333, incompatible-types 185, bad-args 133, package-missing 99,

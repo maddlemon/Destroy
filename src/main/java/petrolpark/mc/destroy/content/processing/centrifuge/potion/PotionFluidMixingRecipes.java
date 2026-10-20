@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.content.processing.centrifuge.potion;
 
+import net.minecraft.world.level.material.Fluid;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -40,11 +41,11 @@ public class PotionFluidMixingRecipes {
 
     public static Map<Item, FluidStack> createFluidEquivalents() {
         return Map.of(
-            Items.DRAGON_BREATH, new FluidStack(DestroyFluids.LINGERING_POTION.getSource(), 100),
-            Items.GUNPOWDER, new FluidStack(DestroyFluids.SPLASH_POTION.getSource(), 100),
-            Items.REDSTONE, new FluidStack(DestroyFluids.LONG_POTION.getSource(), 100),
-            Items.GLOWSTONE_DUST, new FluidStack(DestroyFluids.STRONG_POTION.getSource(), 100),
-            Items.FERMENTED_SPIDER_EYE, new FluidStack(DestroyFluids.CORRUPTING_POTION.getSource(), 100)
+            Items.DRAGON_BREATH, new FluidStack((Fluid) DestroyFluids.LINGERING_POTION.getSource(), 100),
+            Items.GUNPOWDER, new FluidStack((Fluid) DestroyFluids.SPLASH_POTION.getSource(), 100),
+            Items.REDSTONE, new FluidStack((Fluid) DestroyFluids.LONG_POTION.getSource(), 100),
+            Items.GLOWSTONE_DUST, new FluidStack((Fluid) DestroyFluids.STRONG_POTION.getSource(), 100),
+            Items.FERMENTED_SPIDER_EYE, new FluidStack((Fluid) DestroyFluids.CORRUPTING_POTION.getSource(), 100)
         );
     };
 

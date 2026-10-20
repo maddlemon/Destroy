@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.content.processing.glassblowing;
 
+import petrolpark.mc.destroy.util.ItemStackNBT;
 import com.mojang.blaze3d.vertex.PoseStack;
 import petrolpark.mc.destroy.DestroyBlocks;
 
@@ -34,7 +35,7 @@ public class BlowpipeItemRenderLayer<T extends LivingEntity, M extends EntityMod
 
     @Override
     protected void renderArmWithItem(LivingEntity livingEntity, ItemStack stack, ItemDisplayContext displayContext, HumanoidArm arm, PoseStack ms, MultiBufferSource buffer, int light) {
-        if (DestroyBlocks.BLOWPIPE.isIn(stack) && livingEntity.swingTime == 0 && stack.getOrCreateTag().getBoolean("Blowing")) {
+        if (DestroyBlocks.BLOWPIPE.isIn(stack) && livingEntity.swingTime == 0 && ItemStackNBT.read(stack).getBoolean("Blowing")) {
             ms.pushPose();
             ModelPart modelpart = getParentModel().getHead();
             float f = modelpart.xRot;

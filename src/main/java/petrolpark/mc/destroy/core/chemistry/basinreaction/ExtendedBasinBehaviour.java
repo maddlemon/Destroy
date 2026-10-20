@@ -100,7 +100,7 @@ public class ExtendedBasinBehaviour extends BlockEntityBehaviour {
             reactionResults.put(result, number);
         });
 
-        evaporatedFluid = FluidStack.parseOptional(registries, nbt.getCompound("EvaporatedFluidStack"));
+        evaporatedFluid = FluidStack.parseOptional(registries, nbt.getCompound("EvaporatedFluid"));
 	};
 
     @Override
