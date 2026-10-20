@@ -295,4 +295,4 @@ component lifetime (config read at registration = default; refreshed on craft) �
 |---|---|
 | `f8900f17` | (previous hand-off point) PORTING-HANDOFF.md filled in |
 | `5822036a` | Step 5 WIP: other agents' uncommitted work (pack finders, `DestroyBlockEntityBuilder`, `AbstractDestroyRegistrate` additions, SmartExplosion, vibration listener, ExtendedBasinBehaviour, potato projectile MapCodecs, untracked jukebox-song/combustible/mob-effect files) + phase_b2/b3 batches + this session's fixes (AT skipRendering saga resolved, particle data rewrite, residual renames) + this doc. Errors: 327 → 166. |
-| `COMMIT_CODEC` | (Maddie, Windows) Block `codec()` for 13 blocks + 3 subclasses; urine cauldron `InteractionMap`. Errors (Windows, `port-tools/errsummary.py`): 164 unique / 332 lines → 149 / 302. |
+| `ce2f5524` | (Maddie, Windows) Block `codec()` for 13 blocks + 3 subclasses; urine cauldron `InteractionMap`. Errors (Windows, `port-tools/errsummary.py`): 164 unique / 332 lines → 149 / 302. |
