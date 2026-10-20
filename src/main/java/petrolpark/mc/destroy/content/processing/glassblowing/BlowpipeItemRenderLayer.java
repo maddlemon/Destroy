@@ -11,18 +11,19 @@ import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.ItemInHandRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.CustomHeadLayer;
 import net.minecraft.client.renderer.entity.layers.ItemInHandLayer;
+import net.minecraft.client.resources.PlayerSkin;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.HumanoidArm;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 
 public class BlowpipeItemRenderLayer<T extends LivingEntity, M extends EntityModel<T> & ArmedModel & HeadedModel> extends ItemInHandLayer<T, M> {
 
@@ -49,9 +50,13 @@ public class BlowpipeItemRenderLayer<T extends LivingEntity, M extends EntityMod
         };
     };
 
-    public static void registerOnAll(EntityRenderDispatcher renderManager) {
-		for (EntityRenderer<? extends Player> renderer : renderManager.getSkinMap().values()) registerOn(renderer, renderManager.getItemInHandRenderer());
-		for (EntityRenderer<?> renderer : renderManager.renderers.values()) registerOn(renderer, renderManager.getItemInHandRenderer());
+    /**
+     * Add the layer to every Player and Entity renderer (1.20.1 read the same maps from the {@link net.minecraft.client.renderer.entity.EntityRenderDispatcher}, whose {@code renderers} is private in 1.21.1).
+     */
+    public static void registerOnAll(EntityRenderersEvent.AddLayers event) {
+        ItemInHandRenderer itemRenderer = event.getContext().getItemInHandRenderer();
+		for (PlayerSkin.Model skin : event.getSkins()) registerOn(event.getSkin(skin), itemRenderer);
+		for (EntityType<?> entityType : event.getEntityTypes()) registerOn(event.getRenderer(entityType), itemRenderer);
 	};
 
 	@SuppressWarnings({"rawtypes", "unchecked"})

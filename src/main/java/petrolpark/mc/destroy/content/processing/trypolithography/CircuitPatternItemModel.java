@@ -33,8 +33,8 @@ public class CircuitPatternItemModel implements IUnbakedGeometry<CircuitPatternI
     };
 
     @Override
-    public CircuitPatternItemModel.Baked bake(IGeometryBakingContext context, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, ItemOverrides overrides, ResourceLocation modelLocation) {
-        return new Baked(wrapped.bake(context, baker, spriteGetter, modelState, overrides, modelLocation));
+    public CircuitPatternItemModel.Baked bake(IGeometryBakingContext context, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, ItemOverrides overrides) {
+        return new Baked(wrapped.bake(context, baker, spriteGetter, modelState, overrides));
     };
 
     public class Baked extends BakedModelWrapper<BakedModel> {

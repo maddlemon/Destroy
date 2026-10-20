@@ -21,24 +21,24 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.platform.NativeImage.Format;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import petrolpark.mc.destroy.Destroy;
 import net.createmod.catnip.lang.Lang;
 
 import net.minecraft.client.renderer.texture.SpriteContents;
+import net.minecraft.client.renderer.texture.atlas.SpriteResourceLoader;
 import net.minecraft.client.renderer.texture.atlas.SpriteSource;
 import net.minecraft.client.renderer.texture.atlas.SpriteSourceType;
 import net.minecraft.client.renderer.texture.atlas.SpriteSources;
 import net.minecraft.client.renderer.texture.atlas.sources.LazyLoadedImage;
 import net.minecraft.client.renderer.texture.atlas.sources.PalettedPermutations;
-import net.minecraft.client.resources.metadata.animation.AnimationMetadataSection;
 import net.minecraft.client.resources.metadata.animation.FrameSize;
 import net.minecraft.resources.FileToIdConverter;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.server.packs.resources.ResourceMetadata;
 import net.minecraft.util.GsonHelper;
-import net.neoforged.neoforge.client.textures.ForgeTextureMetadata;
 
 public class DestroySpriteSource implements SpriteSource {
 
@@ -52,11 +52,11 @@ public class DestroySpriteSource implements SpriteSource {
         BLOCKS,
         ARMOR_TRIMS;
 
-        private final Codec<DestroySpriteSource> codec;
+        private final MapCodec<DestroySpriteSource> codec;
         private final SpriteSourceType type;
 
         Atlas() {
-            codec = Codec.unit(() -> new DestroySpriteSource(this));
+            codec = MapCodec.unit(() -> new DestroySpriteSource(this));
             type = SpriteSources.register("destroy:"+Lang.asId(name()), codec);
         };
 
@@ -156,7 +156,7 @@ public class DestroySpriteSource implements SpriteSource {
                         int yPos = yStart + y * tileHeight;
                         image.copyRect(partialImage, xPos, yPos, xPos, yPos, tileWidth, tileHeight, false, false);
                         ResourceLocation sectionId = ResourceLocation.fromNamespaceAndPath(id.getNamespace(), id.getPath() + "/" + ((y * 4) + x));
-                        output.add(sectionId, () -> new SpriteContents(sectionId, new FrameSize(image.getWidth(), image.getHeight()), partialImage, AnimationMetadataSection.EMPTY, ForgeTextureMetadata.EMPTY));
+                        output.add(sectionId, loader -> new SpriteContents(sectionId, new FrameSize(image.getWidth(), image.getHeight()), partialImage, ResourceMetadata.EMPTY));
                     };
                 };
             } catch (IOException e) {
@@ -183,11 +183,11 @@ public class DestroySpriteSource implements SpriteSource {
      */
     public static record PalettedSpriteSupplier(LazyLoadedImage baseImage, Supplier<IntUnaryOperator> palette, ResourceLocation permutationLocation) implements SpriteSource.SpriteSupplier {
 
-        @SuppressWarnings("deprecation")
-        public SpriteContents get() {
+        @Override
+        public SpriteContents apply(SpriteResourceLoader loader) {
             try {
                 NativeImage nativeimage = baseImage.get().mappedCopy(this.palette.get());
-                return new SpriteContents(permutationLocation, new FrameSize(nativeimage.getWidth(), nativeimage.getHeight()), nativeimage, AnimationMetadataSection.EMPTY);
+                return new SpriteContents(permutationLocation, new FrameSize(nativeimage.getWidth(), nativeimage.getHeight()), nativeimage, ResourceMetadata.EMPTY);
             } catch (IllegalArgumentException | IOException ioexception) {
                 Destroy.LOGGER.error("Unable to apply palette to {}", permutationLocation, ioexception);
             } finally {
@@ -196,6 +196,7 @@ public class DestroySpriteSource implements SpriteSource {
             return null;
         };
 
+        @Override
         public void discard() {
             baseImage.release();
         };

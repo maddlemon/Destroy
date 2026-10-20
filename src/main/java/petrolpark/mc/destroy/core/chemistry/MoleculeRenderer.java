@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.Consumer;
 
 import org.joml.Math;
 import org.joml.Quaternionf;
@@ -48,6 +49,7 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.client.RenderTypeGroup;
 import net.neoforged.neoforge.client.model.IModelBuilder;
 import net.neoforged.neoforge.client.model.pipeline.QuadBakingVertexConsumer;
+import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.neoforged.neoforge.client.textures.UnitTextureAtlasSprite;
 
 public class MoleculeRenderer {
@@ -138,11 +140,12 @@ public class MoleculeRenderer {
         // Bake all rendered objects into a single model
         IModelBuilder<?> builder = IModelBuilder.of(false, true, true, ItemTransforms.NO_TRANSFORMS, ItemOverrides.EMPTY,
             UnitTextureAtlasSprite.INSTANCE, RenderTypeGroup.EMPTY);
-        QuadBakingVertexConsumer buffer = new QuadBakingVertexConsumer(builder::addUnculledFace);
+        EmittingQuadBakingVertexConsumer buffer = new EmittingQuadBakingVertexConsumer(builder::addUnculledFace);
         buffer.setTintIndex(-1);
         for (Pair<Vec3, IRenderableMoleculePart> pair : RENDERED_OBJECTS) {
             pair.getSecond().renderInto(buffer, pair.getFirst());
         };
+        buffer.emit();
         model = builder.build();
     };
 
@@ -465,6 +468,32 @@ public class MoleculeRenderer {
             Minecraft.getInstance().getBlockRenderer().getModelRenderer()
                 .renderModel(poseStack.last(), builder, Blocks.AIR.defaultBlockState(), atom.getPartial().get(), 1, 1, 1,
                     0, OverlayTexture.NO_OVERLAY, VirtualRenderHelper.VIRTUAL_DATA, RenderType.solid());
+        };
+    };
+    /**
+     * 1.20.1's {@link QuadBakingVertexConsumer} handed each quad to a consumer once its fourth vertex was done. 1.21.1's has to be
+     * asked with {@link QuadBakingVertexConsumer#bakeQuad bakeQuad()}, so bake the previous quad whenever a fifth vertex starts,
+     * and once more at the end with {@link EmittingQuadBakingVertexConsumer#emit emit()}.
+     */
+    protected static class EmittingQuadBakingVertexConsumer extends QuadBakingVertexConsumer {
+
+        private final Consumer<BakedQuad> quadConsumer;
+        private int vertices = 0;
+
+        public EmittingQuadBakingVertexConsumer(Consumer<BakedQuad> quadConsumer) {
+            this.quadConsumer = quadConsumer;
+        };
+
+        @Override
+        public VertexConsumer addVertex(float x, float y, float z) {
+            if (vertices == 4) emit();
+            vertices++;
+            return super.addVertex(x, y, z);
+        };
+
+        public void emit() {
+            if (vertices == 4) quadConsumer.accept(bakeQuad());
+            vertices = 0;
         };
     };
 };

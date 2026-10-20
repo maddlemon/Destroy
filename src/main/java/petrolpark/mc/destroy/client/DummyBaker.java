@@ -12,6 +12,7 @@ import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.BlockModelRotation;
 import net.minecraft.client.resources.model.Material;
 import net.minecraft.client.resources.model.ModelBaker;
+import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.client.resources.model.ModelState;
 import net.minecraft.client.resources.model.UnbakedModel;
 import net.minecraft.resources.ResourceLocation;
@@ -27,7 +28,7 @@ public class DummyBaker implements ModelBaker {
     };
 
     public static BakedModel bake(BlockModel model, BlockModel modelOwner, ResourceLocation location) {
-        return UnbakedGeometryHelper.bake(model, BAKER, model, Material::sprite, BlockModelRotation.X0_Y0, location, false);
+        return UnbakedGeometryHelper.bake(model, BAKER, model, Material::sprite, BlockModelRotation.X0_Y0, false);
     };
 
     @Override
@@ -42,6 +43,16 @@ public class DummyBaker implements ModelBaker {
 
     @Override
     public UnbakedModel getModel(ResourceLocation pLocation) {
+        return null;
+    };
+
+    @Override
+    public @Nullable UnbakedModel getTopLevelModel(ModelResourceLocation location) {
+        return null;
+    };
+
+    @Override
+    public @Nullable BakedModel bakeUncached(UnbakedModel model, ModelState state, Function<Material, TextureAtlasSprite> sprites) {
         return null;
     };
 

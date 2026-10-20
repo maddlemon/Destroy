@@ -17,8 +17,6 @@ import petrolpark.mc.destroy.core.explosion.mixedexplosive.ExplosivePropertiesTo
 import petrolpark.mc.destroy.core.pollution.SmogAffectedBlockColor;
 import petrolpark.mc.destroy.util.NameLists;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
@@ -78,13 +76,12 @@ public class DestroyClientModEvents {
 
     @SubscribeEvent
     public static final void onRegisterModelLoaders(ModelEvent.RegisterGeometryLoaders event) {
-        event.register("circuit_pattern", CircuitPatternItemModel.Loader.INSTANCE);
+        event.register(Destroy.asResource("circuit_pattern"), CircuitPatternItemModel.Loader.INSTANCE); // 1.20.1 namespaced plain names with the registering mod's id
     };
 
     @SubscribeEvent
     public static final void addEntityRendererLayers(EntityRenderersEvent.AddLayers event) {
-        EntityRenderDispatcher dispatcher = Minecraft.getInstance().getEntityRenderDispatcher();
-        BlowpipeItemRenderLayer.registerOnAll(dispatcher);
+        BlowpipeItemRenderLayer.registerOnAll(event);
     };
 
 };
