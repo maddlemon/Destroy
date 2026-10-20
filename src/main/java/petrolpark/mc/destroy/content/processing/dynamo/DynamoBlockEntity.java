@@ -279,8 +279,8 @@ public class DynamoBlockEntity extends BasinOperatingBlockEntity implements Char
             if (availableItems != null) {
                 for (int slot = 0; slot < availableItems.getSlots(); slot++) {
                     ItemStack stack = availableItems.getStackInSlot(slot);
-                    if (stack.is(ItemTags.MUSIC_DISCS)) RecipeFinder.get(discElectroplatingRecipeKey, level, r -> r.getType() == DestroyRecipeTypes.DISC_ELECTROPLATING.getType() && r instanceof DiscElectroplatingRecipe recipe && recipe.original).forEach(r -> {
-                        if (r instanceof DiscElectroplatingRecipe recipe) recipes.add(recipe.copyWithDisc(stack)); // This cast check should never fail
+                    if (stack.is(ItemTags.MUSIC_DISCS)) RecipeFinder.get(discElectroplatingRecipeKey, level, r -> r.value().getType() == DestroyRecipeTypes.DISC_ELECTROPLATING.getType() && r.value() instanceof DiscElectroplatingRecipe recipe && recipe.original).forEach(r -> {
+                        if (r.value() instanceof DiscElectroplatingRecipe recipe) recipes.add(recipe.copyWithDisc(stack)); // This cast check should never fail
                     });
                 };
             };

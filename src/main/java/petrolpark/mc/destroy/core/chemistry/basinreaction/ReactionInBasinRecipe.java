@@ -77,9 +77,9 @@ public class ReactionInBasinRecipe extends BasinRecipe {
                 containsRawMixtures = true;
             } else {
                 // Non-Mixture -> Mixture conversions
-                MixtureConversionRecipe recipe = RecipeFinder.get(recipeCacheKey, basin.getLevel(), r -> r.getType() == DestroyRecipeTypes.MIXTURE_CONVERSION.getType())
+                MixtureConversionRecipe recipe = RecipeFinder.get(recipeCacheKey, basin.getLevel(), r -> r.value().getType() == DestroyRecipeTypes.MIXTURE_CONVERSION.getType())
                     .stream()
-                    .map(r -> (MixtureConversionRecipe)r)
+                    .map(r -> (MixtureConversionRecipe)r.value())
                     .filter(r -> r.getFluidIngredients().get(0).test(fluidStack))
                     .findFirst()
                     .orElse(null);

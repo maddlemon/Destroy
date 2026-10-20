@@ -1,5 +1,9 @@
 package petrolpark.mc.destroy.content.processing.centrifuge;
 
+import net.minecraft.world.item.crafting.RecipeHolder;
+import com.simibubi.create.AllDataComponents;
+import net.minecraft.world.item.alchemy.PotionContents;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.HolderLookup;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -153,7 +157,7 @@ public class CentrifugeBlockEntity extends KineticBlockEntity implements IDirect
             FluidStack inputFluidStack = getInputTank().getFluid();
 
             // Standard recipes
-            List<Recipe<?>> possibleRecipes = RecipeFinder.get(centrifugationRecipeKey, getLevel(), r -> r.getType() == DestroyRecipeTypes.CENTRIFUGATION.getType()).stream().filter(r -> {
+            List<Recipe<?>> possibleRecipes = RecipeFinder.get(centrifugationRecipeKey, getLevel(), r -> r.value().getType() == DestroyRecipeTypes.CENTRIFUGATION.getType()).stream().<Recipe<?>>map(RecipeHolder::value).filter(r -> {
                 CentrifugationRecipe recipe = (CentrifugationRecipe) r;
                 if (!recipe.isValidAt(getLevel(), getBlockPos())) return false; // Biome-specific recipes
                 if (!recipe.getRequiredFluid().test(inputFluidStack)) return false; // If there is insufficient input Fluid
@@ -162,11 +166,12 @@ public class CentrifugeBlockEntity extends KineticBlockEntity implements IDirect
             }).collect(Collectors.toList());
 
             // Potion separation
-            if (AllConfigs.server().recipes.allowBrewingInMixer.get() && inputFluidStack.getFluid().isSame(AllFluids.POTION.get()) && inputFluidStack.hasTag()) {
-                Potion potion = NeoForgeRegistries.POTIONS.getValue(ResourceLocation.parse(inputFluidStack.getOrCreateTag().getString("Potion")));
-                BottleType bottleType = NBTHelper.readEnum(inputFluidStack.getOrCreateTag(), "BottleType", BottleType.class);
-                if (potion != null) {
-                    CentrifugationRecipe potionSeparationRecipe = PotionSeparationRecipes.ALL.get(Pair.of(potion, bottleType));
+            if (AllConfigs.server().recipes.allowBrewingInMixer.get() && inputFluidStack.getFluid().isSame(AllFluids.POTION.get())) {
+                // 1.21: the potion and bottle type are data components (were "Potion"/"BottleType" NBT; a missing bottle type read as REGULAR)
+                PotionContents potionContents = inputFluidStack.get(DataComponents.POTION_CONTENTS);
+                BottleType bottleType = inputFluidStack.getOrDefault(AllDataComponents.POTION_FLUID_BOTTLE_TYPE, BottleType.REGULAR);
+                if (potionContents != null && potionContents.potion().isPresent()) {
+                    CentrifugationRecipe potionSeparationRecipe = PotionSeparationRecipes.getRecipes(getLevel()).get(Pair.of(potionContents.potion().get(), bottleType));
                     if (potionSeparationRecipe != null)
                     possibleRecipes.add(potionSeparationRecipe);
                 };

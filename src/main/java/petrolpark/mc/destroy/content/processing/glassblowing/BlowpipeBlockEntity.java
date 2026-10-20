@@ -104,7 +104,7 @@ public class BlowpipeBlockEntity extends SmartBlockEntity {
     };
 
     protected static GlassblowingRecipe getRecipe(Level level, ResourceLocation recipeId) {
-        return RecipeFinder.get(recipeCacheKey, level, r -> r instanceof GlassblowingRecipe).stream().filter(r -> r.getId().equals(recipeId)).map(r -> (GlassblowingRecipe)r).findFirst().orElse(null);
+        return RecipeFinder.get(recipeCacheKey, level, r -> r.value() instanceof GlassblowingRecipe).stream().filter(r -> r.id().equals(recipeId)).map(r -> (GlassblowingRecipe)r.value()).findFirst().orElse(null);
     };
 
     @Override

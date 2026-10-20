@@ -77,7 +77,7 @@ public class MechanicalMixerBlockEntityMixin {
                 ReactionInBasinRecipe recipe = ReactionInBasinRecipe.create(availableFluidStacks, availableItemStacks, basin);
                 if (!(recipe == null) && BasinRecipe.match(basin, recipe)) matchingRecipes.add(recipe); 
             } else if (AllConfigs.server().recipes.allowBrewingInMixer.get()) {
-                matchingRecipes.addAll(PotionFluidMixingRecipes.ALL.stream().filter(recipe -> BasinRecipe.match(basin, recipe)).toList());
+                matchingRecipes.addAll(PotionFluidMixingRecipes.getRecipes(basin.getLevel()).stream().filter(recipe -> BasinRecipe.match(basin, recipe)).toList());
             };
         });
     };

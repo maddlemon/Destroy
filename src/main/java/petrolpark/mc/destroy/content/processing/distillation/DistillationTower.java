@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.content.processing.distillation;
 
+import net.minecraft.world.item.crafting.RecipeHolder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -125,7 +126,7 @@ public class DistillationTower {
         if (getControllerBubbleCap() == null || level.isClientSide()) return;
         SmartFluidTank inputTank = getControllerBubbleCap().getTank();
         if (lastRecipe == null || !lastRecipe.getRequiredFluid().test(inputTank.getFluid()) || !lastRecipe.isValidAt(level, getControllerPos())) { // If the Recipe has changed
-            List<Recipe<?>> possibleRecipes = RecipeFinder.get(distillationRecipeKey, level, r -> r.getType() == DestroyRecipeTypes.DISTILLATION.getType()).stream().filter(r -> {
+            List<Recipe<?>> possibleRecipes = RecipeFinder.get(distillationRecipeKey, level, r -> r.value().getType() == DestroyRecipeTypes.DISTILLATION.getType()).stream().<Recipe<?>>map(RecipeHolder::value).filter(r -> {
                 DistillationRecipe recipe = (DistillationRecipe) r;
                 return (recipe.getRequiredFluid().test(inputTank.getFluid())) && recipe.isValidAt(level, getControllerPos()); // If there is sufficient input Fluid and we're in the right biome
             }).collect(Collectors.toList());

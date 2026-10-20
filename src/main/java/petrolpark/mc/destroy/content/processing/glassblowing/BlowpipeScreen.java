@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.content.processing.glassblowing;
 
+import net.minecraft.world.item.crafting.RecipeHolder;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,7 +31,7 @@ public class BlowpipeScreen extends AbstractSimiScreen {
     protected DestroyGuiTextures background;
 
     protected final InteractionHand hand;
-    protected List<GlassblowingRecipe> recipes;
+    protected List<RecipeHolder<GlassblowingRecipe>> recipes; // Holders: the selected recipe is sent to the server by id
 
     protected int scroll;
 
@@ -44,7 +45,7 @@ public class BlowpipeScreen extends AbstractSimiScreen {
     protected void init() {
         setWindowSize(background.width, background.height);
         super.init();
-        recipes = RecipeFinder.get(recipeCacheKey, minecraft.level, r -> r instanceof GlassblowingRecipe).stream().map(r -> (GlassblowingRecipe)r).toList();
+        recipes = RecipeFinder.get(recipeCacheKey, minecraft.level, r -> r.value() instanceof GlassblowingRecipe).stream().map(r -> new RecipeHolder<>(r.id(), (GlassblowingRecipe)r.value())).toList();
         refreshRecipeButtons();
     };
 
@@ -80,11 +81,11 @@ public class BlowpipeScreen extends AbstractSimiScreen {
         // Recipes
         for (int i = 0; i < 3; i++) {
             if (scroll + i >= recipes.size()) continue;
-            GlassblowingRecipe recipe = recipes.get(scroll + i);
+            GlassblowingRecipe recipe = recipes.get(scroll + i).value();
             int y = 16 + i * 18;
 
             // Item
-            ItemStack stack = recipes.get(scroll + i).getResultItem(minecraft.level.registryAccess());
+            ItemStack stack = recipes.get(scroll + i).value().getResultItem(minecraft.level.registryAccess());
             graphics.renderItem(stack, 56, y, i);
 
             // Fluid
@@ -120,7 +121,7 @@ public class BlowpipeScreen extends AbstractSimiScreen {
             super(x, y, 64, 18);
             withCallback(() -> {
                 if (recipeNo >= recipes.size()) return;
-                DestroyMessages.sendToServer(new SelectGlassblowingRecipeC2SPacket(hand, recipes.get(recipeNo).getId()));
+                DestroyMessages.sendToServer(new SelectGlassblowingRecipeC2SPacket(hand, recipes.get(recipeNo).id()));
                 if (minecraft != null && minecraft.player != null) minecraft.player.closeContainer();
             });
         };

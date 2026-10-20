@@ -50,7 +50,7 @@ public class ElementTankBlockEntity extends SmartBlockEntity implements IHaveLab
 
     public void checkRecipe() {
         FluidStack fs = tank.getPrimaryHandler().getFluid();
-        RecipeFinder.get(recipeCacheKey, getLevel(), r -> r.getType() == DestroyRecipeTypes.ELEMENT_TANK_FILLING.getType()).stream().map(r -> (ElementTankFillingRecipe)r).filter(r -> {
+        RecipeFinder.get(recipeCacheKey, getLevel(), r -> r.value().getType() == DestroyRecipeTypes.ELEMENT_TANK_FILLING.getType()).stream().map(r -> (ElementTankFillingRecipe)r.value()).filter(r -> {
             SizedFluidIngredient ingredient = r.getFluidIngredients().get(0);
             return ingredient.test(fs) && ingredient.amount() <= fs.getAmount();
         }).findFirst().ifPresent(r -> {

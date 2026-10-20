@@ -43,7 +43,7 @@ public class SelectGlassblowingRecipeC2SPacket extends C2SPacket {
         context.enqueueWork(() -> {
             ServerPlayer sender = context.getSender();
             CompoundTag tag = sender.getItemInHand(hand).getOrCreateTag();
-            GlassblowingRecipe recipe = RecipeFinder.get(recipeCacheKey, sender.level(), r -> r instanceof GlassblowingRecipe).stream().filter(r -> r.getId().equals(recipeId)).findFirst().map(r -> (GlassblowingRecipe)r).orElse(null);
+            GlassblowingRecipe recipe = RecipeFinder.get(recipeCacheKey, sender.level(), r -> r.value() instanceof GlassblowingRecipe).stream().filter(r -> r.id().equals(recipeId)).findFirst().map(r -> (GlassblowingRecipe)r.value()).orElse(null);
             if (recipe == null) return;
             if (!tag.contains("Recipe")) { // If no recipe was set to begin with
 

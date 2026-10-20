@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.content.processing.ageing;
 
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.minecraft.core.HolderLookup;
@@ -92,7 +93,7 @@ public class AgeingBarrelBlockEntity extends SmartBlockEntity implements IHaveGo
     @SuppressWarnings("null")
     public void checkRecipe() {
         if (!hasLevel() || getLevel().isClientSide()) return; // It thinks getLevel() might be null (it's not)
-        List<Recipe<?>> allRecipes = RecipeFinder.get(agingRecipeKey, level, r -> r.getType() == DestroyRecipeTypes.AGING.getType());
+        List<Recipe<?>> allRecipes = RecipeFinder.get(agingRecipeKey, level, r -> r.value().getType() == DestroyRecipeTypes.AGING.getType()).stream().<Recipe<?>>map(RecipeHolder::value).toList();
         List<Recipe<?>> possibleRecipes = allRecipes.stream().filter(r -> {
             AgeingRecipe recipe = (AgeingRecipe) r;
             if (!recipe.getFluidIngredients().get(0).test(getTank().getFluid())) {

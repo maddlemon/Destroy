@@ -749,9 +749,9 @@ public class VatControllerBlockEntity extends SmartBlockEntity implements IHaveL
 
             // Non-Mixture -> Mixture conversion
             if (lastRecipe == null || !lastRecipe.getFluidIngredients().get(0).test(stack)) {
-                lastRecipe = RecipeFinder.get(recipeCacheKey, controller.getLevel(), r -> r.getType() == DestroyRecipeTypes.MIXTURE_CONVERSION.getType())
+                lastRecipe = RecipeFinder.get(recipeCacheKey, controller.getLevel(), r -> r.value().getType() == DestroyRecipeTypes.MIXTURE_CONVERSION.getType())
                     .stream()
-                    .map(r -> (MixtureConversionRecipe)r)
+                    .map(r -> (MixtureConversionRecipe)r.value())
                     .filter(r -> r.getFluidIngredients().get(0).test(stack))
                     .findFirst()
                     .orElse(null);
