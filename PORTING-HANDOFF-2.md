@@ -13,6 +13,8 @@ Maddie (Windows, git identity `Meowfoe`). **Pull before starting.**
 - Compile: **166 deduped javac errors** (334 error lines, compile11 — the state of the pushed
   tree). Error history: 567 (start of step 5) → 327 (compile6) → 213 (compile8) → 178 (compile9)
   → 166 (compile11).
+- **Windows (Maddie), after the block `codec()` batch: 149 unique errors / 302 error lines**
+  (`python port-tools/errsummary.py <log>`; the same tree as compile11 counted 164 / 332 there).
 - Latest logs on Azzie's box: `/var/home/azziee/Documents/Azziecraft/build/compileN.log`;
   parse with `python3 /var/home/azziee/Documents/Azziecraft/build/parse_errors.py <log>`.
 - Everything below is committed and pushed in the hand-off commit (see History). The working
@@ -149,13 +151,15 @@ Maddie (Windows, git identity `Meowfoe`). **Pull before starting.**
 
 ## Do next (remaining step 5, by theme — compile + commit per batch)
 
-1. **Block `codec()`** (18 `not-abstract` errors): PumpjackBlock, PumpjackStructuralBlock,
-   AgingBarrelBlock (HorizontalDirectionalBlock), BlowpipeBlock (DirectionalBlock),
-   UrineCauldronBlock (AbstractCauldronBlock), FullyGrownCropBlock + MagicBeetrootShootsBlock
-   (BushBlock), PeriodicTableBlock, RedstoneProgrammerBlock, ElementTankBlock, ColorimeterBlock,
-   VatControllerBlock, CatalyticConverterBlock. Pattern (1.21.1 `BlockBehaviour.codec()` is abstract):
+1. **Block `codec()` — DONE** (13 blocks; the other 5 `not-abstract` errors are models / saved data /
+   item attribute, in their own items below). Properties-only blocks:
    `public static final MapCodec<X> CODEC = simpleCodec(X::new);` +
-   `@Override protected MapCodec<? extends Block> codec() { return CODEC; }`.
+   `@Override protected MapCodec<? extends X> codec() { return CODEC; };` (`? extends X` so subclasses can
+   override). Blocks with extra ctor args get a `RecordCodecBuilder` codec like vanilla `StemBlock` /
+   `LayeredCauldronBlock`: `FullyGrownCropBlock` + subclass `HeftyBeetrootBlock` (`seed` via
+   `BuiltInRegistries.ITEM.byNameCodec()`), `TankPeriodicTableBlock` (`color`), `UrineCauldronBlock`
+   (`CauldronInteraction.CODEC`). Only the classes that had errors (plus their subclasses) got one;
+   plain `Block` subclasses inherit `Block.CODEC` like Create's blocks.
 2. **Decay items** (OxidizingItem 22 error lines, CarboxylatingItem 12, cascade DestroyItems:181/314)
    — **designed, see below**.
 3. **Contamination** (FireproofingHelper 20, CircuitPatternItemAttribute 16): old
@@ -167,6 +171,13 @@ Maddie (Windows, git identity `Meowfoe`). **Pull before starting.**
    Note `CircuitPatternItemAttribute.java:73`: anonymous `ItemAttributeType` needs `streamCodec()`.
 4. **Plant blocks** (MagicBeetrootShootsBlock 22, FullyGrownCropBlock 12): `PlantType` GONE,
    `EventHooks.getMobGriefingEvent` GONE, `ForgeHooks` usage (2 sites) — inspect.
+   MagicBeetrootShootsBlock also needs 1.21.1 `BonemealableBlock.isValidBonemealTarget(LevelReader,
+   BlockPos, BlockState)` (was hidden behind the codec error). `PlantType.CROP` can simply go: NeoForge's
+   `BushBlock.canSurvive` asks `canSustainPlant` (default `TriState.DEFAULT`) then `mayPlaceOn`, which
+   already checks farmland. **Parity catch:** in 1.20.1 any `IPlantable` crop on farmland stopped it
+   drying to dirt; 1.21.1 `FarmBlock.shouldMaintainFarmland` only checks the `minecraft:maintains_farmland`
+   block tag (vanilla crops only, not `#crops`), so tag Golden Carrots, the Hefty/infused Beetroots and
+   Magic Beetroot Shoots with `BlockTags.MAINTAINS_FARMLAND` in `DestroyBlocks`.
 5. **Client models**: DestroySpriteSource (12: `SpriteSource.codec()` now returns `MapCodec`,
    `SpriteSources.register(String, MapCodec)`, `PalettedPermutations` `PalettedSpriteSupplier
    .apply(SpriteResourceLoader)`, `AnimationMetadataSection` → `ResourceMetadata`,
@@ -187,10 +198,10 @@ Maddie (Windows, git identity `Meowfoe`). **Pull before starting.**
    DynamiteBlockEntity:72,73, PumpjackCamBlockEntity:43, ExtrudableMovementBehaviour:77,110.
 8. **BlockPos → Vec3** (4): VatControllerBlockEntity:663, Vat:352, DynamiteBlockEntity:86,
    DynamiteBlock:30.
-9. **Cauldron**: DestroyCauldronInteractions + UrineCauldronBlock (`Map<Item,CauldronInteraction>` →
-   `CauldronInteraction.InteractionMap`; register into `CauldronInteraction.INTERACTIONS`;
-   `net.minecraft.core.cauldron.CauldronInteraction` + `InteractionMap` record `(String name,
-   Map<Item,CauldronInteraction> map)`, static `INTERACTIONS`).
+9. **Cauldron — DONE** (with item 1, the codec needs it): `DestroyCauldronInteractions.URINE` is
+   `CauldronInteraction.newInteractionMap("destroy:urine")` (registers it in `INTERACTIONS`, default
+   `PASS_TO_DEFAULT_BLOCK_INTERACTION` = 1.20.1's `PASS`); the glass-bottle interaction returns
+   `ItemInteractionResult.sidedSuccess`.
 10. **Loot / advancement / conditions / misc**: DestroyLootConditions (`net.minecraft.world.level
     .storage.loot.Serializer` GONE → `LootItemConditionType` + MapCodec), ObliterationCondition (6),
     DestroyAdvancementTrigger:99,110 (`getAdvancement(ResourceKey.create(Registries.ADVANCEMENT,
@@ -284,3 +295,4 @@ component lifetime (config read at registration = default; refreshed on craft) �
 |---|---|
 | `f8900f17` | (previous hand-off point) PORTING-HANDOFF.md filled in |
 | `5822036a` | Step 5 WIP: other agents' uncommitted work (pack finders, `DestroyBlockEntityBuilder`, `AbstractDestroyRegistrate` additions, SmartExplosion, vibration listener, ExtendedBasinBehaviour, potato projectile MapCodecs, untracked jukebox-song/combustible/mob-effect files) + phase_b2/b3 batches + this session's fixes (AT skipRendering saga resolved, particle data rewrite, residual renames) + this doc. Errors: 327 → 166. |
+| `COMMIT_CODEC` | (Maddie, Windows) Block `codec()` for 13 blocks + 3 subclasses; urine cauldron `InteractionMap`. Errors (Windows, `port-tools/errsummary.py`): 164 unique / 332 lines → 149 / 302. |

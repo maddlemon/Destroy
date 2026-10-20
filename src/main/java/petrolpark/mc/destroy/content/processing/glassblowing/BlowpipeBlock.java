@@ -15,6 +15,7 @@ import com.simibubi.create.AllBlocks;
 import com.simibubi.create.content.kinetics.deployer.DeployerBlockEntity;
 import com.simibubi.create.content.kinetics.deployer.DeployerFakePlayer;
 import com.simibubi.create.foundation.block.IBE;
+import com.mojang.serialization.MapCodec;
 
 import net.createmod.catnip.data.Iterate;
 import net.minecraft.core.BlockPos;
@@ -41,8 +42,15 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class BlowpipeBlock extends DirectionalBlock implements IBE<BlowpipeBlockEntity>, IPickUpPutDownBlock {
 
+    public static final MapCodec<BlowpipeBlock> CODEC = simpleCodec(BlowpipeBlock::new);
+
     public BlowpipeBlock(Properties properties) {
         super(properties);
+    };
+
+    @Override
+    protected MapCodec<? extends BlowpipeBlock> codec() {
+        return CODEC;
     };
 
     @Override

@@ -4,6 +4,8 @@ import petrolpark.mc.destroy.DestroyBlocks;
 import petrolpark.mc.destroy.DestroyItems;
 import petrolpark.mc.destroy.DestroyVoxelShapes;
 
+import com.mojang.serialization.MapCodec;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
@@ -24,8 +26,15 @@ import net.neoforged.neoforge.common.PlantType;
 
 public class MagicBeetrootShootsBlock extends BushBlock implements BonemealableBlock {
 
+    public static final MapCodec<MagicBeetrootShootsBlock> CODEC = simpleCodec(MagicBeetrootShootsBlock::new);
+
     public MagicBeetrootShootsBlock(Properties properties) {
         super(properties);
+    };
+
+    @Override
+    protected MapCodec<? extends MagicBeetrootShootsBlock> codec() {
+        return CODEC;
     };
 
     @Override

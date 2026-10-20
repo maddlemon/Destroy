@@ -11,6 +11,7 @@ import petrolpark.mc.destroy.DestroyVoxelShapes;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
 import com.simibubi.create.content.kinetics.base.RotatedPillarKineticBlock;
 import com.simibubi.create.foundation.block.IBE;
+import com.mojang.serialization.MapCodec;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -34,9 +35,16 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class PumpjackBlock extends HorizontalDirectionalBlock implements IBE<PumpjackBlockEntity>, IWrenchable {
 
+    public static final MapCodec<PumpjackBlock> CODEC = simpleCodec(PumpjackBlock::new);
+
     public PumpjackBlock(Properties properties) {
         super(properties);
         registerDefaultState(defaultBlockState().setValue(FACING, Direction.NORTH));
+    };
+
+    @Override
+    protected MapCodec<? extends PumpjackBlock> codec() {
+        return CODEC;
     };
 
     @Override

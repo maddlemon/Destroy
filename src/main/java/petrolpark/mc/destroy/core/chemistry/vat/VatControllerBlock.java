@@ -10,6 +10,7 @@ import petrolpark.mc.destroy.core.chemistry.storage.ISpecialMixtureContainerBloc
 import com.simibubi.create.AllSoundEvents;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
 import com.simibubi.create.foundation.block.IBE;
+import com.mojang.serialization.MapCodec;
 
 import net.createmod.catnip.gui.ScreenOpener;
 import net.minecraft.client.player.LocalPlayer;
@@ -39,9 +40,16 @@ import petrolpark.mc.destroy.Destroy;
 
 public class VatControllerBlock extends HorizontalDirectionalBlock implements IBE<VatControllerBlockEntity>, ISpecialMixtureContainerBlock, IWrenchable {
 
+    public static final MapCodec<VatControllerBlock> CODEC = simpleCodec(VatControllerBlock::new);
+
     public VatControllerBlock(Properties properties) {
         super(properties);
         registerDefaultState(defaultBlockState().setValue(FACING, Direction.NORTH));
+    };
+
+    @Override
+    protected MapCodec<? extends VatControllerBlock> codec() {
+        return CODEC;
     };
 
     @Override

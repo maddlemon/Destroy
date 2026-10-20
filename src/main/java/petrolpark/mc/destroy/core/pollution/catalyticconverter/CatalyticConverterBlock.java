@@ -5,6 +5,7 @@ import petrolpark.mc.destroy.DestroyBlockEntityTypes;
 import petrolpark.mc.destroy.DestroyVoxelShapes;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
 import com.simibubi.create.foundation.block.IBE;
+import com.mojang.serialization.MapCodec;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -20,9 +21,16 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class CatalyticConverterBlock extends DirectionalBlock implements IBE<CatalyticConverterBlockEntity>, IWrenchable {
 
+    public static final MapCodec<CatalyticConverterBlock> CODEC = simpleCodec(CatalyticConverterBlock::new);
+
     public CatalyticConverterBlock(Properties properties) {
         super(properties);
         registerDefaultState(defaultBlockState().setValue(FACING, Direction.UP));
+    };
+
+    @Override
+    protected MapCodec<? extends CatalyticConverterBlock> codec() {
+        return CODEC;
     };
 
     @Override

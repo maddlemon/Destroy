@@ -2,6 +2,7 @@ package petrolpark.mc.destroy.core.chemistry.storage;
 
 import petrolpark.mc.destroy.DestroyBlockEntityTypes;
 import com.simibubi.create.foundation.block.IBE;
+import com.mojang.serialization.MapCodec;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -14,8 +15,15 @@ import net.minecraft.world.level.block.state.StateDefinition.Builder;
 
 public class ElementTankBlock extends HorizontalDirectionalBlock implements IBE<ElementTankBlockEntity> {
 
+    public static final MapCodec<ElementTankBlock> CODEC = simpleCodec(ElementTankBlock::new);
+
     public ElementTankBlock(Properties properties) {
         super(properties);
+    };
+
+    @Override
+    protected MapCodec<? extends ElementTankBlock> codec() {
+        return CODEC;
     };
 
     @Override

@@ -4,7 +4,11 @@ import java.util.function.Supplier;
 
 import petrolpark.mc.destroy.DestroyVoxelShapes;
 
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
@@ -18,11 +22,21 @@ import net.neoforged.neoforge.common.PlantType;
 
 public class FullyGrownCropBlock extends BushBlock {
 
+    public static final MapCodec<FullyGrownCropBlock> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
+        propertiesCodec(),
+        BuiltInRegistries.ITEM.byNameCodec().fieldOf("seed").forGetter(FullyGrownCropBlock::asItem)
+    ).apply(i, (properties, seed) -> new FullyGrownCropBlock(properties, () -> seed)));
+
     private Supplier<? extends Item> seed;
 
     public FullyGrownCropBlock(Properties properties, Supplier<? extends Item> seed) {
         super(properties);
         this.seed = seed;
+    };
+
+    @Override
+    protected MapCodec<? extends FullyGrownCropBlock> codec() {
+        return CODEC;
     };
 
     @Override

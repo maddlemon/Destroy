@@ -12,6 +12,7 @@ import com.simibubi.create.content.equipment.wrench.IWrenchable;
 import com.simibubi.create.foundation.block.IBE;
 import com.simibubi.create.foundation.block.ProperWaterloggedBlock;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
+import com.mojang.serialization.MapCodec;
 
 import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.level.LevelReader;
@@ -48,6 +49,8 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class RedstoneProgrammerBlock extends HorizontalDirectionalBlock implements IBE<RedstoneProgrammerBlockEntity>, IWrenchable, ProperWaterloggedBlock, IPickUpPutDownBlock {
 
+    public static final MapCodec<RedstoneProgrammerBlock> CODEC = simpleCodec(RedstoneProgrammerBlock::new);
+
     public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
 
     public RedstoneProgrammerBlock(Properties properties) {
@@ -57,6 +60,11 @@ public class RedstoneProgrammerBlock extends HorizontalDirectionalBlock implemen
             .setValue(FACING, Direction.NORTH)
             .setValue(WATERLOGGED, false)
         );
+    };
+
+    @Override
+    protected MapCodec<? extends RedstoneProgrammerBlock> codec() {
+        return CODEC;
     };
 
     @Override

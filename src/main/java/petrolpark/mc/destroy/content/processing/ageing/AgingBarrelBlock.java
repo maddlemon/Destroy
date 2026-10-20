@@ -14,6 +14,7 @@ import com.simibubi.create.content.fluids.transfer.GenericItemFilling;
 import com.simibubi.create.foundation.block.IBE;
 import com.simibubi.create.foundation.fluid.FluidHelper;
 import com.simibubi.create.foundation.item.ItemHelper;
+import com.mojang.serialization.MapCodec;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -48,6 +49,8 @@ import net.neoforged.neoforge.items.ItemStackHandler;
 
 public class AgingBarrelBlock extends HorizontalDirectionalBlock implements IBE<AgeingBarrelBlockEntity>, IWrenchable, TransformableBlock {
 
+    public static final MapCodec<AgingBarrelBlock> CODEC = simpleCodec(AgingBarrelBlock::new);
+
     public static final BooleanProperty IS_OPEN = BooleanProperty.create("open");
     public static final IntegerProperty PROGRESS = IntegerProperty.create("progress", 0, 4); //0 = smallest balloon, ... 4 = done (biggest balloon)
 
@@ -58,6 +61,11 @@ public class AgingBarrelBlock extends HorizontalDirectionalBlock implements IBE<
             .setValue(IS_OPEN, true)
             .setValue(PROGRESS, 0)
         );
+    };
+
+    @Override
+    protected MapCodec<? extends AgingBarrelBlock> codec() {
+        return CODEC;
     };
 
     @Override

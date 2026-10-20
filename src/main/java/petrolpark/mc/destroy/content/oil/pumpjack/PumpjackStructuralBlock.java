@@ -4,6 +4,8 @@ import java.util.function.Consumer;
 
 import petrolpark.mc.destroy.DestroyBlocks;
 
+import com.mojang.serialization.MapCodec;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -29,8 +31,15 @@ import net.neoforged.neoforge.client.extensions.common.IClientBlockExtensions;
  */
 public class PumpjackStructuralBlock extends DirectionalBlock implements IPumpjackStructuralBlock {
 
+    public static final MapCodec<PumpjackStructuralBlock> CODEC = simpleCodec(PumpjackStructuralBlock::new);
+
     public PumpjackStructuralBlock(Properties properties) {
         super(properties);
+    };
+
+    @Override
+    protected MapCodec<? extends PumpjackStructuralBlock> codec() {
+        return CODEC;
     };
 
     @Override

@@ -15,6 +15,7 @@ import com.simibubi.create.AllBlocks;
 import com.simibubi.create.AllItems;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
 import com.simibubi.create.foundation.block.IBE;
+import com.mojang.serialization.MapCodec;
 
 import net.createmod.catnip.gui.ScreenOpener;
 import net.minecraft.client.player.LocalPlayer;
@@ -44,6 +45,8 @@ import petrolpark.mc.destroy.util.BlockUseHelper;
 
 public class ColorimeterBlock extends HorizontalDirectionalBlock implements IBE<ColorimeterBlockEntity>, IWrenchable {
 
+    public static final MapCodec<ColorimeterBlock> CODEC = simpleCodec(ColorimeterBlock::new);
+
     public static final BooleanProperty POWERED = BooleanProperty.create("powered");
     public static final BooleanProperty BLUSHING = BooleanProperty.create("blushing");
 
@@ -55,6 +58,11 @@ public class ColorimeterBlock extends HorizontalDirectionalBlock implements IBE<
             .setValue(BLUSHING, false)
             .setValue(POWERED, false)
         );
+    };
+
+    @Override
+    protected MapCodec<? extends ColorimeterBlock> codec() {
+        return CODEC;
     };
 
     @Override

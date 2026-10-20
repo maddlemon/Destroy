@@ -10,6 +10,7 @@ import java.util.Set;
 import javax.annotation.Nullable;
 
 import com.google.gson.JsonObject;
+import com.mojang.serialization.MapCodec;
 import petrolpark.mc.destroy.Destroy;
 import petrolpark.mc.destroy.DestroyAdvancementTrigger;
 import petrolpark.mc.destroy.util.DestroyReloadListener;
@@ -40,10 +41,17 @@ import net.neoforged.fml.common.EventBusSubscriber;
 @EventBusSubscriber(modid = Destroy.MOD_ID)
 public class PeriodicTableBlock extends HorizontalDirectionalBlock {
 
+    public static final MapCodec<PeriodicTableBlock> CODEC = simpleCodec(PeriodicTableBlock::new);
+
     public static Set<PeriodicTableEntry> ELEMENTS = new HashSet<>();
 
     public PeriodicTableBlock(Properties properties) {
         super(properties);
+    };
+
+    @Override
+    protected MapCodec<? extends PeriodicTableBlock> codec() {
+        return CODEC;
     };
 
     @Override
