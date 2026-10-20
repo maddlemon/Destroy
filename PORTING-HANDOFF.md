@@ -214,7 +214,7 @@ Intended to be empty. Current entries:
 | `7bfb29aa` | Block-entity capabilities → `DestroyCapabilities`; `BlockSource` record accessors |
 | `7bdf6d44` | Entity capabilities → attachments; **registered the author's missing registries** in the ctor |
 | `bd702b4b` | Mixture `MIXTURE` component; `ItemStackNBT`; fireworks/dye components; tick handlers back to 2x/tick; `EvaporatedFluid` key fix |
-| (this commit) | Farmer's Delight / Embeddium / Sodium compat mixins; **`DestroyMixinPlugin` package fixed** (was `com.destroy.mixin`, so compat mixins were never gated — would crash without the mod); water tint mixin retargeted to `ClientNeoForgeMod$1`; missing cartography mixins listed; `port-tools/`; this doc restructured |
+| `127f23a1` | Farmer's Delight / Embeddium / Sodium compat mixins; **`DestroyMixinPlugin` package fixed** (was `com.destroy.mixin`, so compat mixins were never gated — would crash without the mod); water tint mixin retargeted to `ClientNeoForgeMod$1`; missing cartography mixins listed; `port-tools/`; this doc restructured |
 
 Error counts: 2,301 error lines (batch 1) → 2,178 javac → 2,050 → 1,940 → 1,892 → 1,718 → 1,621 → 1,502 → 1,501.
 
