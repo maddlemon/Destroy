@@ -344,7 +344,7 @@ Intended to be empty. Current entries:
 | `26b63081` | Recipes part 4: trypolithography + disc stamping recipes, sequenced assembly mixin, recipe consumers (sieve, dynamo, distillation, blowpipe, basin reactions, vat materials) |
 | `6f5d02b0` | Packets: 21 packets → Catnip payloads in `DestroyPackets`, `DestroyMessages` deleted, 38 send sites → `CatnipServices.NETWORK`, `NetworkHooks` replaced, creative-slot mixin retargeted |
 | `d508622e` | Pollution: author's framework with 1.20.1 behaviour (configs, data maps, decay/spreading, sources, effects, temperature, radioactivity, client visuals), author's acid rain kept |
-| _(this commit)_ | Crude oil + seismology: 1.20.1 behaviour plus the author's provider menu / error rate / quality; Oil and Pollution Ponder scenes ported and re-enabled |
+| `4da3c6e7` | Crude oil + seismology: 1.20.1 behaviour plus the author's provider menu / error rate / quality; Oil and Pollution Ponder scenes ported and re-enabled |
 
 Error counts: 2,301 error lines (batch 1) → 2,178 javac → 2,050 → 1,940 → 1,892 → 1,718 → 1,621 → 1,502 → 1,501 → 1,281 (recipes 1) → 1,217 (recipes 2) → 1,184 → 1,071 (recipes 4) → 863 (packets) → 764 (pollution) → 693 (oil, seismology, Ponder).
 
