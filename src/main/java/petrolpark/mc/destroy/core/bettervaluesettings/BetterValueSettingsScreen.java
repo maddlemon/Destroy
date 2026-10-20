@@ -4,12 +4,12 @@ import java.util.function.Consumer;
 
 import petrolpark.mc.destroy.mixin.accessor.ValueSettingsScreenAccessor;
 import com.simibubi.create.AllKeys;
-import com.simibubi.create.AllPackets;
 import com.simibubi.create.foundation.blockEntity.behaviour.ValueSettingsBehaviour.ValueSettings;
 import com.simibubi.create.foundation.blockEntity.behaviour.ValueSettingsBoard;
 import com.simibubi.create.foundation.blockEntity.behaviour.ValueSettingsPacket;
 import com.simibubi.create.foundation.blockEntity.behaviour.ValueSettingsScreen;
 
+import net.createmod.catnip.platform.CatnipServices;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
@@ -38,7 +38,7 @@ public class BetterValueSettingsScreen extends ValueSettingsScreen {
     @Override
     protected void saveAndClose(double mouseX, double mouseY) {
 		ValueSettings closest = getClosestCoordinate((int) mouseX, (int) mouseY);
-		AllPackets.getChannel()
+		CatnipServices.NETWORK
 			.sendToServer(new ValueSettingsPacket(pos, closest.row(), closest.value(), hand, null, sideAccessed,
 				AllKeys.ctrlDown(), ((ValueSettingsScreenAccessor) this).getNetId()));
 		onClose();

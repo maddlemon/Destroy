@@ -3,9 +3,9 @@ package petrolpark.mc.destroy;
 import petrolpark.mc.destroy.client.DestroyItemDisplayContexts;
 import petrolpark.mc.destroy.client.DestroyPartials;
 import petrolpark.mc.destroy.client.DestroyParticleTypes;
-import petrolpark.mc.destroy.client.DestroyPonderPlugin;
 import petrolpark.mc.destroy.client.DestroySpriteSource;
 import petrolpark.mc.destroy.client.FogHandler;
+import petrolpark.mc.destroy.client.ponder.DestroyPonderPlugin;
 import petrolpark.mc.destroy.core.extendedinventory.ExtendedInventoryClientHandler;
 
 import net.createmod.ponder.foundation.PonderIndex;

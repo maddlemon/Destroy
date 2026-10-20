@@ -1,0 +1,19 @@
+{
+    "entries": [
+        {
+            "enum": "net/minecraft/world/item/ItemDisplayContext",
+            "name": "DESTROY_BLOWPIPE",
+            "constructor": "(ILjava/lang/String;Ljava/lang/String;)V",
+            "parameters": [ -1, "destroy:blowpipe", "NONE" ]
+        },
+        {
+            "enum": "net/minecraft/client/gui/Gui$HeartType",
+            "name": "DESTROY_CHEMICAL_POISON",
+            "constructor": "(Lnet/minecraft/resources/ResourceLocation;Lnet/minecraft/resources/ResourceLocation;Lnet/minecraft/resources/ResourceLocation;Lnet/minecraft/resources/ResourceLocation;Lnet/minecraft/resources/ResourceLocation;Lnet/minecraft/resources/ResourceLocation;Lnet/minecraft/resources/ResourceLocation;Lnet/minecraft/resources/ResourceLocation;)V",
+            "parameters": {
+                "class": "petrolpark/mc/destroy/client/DestroyHeartTypes",
+                "field": "CHEMICAL_POISON"
+            }
+        }
+    ]
+}

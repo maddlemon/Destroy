@@ -171,7 +171,7 @@ public class SidedScrollValueBehaviour extends BlockEntityBehaviour implements B
     public void onShortInteract(Player player, InteractionHand hand, Direction side, BlockHitResult hitResult) {
         lastSideAccessed = side;
         if (player instanceof FakePlayer)
-			blockEntity.getBlockState().use(getWorld(), player, hand, hitResult);
+			blockEntity.getBlockState().useItemOn(player.getItemInHand(hand), getWorld(), player, hand, hitResult); // As Create 6's ScrollValueBehaviour
     };
 
     @Override

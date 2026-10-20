@@ -220,13 +220,12 @@ public enum DestroyGuiTextures implements IGuiTexture {
 		float uvy2 = (startY + height) / (float)textureHeight;
 		RenderSystem.setShaderTexture(0, location);
 		RenderSystem.setShader(GameRenderer::getPositionTexShader);
-		BufferBuilder bufferbuilder = Tesselator.getInstance().getBuilder();
-		bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
-		bufferbuilder.vertex(matrix, x, y, 0f).uv(uvx1, uvy1).endVertex();
-		bufferbuilder.vertex(matrix, x, y + height, 0f).uv(uvx1, uvy2).endVertex();
-		bufferbuilder.vertex(matrix, x + width, y + height, 0f).uv(uvx2, uvy2).endVertex();
-		bufferbuilder.vertex(matrix, x + width, y, 0f).uv(uvx2, uvy1).endVertex();
-		BufferUploader.drawWithShader(bufferbuilder.end());
+		BufferBuilder bufferbuilder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+		bufferbuilder.addVertex(matrix, x, y, 0f).setUv(uvx1, uvy1);
+		bufferbuilder.addVertex(matrix, x, y + height, 0f).setUv(uvx1, uvy2);
+		bufferbuilder.addVertex(matrix, x + width, y + height, 0f).setUv(uvx2, uvy2);
+		bufferbuilder.addVertex(matrix, x + width, y, 0f).setUv(uvx2, uvy1);
+		BufferUploader.drawWithShader(bufferbuilder.buildOrThrow());
 	};
     
 };

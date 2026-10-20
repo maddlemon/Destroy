@@ -13,10 +13,10 @@ Maddie (Windows, git identity `Meowfoe`). **Pull before starting.**
 - Compile: **166 deduped javac errors** (334 error lines, compile11 — the state of the pushed
   tree). Error history: 567 (start of step 5) → 327 (compile6) → 213 (compile8) → 178 (compile9)
   → 166 (compile11).
-- **Windows (Maddie): 80 unique errors / 162 error lines** after the client-model batch
+- **Windows (Maddie): 63 unique errors / 128 error lines** after the Ponder/client-misc batch
   (`python port-tools/errsummary.py <log>`; the same tree as compile11 counted 164 / 332 there;
   149 / 302 after block `codec()`, 128 / 258 after decay items, 110 / 222 after contamination,
-  94 / 190 after plant blocks).
+  94 / 190 after plant blocks, 80 / 162 after client models).
 - Latest logs on Azzie's box: `/var/home/azziee/Documents/Azziecraft/build/compileN.log`;
   parse with `python3 /var/home/azziee/Documents/Azziecraft/build/parse_errors.py <log>`.
 - Everything below is committed and pushed in the hand-off commit (see History). The working
@@ -209,13 +209,32 @@ Maddie (Windows, git identity `Meowfoe`). **Pull before starting.**
      types (the same maps 1.20.1 read from `EntityRenderDispatcher`, whose `renderers` is private now — no AT).
    - `DestroyClientModEvents`: geometry loader registered as `Destroy.asResource("circuit_pattern")` (1.20.1 Forge put
      the plain name under the registering mod's namespace; no model JSON uses this loader, then or now).
-6. **Ponder/client misc**: DestroyClient (import `client.DestroyPonderPlugin` — the file exists at
-   `client/ponder/DestroyPonderPlugin.java`, check what it references), DestroyGuiTextures (14),
-   DestroyIcons, DestroyItemDisplayContexts (11: `ItemDisplayContext.create` GONE — no such static
-   in 1.21.1), BetterValueSettingsScreen:41, SidedScrollValueBehaviour:174,
-   mixin/client/GuiMixin:39 (`Gui.HeartType.getX(boolean,boolean)` GONE → `getSprite(boolean,boolean,
-   boolean)`), mixin/client/PonderLevelMixin:34 (`gatherCapabilities()`),
-   ~~DestroyClientModEvents:81~~ (done with item 5).
+6. **Ponder/client misc — DONE.**
+   - `DestroyPonderPlugin` (in `client/ponder`) imports; `DestroyClient` adds it at client setup — fine, Ponder only
+     collects plugins at `FMLLoadCompleteEvent` (`PonderClient.modLoadCompleted` → `PonderIndex.registerAll`).
+   - `DestroyGuiTextures.render`: `Tesselator.begin(…)` → `addVertex(…).setUv(…)` → `buildOrThrow()`.
+     `DestroyIcons.vertex`: re-copied from Create 6 `AllIcons` (`addVertex/setColor/setUv/setLight`).
+   - **Enum extensions** (`src/main/resources/META-INF/enumextensions.json`, enabled in
+     `templates/META-INF/neoforge.mods.toml`): `ItemDisplayContext.DESTROY_BLOWPIPE` (`-1, "destroy:blowpipe",
+     "NONE"` = 1.20.1's `create(…, NONE)`, same pattern as the library's `PETROLPARK_BELT`), read with
+     `ItemDisplayContext.valueOf`; `Gui$HeartType.DESTROY_CHEMICAL_POISON` via `EnumProxy` in
+     `client/DestroyHeartTypes` (8 sprite ids).
+   - **Chemical Poison hearts:** 1.20.1's `HeartTypeMixin` (rebuilt `$VALUES` through the old `(String, int, int,
+     boolean)` ctor) and `GuiMixin.renderHeart` blit **would both have failed to apply in 1.21.1** — removed. Now the
+     enum extension above + `PlayerHeartTypeEvent` in `DestroyClientEvents` (sets the type whenever Chemical Poison
+     is active, i.e. over every vanilla type like 1.20.1's HEAD inject) + vanilla `blitSprite`. The 8 sprites in
+     `textures/gui/sprites/hud/heart/chemical_poison_*.png` are cut from the old `hud_icons.png` at 1.20.1's
+     `getX` positions (x = 16 + 9 × (half + 2 × blinking), v = 0 / 45 hardcore), so the pixels are identical;
+     `hud_icons.png` (nothing else in it) deleted.
+   - `GuiMixin` is now only the extended-hotbar offhand offset, retargeted to 1.21.1 `renderItemHotbar`:
+     `renderSlot(…, DeltaTracker, …)` redirect, and the offhand background redirect matches
+     `blitSprite(hud/hotbar_offhand_left|right, …)` instead of 1.20.1's `blit` UVs.
+   - `BetterValueSettingsScreen`: `CatnipServices.NETWORK.sendToServer` (as Create 6's `ValueSettingsScreen`).
+     `SidedScrollValueBehaviour.onShortInteract`: `useItemOn(player.getItemInHand(hand), …)` (as Create 6).
+   - `PonderLevelMixin`: `gatherCapabilities()` removed (no capability gathering in 1.21.1; attachments are lazy).
+   - **Check at runtime (step 8):** both enum extensions apply (incl. a **dedicated server** — the HeartType entry
+     names a client-only enum, which should simply never load there), Chemical Poison hearts show, `GuiMixin`
+     applies, extra hotbar slots push the offhand slot aside.
 7. **`NbtUtils.readBlockPos`** (1-arg GONE; new is `readBlockPos(CompoundTag, String)` →
    `Optional<BlockPos>`): VatSideBlockEntity:218, VatControllerBlockEntity:309, Vat:75 (×2),
    DynamiteBlockEntity:72,73, PumpjackCamBlockEntity:43, ExtrudableMovementBehaviour:77,110.
@@ -328,3 +347,4 @@ String translationKey`). `OxidizingItem` / `CarboxylatingItem` extend it with th
 | `7aee6c1a` | (Maddie, Windows) Contamination → library flags: `destroy:fireproof` Flag, `FireproofingHelper`, `FlaggableItemsMixin` (every non-Block Item flaggable, as 1.20.1), seeds tag, `CircuitPatternItemAttribute` on Create 6. Errors 128 / 258 → 110 / 222. |
 | `d998bb58` | (Maddie, Windows) Plant blocks: NeoForge 21.1 crop hooks, `PlantType` removed, 1.21.1 signatures; `maintains_farmland` tag on all 16 Destroy crop blocks (1.20.1 parity). Errors 110 / 222 → 94 / 190. |
 | `34befe07` | (Maddie, Windows) Client models: sprite source on 1.21.1 `SpriteResourceLoader`/`ResourceMetadata`, `DummyBaker`, `CircuitPatternItemModel`, molecule quad baking, Blowpipe layer via `AddLayers`, loader id. Errors 94 / 190 → 80 / 162. |
+| `COMMIT_MISC` | (Maddie, Windows) Ponder/client misc: Ponder plugin, GUI rendering, enum extensions (Blowpipe display context, Chemical Poison heart type + sprites, replacing `HeartTypeMixin`), `GuiMixin` on 1.21.1 hotbar, value settings, `PonderLevelMixin`. Errors 80 / 162 → 63 / 128. |

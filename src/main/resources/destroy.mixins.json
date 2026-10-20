@@ -68,7 +68,6 @@
         "client.CreativeModeInventoryScreenMixin",
         "client.EffectRenderingInventoryScreenMixin",
         "client.GuiMixin",
-        "client.HeartTypeMixin",
         "client.LevelRendererMixin",
         "client.MinecraftMixin",
         "client.MultiPlayerGameModeMixin",

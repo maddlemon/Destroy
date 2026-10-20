@@ -3,14 +3,12 @@ package petrolpark.mc.destroy.mixin.client;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import petrolpark.mc.destroy.Destroy;
 import petrolpark.mc.destroy.config.DestroyClientConfigs;
 import petrolpark.mc.destroy.core.extendedinventory.ExtendedInventory;
 
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
@@ -18,37 +16,27 @@ import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
+/**
+ * Moves the offhand slot of the hotbar out of the way of extra hotbar slots.
+ * (1.20.1 also drew Chemical Poison hearts here; they are now a {@link Gui.HeartType} with sprites - see {@link petrolpark.mc.destroy.client.DestroyHeartTypes}.)
+ */
 @Mixin(Gui.class)
 public abstract class GuiMixin {
 
     @Shadow
     abstract Player getCameraPlayer();
 
-    @Shadow
-    public abstract void renderSlot(GuiGraphics pGuiGraphics, int pX, int pY, float pPartialTick, Player pPlayer, ItemStack pStack, int pSeed);
-
-    private static final ResourceLocation DESTROY_GUI_ICONS_LOCATION = Destroy.asResource("textures/gui/hud_icons.png");
-
-    @Inject(
-        method = "renderHeart",
-        at = @At("HEAD"),
-        cancellable = true
-    )
-    private void inRenderHeart(GuiGraphics guiGraphics, Gui.HeartType heartType, int x, int y, int yOffset, boolean renderHighlight, boolean halfHeart, CallbackInfo ci) {
-        if ("CHEMICAL_POISON".equals(heartType.name())) {
-            guiGraphics.blit(DESTROY_GUI_ICONS_LOCATION, x, y, heartType.getX(halfHeart, renderHighlight), yOffset, 9, 9);
-            ci.cancel();
-        };
-    };
+    private static final ResourceLocation HOTBAR_OFFHAND_LEFT_SPRITE = ResourceLocation.withDefaultNamespace("hud/hotbar_offhand_left");
+    private static final ResourceLocation HOTBAR_OFFHAND_RIGHT_SPRITE = ResourceLocation.withDefaultNamespace("hud/hotbar_offhand_right");
 
     @Redirect(
-        method = "renderHotbar",
+        method = "renderItemHotbar",
         at = @At(
             value = "INVOKE",
-            target = "Lnet/minecraft/client/gui/Gui;renderSlot(Lnet/minecraft/client/gui/GuiGraphics;IIFLnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/item/ItemStack;I)V"
+            target = "Lnet/minecraft/client/gui/Gui;renderSlot(Lnet/minecraft/client/gui/GuiGraphics;IILnet/minecraft/client/DeltaTracker;Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/item/ItemStack;I)V"
         )
     )
-    private void renderOffhandItemOffset(Gui gui, GuiGraphics pGuiGraphics, int pX, int pY, float pPartialTick, Player pPlayer, ItemStack pStack, int pSeed) {
+    private void renderOffhandItemOffset(Gui gui, GuiGraphics pGuiGraphics, int pX, int pY, DeltaTracker deltaTracker, Player pPlayer, ItemStack pStack, int pSeed) {
         Player player = getCameraPlayer();
         if (pStack == pPlayer.getOffhandItem()) { // If we're rendering the offhand Item
             ExtendedInventory inv = ExtendedInventory.get(getCameraPlayer());
@@ -60,18 +48,18 @@ public abstract class GuiMixin {
             };
             pGuiGraphics.pose().popPose();
         };
-        renderSlot(pGuiGraphics, pX, pY, pPartialTick, pPlayer, pStack, pSeed);
+        gui.renderSlot(pGuiGraphics, pX, pY, deltaTracker, pPlayer, pStack, pSeed);
     };
 
     @Redirect(
-        method = "renderHotbar",
+        method = "renderItemHotbar",
         at = @At(
             value = "INVOKE",
-            target = "Lnet/minecraft/client/gui/GuiGraphics;blit(Lnet/minecraft/resources/ResourceLocation;IIIIII)V"
+            target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lnet/minecraft/resources/ResourceLocation;IIII)V"
         )
     )
-    private void renderOffhandBackgroundOffset(GuiGraphics pGuiGraphics, ResourceLocation pAtlasLocation, int pX, int pY, int pUOffset, int pVOffset, int pUWidth, int pVHeight) {
-        if ((pUOffset == 24 || pUOffset == 53) && pVOffset == 22 && pUWidth == 29 && pVHeight == 24) { // If we're rendering the offhand background
+    private void renderOffhandBackgroundOffset(GuiGraphics pGuiGraphics, ResourceLocation sprite, int pX, int pY, int pWidth, int pHeight) {
+        if (HOTBAR_OFFHAND_LEFT_SPRITE.equals(sprite) || HOTBAR_OFFHAND_RIGHT_SPRITE.equals(sprite)) { // If we're rendering the offhand background
             Player player = getCameraPlayer();
             ExtendedInventory inv = ExtendedInventory.get(getCameraPlayer());
             pGuiGraphics.pose().pushPose();
@@ -82,6 +70,6 @@ public abstract class GuiMixin {
             };
             pGuiGraphics.pose().popPose();
         };
-        pGuiGraphics.blit(pAtlasLocation, pX, pY, pUOffset, pVOffset, pUWidth, pVHeight);
+        pGuiGraphics.blitSprite(sprite, pX, pY, pWidth, pHeight);
     };
 };

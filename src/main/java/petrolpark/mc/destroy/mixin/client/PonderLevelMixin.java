@@ -31,7 +31,6 @@ public abstract class PonderLevelMixin extends Level {
         at = @At("RETURN")
     )
     public void inInit(CallbackInfo ci) {
-        gatherCapabilities();
         levelData = new ClientLevelData(levelData.getDifficulty(), levelData.isHardcore(), false);
     };
 

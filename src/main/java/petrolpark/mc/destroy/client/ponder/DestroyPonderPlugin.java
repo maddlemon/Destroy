@@ -1,6 +1,8 @@
 package petrolpark.mc.destroy.client.ponder;
 
 import petrolpark.mc.destroy.Destroy;
+import petrolpark.mc.destroy.client.DestroyPonderScenes;
+import petrolpark.mc.destroy.client.DestroyPonderTags;
 
 import net.createmod.ponder.api.registration.PonderPlugin;
 import net.createmod.ponder.api.registration.PonderSceneRegistrationHelper;

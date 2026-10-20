@@ -3,6 +3,8 @@ package petrolpark.mc.destroy.core.event;
 import com.mojang.datafixers.util.Either;
 import petrolpark.mc.destroy.Destroy;
 import petrolpark.mc.destroy.DestroyClient;
+import petrolpark.mc.destroy.DestroyMobEffects;
+import petrolpark.mc.destroy.client.DestroyHeartTypes;
 import petrolpark.mc.destroy.util.DestroyLang;
 import petrolpark.mc.destroy.content.tool.swissarmyknife.SwissArmyKnifeItem;
 import petrolpark.mc.destroy.core.block.entity.BlockEntityBehaviourRenderer;
@@ -21,6 +23,7 @@ import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.client.event.RenderTooltipEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerHeartTypeEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 
@@ -36,6 +39,15 @@ public class DestroyClientEvents {
     public static final void onTick(ClientTickEvent.Pre event) {
         SwissArmyKnifeItem.clientPlayerTick();
         DestroyClient.EXTENDED_INVENTORY_HANDLER.tick();
+    };
+
+    /**
+     * Chemical Poison hearts. Takes priority over every vanilla heart type, as 1.20.1's mixin at the head of {@code HeartType.forPlayer} did.
+     * @param event
+     */
+    @SubscribeEvent
+    public static final void onPlayerHeartType(PlayerHeartTypeEvent event) {
+        if (event.getEntity().hasEffect(DestroyMobEffects.CHEMICAL_POISON)) event.setType(DestroyHeartTypes.CHEMICAL_POISON.getValue());
     };
 
     @SubscribeEvent
