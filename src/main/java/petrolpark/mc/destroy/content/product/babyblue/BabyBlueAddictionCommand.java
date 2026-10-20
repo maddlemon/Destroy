@@ -26,7 +26,7 @@ public class BabyBlueAddictionCommand {
     }
 
     private int queryBabyBlueAddiction(CommandSourceStack source, ServerPlayer player) {
-        return player.getCapability(PlayerBabyBlueAddictionCapability.CAPABILITY).map(babyblueAddiction -> {
+        return PlayerBabyBlueAddictionCapability.of(player).map(babyblueAddiction -> {
             int addictionLevel = babyblueAddiction.getBabyBlueAddiction();
             source.sendSuccess(() -> Component.translatable("commands.destroy.babyblueaddiction.query", player.getDisplayName(), addictionLevel), true);
             return addictionLevel;
@@ -36,7 +36,7 @@ public class BabyBlueAddictionCommand {
     // Returns the number of Players for whom the Baby Blue addiction was set
     private int setBabyBlueAddiction(CommandSourceStack source, Collection<? extends ServerPlayer> players, int amount) {
         for (ServerPlayer player : players) {
-            player.getCapability(PlayerBabyBlueAddictionCapability.CAPABILITY).ifPresent(babyblueAddiction -> {
+            PlayerBabyBlueAddictionCapability.of(player).ifPresent(babyblueAddiction -> {
                 babyblueAddiction.setBabyBlueAddiction(amount);
             });
         };

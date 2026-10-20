@@ -1,5 +1,8 @@
 package petrolpark.mc.destroy.core.chemistry.hazard;
 
+import petrolpark.mc.destroy.DestroyAttachmentTypes;
+import net.minecraft.core.HolderLookup;
+import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -12,20 +15,22 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.neoforged.neoforge.capabilities.Capability;
-import net.neoforged.neoforge.capabilities.CapabilityManager;
-import net.neoforged.neoforge.capabilities.CapabilityToken;
-import net.neoforged.neoforge.capabilities.ICapabilityProvider;
 import net.neoforged.neoforge.common.util.INBTSerializable;
-import net.neoforged.neoforge.common.util.LazyOptional;
 
-public class EntityChemicalPoisonCapability {
+public class EntityChemicalPoisonCapability implements INBTSerializable<CompoundTag> {
+
+    /**
+     * Living Entities only (as the old capability was).
+     */
+    public static Optional<EntityChemicalPoisonCapability> of(Entity entity) {
+        return entity instanceof LivingEntity ? Optional.of(entity.getData(DestroyAttachmentTypes.ENTITY_CHEMICAL_POISON)) : Optional.empty();
+    };
   
     private LegacySpecies molecule;
 
     public static void setMolecule(Entity entity, LegacySpecies molecule) {
         if (!(entity instanceof LivingEntity)) return;
-        entity.getCapability(Provider.ENTITY_CHEMICAL_POISON).ifPresent(cp -> {
+        of(entity).ifPresent(cp -> {
             if (cp.molecule != null) return; // Don't replace existing poison
             cp.molecule = molecule;
             if (entity instanceof ServerPlayer serverPlayer) DestroyMessages.sendToClient(new ChemicalPoisonS2CPacket(molecule), serverPlayer);
@@ -34,48 +39,26 @@ public class EntityChemicalPoisonCapability {
 
     public static void removeMolecule(Entity entity) {
         if (!(entity instanceof LivingEntity)) return;
-        entity.getCapability(Provider.ENTITY_CHEMICAL_POISON).ifPresent(cp -> {
+        of(entity).ifPresent(cp -> {
             cp.molecule = null;
             if (entity instanceof ServerPlayer serverPlayer) DestroyMessages.sendToClient(new ChemicalPoisonS2CPacket((LegacySpecies)null), serverPlayer);
         });
     };
 
+    @Override
+    public CompoundTag serializeNBT(HolderLookup.Provider registries) {
+        CompoundTag tag = new CompoundTag();
+        if (molecule != null) tag.putString("ToxicMolecule", molecule.getFullID());
+        return tag;
+    };
+
+    @Override
+    public void deserializeNBT(HolderLookup.Provider registries, CompoundTag tag) {
+        if (tag.contains("ToxicMolecule", Tag.TAG_STRING)) molecule = LegacySpecies.getMolecule(tag.getString("ToxicMolecule"));
+    };
+
     @Nullable
     public LegacySpecies getMolecule() {
         return molecule;
-    };
-
-    public static class Provider implements ICapabilityProvider, INBTSerializable<CompoundTag> {
-
-        public static Capability<EntityChemicalPoisonCapability> ENTITY_CHEMICAL_POISON = CapabilityManager.get(new CapabilityToken<EntityChemicalPoisonCapability>() {});
-
-        private EntityChemicalPoisonCapability chemicalPoison = null;
-        private final LazyOptional<EntityChemicalPoisonCapability> optional = LazyOptional.of(this::createEntityChemicalPoison);
-
-        private EntityChemicalPoisonCapability createEntityChemicalPoison() {
-            if (chemicalPoison == null) chemicalPoison = new EntityChemicalPoisonCapability();
-            return chemicalPoison;
-        };
-
-        @Override
-        public CompoundTag serializeNBT() {
-            CompoundTag tag = new CompoundTag();
-            if (createEntityChemicalPoison().molecule != null)
-                tag.putString("ToxicMolecule", createEntityChemicalPoison().molecule.getFullID());
-            return tag;
-        };
-
-        @Override
-        public void deserializeNBT(CompoundTag tag) {
-            if (tag.contains("ToxicMolecule", Tag.TAG_STRING))
-                createEntityChemicalPoison().molecule = LegacySpecies.getMolecule(tag.getString("ToxicMolecule"));
-        };
-
-        @Override
-        public <T> @NotNull LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-            if (cap == ENTITY_CHEMICAL_POISON) return optional.cast();
-            return LazyOptional.empty();
-        };
-
     };
 };

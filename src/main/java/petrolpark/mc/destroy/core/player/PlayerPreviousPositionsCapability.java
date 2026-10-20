@@ -1,5 +1,9 @@
 package petrolpark.mc.destroy.core.player;
 
+import petrolpark.mc.destroy.DestroyAttachmentTypes;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.core.HolderLookup;
+import java.util.Optional;
 import java.util.List;
 import java.util.Queue;
 
@@ -18,20 +22,28 @@ import net.minecraft.nbt.IntArrayTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.capabilities.Capability;
-import net.neoforged.neoforge.capabilities.CapabilityManager;
-import net.neoforged.neoforge.capabilities.CapabilityToken;
-import net.neoforged.neoforge.capabilities.ICapabilityProvider;
 import net.neoforged.neoforge.common.util.INBTSerializable;
-import net.neoforged.neoforge.common.util.LazyOptional;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 
 @EventBusSubscriber(modid = Destroy.MOD_ID)
-public class PlayerPreviousPositionsCapability {
+public class PlayerPreviousPositionsCapability implements INBTSerializable<CompoundTag> {
 
-    public static final Capability<PlayerPreviousPositionsCapability> CAPABILITY = CapabilityManager.get(new CapabilityToken<PlayerPreviousPositionsCapability>() {});
+    /**
+     * Players only (as the old capability was).
+     */
+    public static Optional<PlayerPreviousPositionsCapability> of(Entity entity) {
+        return entity instanceof Player ? Optional.of(entity.getData(DestroyAttachmentTypes.PLAYER_PREVIOUS_POSITIONS)) : Optional.empty();
+    };
+
+    /**
+     * Attachment factory: reads the queue size from the config before creating the queue (as the old Provider did).
+     */
+    public static PlayerPreviousPositionsCapability create() {
+        updateQueueSize();
+        return new PlayerPreviousPositionsCapability();
+    };
 
     private static int QUEUE_SIZE = 20; // Default is 20
     private static final int TICKS_PER_SECOND = 20;
@@ -79,6 +91,18 @@ public class PlayerPreviousPositionsCapability {
         };
     };
 
+    @Override
+    public CompoundTag serializeNBT(HolderLookup.Provider registries) {
+        CompoundTag tag = new CompoundTag();
+        saveNBTData(tag);
+        return tag;
+    };
+
+    @Override
+    public void deserializeNBT(HolderLookup.Provider registries, CompoundTag tag) {
+        loadNBTData(tag);
+    };
+
     public static void updateQueueSize() {
         QUEUE_SIZE = DestroyAllConfigs.SERVER.substances.chorusWineTeleportTime.get();
     };
@@ -87,45 +111,10 @@ public class PlayerPreviousPositionsCapability {
         return QUEUE_SIZE;
     };
 
-    public static class Provider implements ICapabilityProvider, INBTSerializable<CompoundTag> {
-    
-        private PlayerPreviousPositionsCapability previousPositions = null;
-        private final LazyOptional<PlayerPreviousPositionsCapability> optional = LazyOptional.of(this::createPlayerPreviousPositions);
-    
-        private PlayerPreviousPositionsCapability createPlayerPreviousPositions() {
-            PlayerPreviousPositionsCapability.updateQueueSize();
-            if (previousPositions == null) {
-                previousPositions = new PlayerPreviousPositionsCapability();
-            };
-            return previousPositions;
-        };
-    
-        @Override
-        public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-            if(cap == CAPABILITY) {
-                return optional.cast();
-            };
-            return LazyOptional.empty();
-        };
-    
-        @Override
-        public CompoundTag serializeNBT() {
-            CompoundTag tag = new CompoundTag();
-            createPlayerPreviousPositions().saveNBTData(tag);
-            return tag;
-        };
-    
-        @Override
-        public void deserializeNBT(CompoundTag tag) {
-            createPlayerPreviousPositions().loadNBTData(tag);
-        };
-        
-    };
-
     @SubscribeEvent
     public static final void onPlayerTick(PlayerTickEvent.Post event) {
         Player player = event.getEntity();
-        if (!player.level().isClientSide()) player.getCapability(PlayerPreviousPositionsCapability.CAPABILITY).ifPresent((playerPreviousPositions -> {
+        if (!player.level().isClientSide()) PlayerPreviousPositionsCapability.of(player).ifPresent((playerPreviousPositions -> {
             playerPreviousPositions.incrementTickCounter();
             if (playerPreviousPositions.hasBeenSecond()) playerPreviousPositions.recordPosition(player.blockPosition());
         }));

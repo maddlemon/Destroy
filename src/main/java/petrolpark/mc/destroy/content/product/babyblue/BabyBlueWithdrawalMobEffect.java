@@ -34,7 +34,7 @@ public class BabyBlueWithdrawalMobEffect extends UncurableMobEffect {
             int duration = livingEntity.getEffect(DestroyMobEffects.BABY_BLUE_WITHDRAWAL).getDuration(); // This is the bit it says is null
 
             if (livingEntity instanceof Player) {
-                livingEntity.getCapability(PlayerBabyBlueAddictionCapability.CAPABILITY).ifPresent(babyBlueAddiction -> {
+                PlayerBabyBlueAddictionCapability.of(livingEntity).ifPresent(babyBlueAddiction -> {
                     if (duration % Math.round(100 / (Math.log(babyBlueAddiction.getBabyBlueAddiction() + 1))) == 0) { // Apply damage at a rate roughly equal to ln(baby blue addiction level)
                         livingEntity.hurt(DestroyDamageSources.babyBlueOverdose(livingEntity.level()), 1f);
                     }

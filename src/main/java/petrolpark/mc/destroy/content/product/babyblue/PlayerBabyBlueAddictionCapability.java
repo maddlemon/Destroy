@@ -1,5 +1,10 @@
 package petrolpark.mc.destroy.content.product.babyblue;
 
+import net.minecraft.world.entity.player.Player;
+import petrolpark.mc.destroy.DestroyAttachmentTypes;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.core.HolderLookup;
+import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -8,16 +13,16 @@ import petrolpark.mc.destroy.config.DestroyAllConfigs;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Mth;
-import net.neoforged.neoforge.capabilities.Capability;
-import net.neoforged.neoforge.capabilities.CapabilityManager;
-import net.neoforged.neoforge.capabilities.CapabilityToken;
-import net.neoforged.neoforge.capabilities.ICapabilityProvider;
 import net.neoforged.neoforge.common.util.INBTSerializable;
-import net.neoforged.neoforge.common.util.LazyOptional;
 
-public class PlayerBabyBlueAddictionCapability {
+public class PlayerBabyBlueAddictionCapability implements INBTSerializable<CompoundTag> {
 
-    public static final Capability<PlayerBabyBlueAddictionCapability> CAPABILITY = CapabilityManager.get(new CapabilityToken<PlayerBabyBlueAddictionCapability>() { });
+    /**
+     * Players only (as the old capability was).
+     */
+    public static Optional<PlayerBabyBlueAddictionCapability> of(Entity entity) {
+        return entity instanceof Player ? Optional.of(entity.getData(DestroyAttachmentTypes.PLAYER_BABY_BLUE_ADDICTION)) : Optional.empty();
+    };
 
     private int babyBlueAddiction;
 
@@ -45,36 +50,19 @@ public class PlayerBabyBlueAddictionCapability {
         nbt.putInt("BabyBlueAddiction", this.babyBlueAddiction);
     };
 
-    public void loadNBTData(CompoundTag nbt) {
-        this.babyBlueAddiction = nbt.getInt("BabyBlueAddiction");
+    @Override
+    public CompoundTag serializeNBT(HolderLookup.Provider registries) {
+        CompoundTag nbt = new CompoundTag();
+        saveNBTData(nbt);
+        return nbt;
     };
 
-    public static class Provider implements ICapabilityProvider, INBTSerializable<CompoundTag> {
+    @Override
+    public void deserializeNBT(HolderLookup.Provider registries, CompoundTag nbt) {
+        loadNBTData(nbt);
+    };
 
-        private PlayerBabyBlueAddictionCapability babyBlueAddiction = null;
-        private final LazyOptional<PlayerBabyBlueAddictionCapability> optional = LazyOptional.of(this::createPlayerBabyBlueAddiction);
-
-        private PlayerBabyBlueAddictionCapability createPlayerBabyBlueAddiction() {
-            if (babyBlueAddiction == null) babyBlueAddiction = new PlayerBabyBlueAddictionCapability();
-            return this.babyBlueAddiction;
-        };
-
-        @Override
-        public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-            if (cap == CAPABILITY) return optional.cast();
-            return LazyOptional.empty();
-        };
-        
-        @Override
-        public CompoundTag serializeNBT() {
-            CompoundTag nbt = new CompoundTag();
-            createPlayerBabyBlueAddiction().saveNBTData(nbt);
-            return nbt;
-        };
-
-        @Override
-        public void deserializeNBT(CompoundTag nbt) {
-            createPlayerBabyBlueAddiction().loadNBTData(nbt);
-        };
+    public void loadNBTData(CompoundTag nbt) {
+        this.babyBlueAddiction = nbt.getInt("BabyBlueAddiction");
     };
 }

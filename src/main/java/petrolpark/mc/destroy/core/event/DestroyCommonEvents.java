@@ -100,10 +100,8 @@ import net.minecraft.world.level.levelgen.structure.pools.StructureTemplatePool;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorList;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.common.util.FakePlayer;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
-import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
@@ -125,54 +123,6 @@ import net.neoforged.fml.common.EventBusSubscriber;
 
 @EventBusSubscriber(modid = Destroy.MOD_ID, bus = EventBusSubscriber.Bus.GAME)
 public class DestroyCommonEvents {
-
-    @SubscribeEvent
-    public static final void onAttachCapabilitiesLevel(RegisterCapabilitiesEvent<Level> event) {
-        Level level = event.getObject();
-        if (!level.getCapability(Pollution.CAPABILITY).isPresent()) {
-            event.addCapability(Destroy.asResource("pollution"), level instanceof PonderLevel ? new Pollution.PonderCapabilityProvider() : new Pollution.Level.Provider());
-        };
-    };
-
-    @SubscribeEvent
-    public static final void onAttachCapabilitiesEntity(RegisterCapabilitiesEvent<Entity> event) {
-        Entity entity = event.getObject();
-        if (entity instanceof LivingEntity) {
-            // Add Chemical Poison Capability
-            if (!entity.getCapability(EntityChemicalPoisonCapability.Provider.ENTITY_CHEMICAL_POISON).isPresent()) {
-                event.addCapability(Destroy.asResource("chemical_poison"), new EntityChemicalPoisonCapability.Provider());
-            };
-        };
-        if (event.getObject() instanceof Player player) {
-            // Add Baby Blue Addiction Capability
-            if (!player.getCapability(PlayerBabyBlueAddictionCapability.CAPABILITY).isPresent()) {
-                event.addCapability(Destroy.asResource("baby_blue_addiction"), new PlayerBabyBlueAddictionCapability.Provider());
-            };
-            // Add Previous Positions Capability
-            if (!player.getCapability(PlayerPreviousPositionsCapability.CAPABILITY).isPresent()) {
-                event.addCapability(Destroy.asResource("previous_positions"), new PlayerPreviousPositionsCapability.Provider());
-            };
-            // Add Crouching Capability
-            if (!player.getCapability(PlayerCrouchingCapability.CAPABILITY).isPresent()) {
-                event.addCapability(Destroy.asResource("crouching"), new PlayerCrouchingCapability.Provider());
-            };
-            // Add Novel compound Capability
-            if (!player.getCapability(PlayerNovelCompoundsSynthesizedCapability.CAPABILITY).isPresent()) {
-                event.addCapability(Destroy.asResource("novel_compounds_synthesized"), new PlayerNovelCompoundsSynthesizedCapability.Provider());
-            };
-        };
-    };
-
-    @SubscribeEvent
-    public static final void onAttachCapabilitiesChunk(RegisterCapabilitiesEvent<LevelChunk> event) {
-        LevelChunk chunk = event.getObject();
-        if (!chunk.getCapability(ChunkCrudeOil.Provider.CHUNK_CRUDE_OIL).isPresent()) {
-            event.addCapability(Destroy.asResource("crude_oil"), new ChunkCrudeOil.Provider());
-        };
-        if (!chunk.getCapability(Pollution.CAPABILITY).isPresent()) {
-            event.addCapability(Destroy.asResource("pollution"), new Pollution.Chunk.Provider());
-        };
-    };
 
     /**
      * Collect the Player's Badges and refresh the Pollution they see.
@@ -227,7 +177,7 @@ public class DestroyCommonEvents {
         });
 
         // Clear Chorus wine info
-        player.getCapability(PlayerPreviousPositionsCapability.CAPABILITY).ifPresent(previousPositions -> {
+        PlayerPreviousPositionsCapability.of(player).ifPresent(previousPositions -> {
             previousPositions.clearPositions();
         });
     };
@@ -240,15 +190,15 @@ public class DestroyCommonEvents {
         boolean keepInv = event.getEntity().level().getGameRules().getBoolean(GameRules.RULE_KEEPINVENTORY);
         if (event.isWasDeath()) {
             // Copy Baby Blue Addiction Data
-            if (DestroyAllConfigs.SERVER.substances.keepBabyBlueAddictionOnDeath.get() || keepInv) event.getOriginal().getCapability(PlayerBabyBlueAddictionCapability.CAPABILITY).ifPresent(oldStore -> {
-                event.getEntity().getCapability(PlayerBabyBlueAddictionCapability.CAPABILITY).ifPresent(newStore -> {
+            if (DestroyAllConfigs.SERVER.substances.keepBabyBlueAddictionOnDeath.get() || keepInv) PlayerBabyBlueAddictionCapability.of(event.getOriginal()).ifPresent(oldStore -> {
+                PlayerBabyBlueAddictionCapability.of(event.getEntity()).ifPresent(newStore -> {
                     newStore.copyFrom(oldStore);
                 });
             });
 
             // Copy Novel Compound Data
-            event.getOriginal().getCapability(PlayerNovelCompoundsSynthesizedCapability.CAPABILITY).ifPresent(oldStore -> {
-                event.getEntity().getCapability(PlayerNovelCompoundsSynthesizedCapability.CAPABILITY).ifPresent(newStore -> {
+            PlayerNovelCompoundsSynthesizedCapability.of(event.getOriginal()).ifPresent(oldStore -> {
+                PlayerNovelCompoundsSynthesizedCapability.of(event.getEntity()).ifPresent(newStore -> {
                     newStore.copyFrom(oldStore);
                 });
             });

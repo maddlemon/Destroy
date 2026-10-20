@@ -1,5 +1,9 @@
 package petrolpark.mc.destroy.core.player;
 
+import petrolpark.mc.destroy.DestroyAttachmentTypes;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.core.HolderLookup;
+import java.util.Optional;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -18,61 +22,39 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.capabilities.Capability;
-import net.neoforged.neoforge.capabilities.CapabilityManager;
-import net.neoforged.neoforge.capabilities.CapabilityToken;
-import net.neoforged.neoforge.capabilities.ICapabilityProvider;
 import net.neoforged.neoforge.common.util.INBTSerializable;
-import net.neoforged.neoforge.common.util.LazyOptional;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.fml.common.EventBusSubscriber;
 
 @EventBusSubscriber(modid = Destroy.MOD_ID)
-public class PlayerCrouchingCapability {
+public class PlayerCrouchingCapability implements INBTSerializable<CompoundTag> {
 
-    public static final Capability<PlayerCrouchingCapability> CAPABILITY = CapabilityManager.get(new CapabilityToken<PlayerCrouchingCapability>() {});
+    /**
+     * Players only (as the old capability was).
+     */
+    public static Optional<PlayerCrouchingCapability> of(Entity entity) {
+        return entity instanceof Player ? Optional.of(entity.getData(DestroyAttachmentTypes.PLAYER_CROUCHING)) : Optional.empty();
+    };
 
     public int ticksCrouching; // How long the Player has been crouching
     public int ticksUrinating; // How long the Player has been urinating
 
-    public static class Provider implements ICapabilityProvider, INBTSerializable<CompoundTag> {
-
-        private PlayerCrouchingCapability playerCrouching = null;
-        private final LazyOptional<PlayerCrouchingCapability> optional = LazyOptional.of(this::createPlayerCrouching);
-
-        private PlayerCrouchingCapability createPlayerCrouching() {
-            if (playerCrouching == null) {
-                playerCrouching = new PlayerCrouchingCapability();
-            };
-            return playerCrouching;
-        };
-
-        @Override
-        public CompoundTag serializeNBT() {
-            CompoundTag tag = new CompoundTag();
-            PlayerCrouchingCapability playerCrouching = createPlayerCrouching();
-            tag.putInt("Crouching", playerCrouching.ticksCrouching);
-            tag.putInt("Urinating", playerCrouching.ticksUrinating);
-            return tag;
-        };
-
-        @Override
-        public void deserializeNBT(CompoundTag tag) {
-            PlayerCrouchingCapability playerCrouching = createPlayerCrouching();
-            playerCrouching.ticksCrouching = tag.getInt("Crouching");
-            playerCrouching.ticksUrinating = tag.getInt("Urinating");
-        };
-
-        @Override
-        public <T> @NotNull LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-            if(cap == CAPABILITY) {
-                return optional.cast();
-            };
-            return LazyOptional.empty();
-        };
+    @Override
+    public CompoundTag serializeNBT(HolderLookup.Provider registries) {
+        CompoundTag tag = new CompoundTag();
+        tag.putInt("Crouching", ticksCrouching);
+        tag.putInt("Urinating", ticksUrinating);
+        return tag;
     };
+
+    @Override
+    public void deserializeNBT(HolderLookup.Provider registries, CompoundTag tag) {
+        ticksCrouching = tag.getInt("Crouching");
+        ticksUrinating = tag.getInt("Urinating");
+    };
+
 
     @SubscribeEvent
     public static final void onPlayerTick(PlayerTickEvent.Post event) {
@@ -82,18 +64,18 @@ public class PlayerCrouchingCapability {
         BlockState stateOn = player.level().getBlockState(posOn);
         boolean urinating = (stateOn.getBlock() == Blocks.WATER_CAULDRON || stateOn.getBlock() == Blocks.CAULDRON) && player.hasEffect(DestroyMobEffects.FULL_BLADDER);
         if (player.isCrouching()) {
-            player.getCapability(PlayerCrouchingCapability.CAPABILITY).ifPresent(crouchingCap -> {
+            PlayerCrouchingCapability.of(player).ifPresent(crouchingCap -> {
                 crouchingCap.ticksCrouching++;
                 if (urinating) {crouchingCap.ticksUrinating++;} else crouchingCap.ticksUrinating = 0;
             });
         } else {
-            player.getCapability(PlayerCrouchingCapability.CAPABILITY).ifPresent(crouchingCap -> {
+            PlayerCrouchingCapability.of(player).ifPresent(crouchingCap -> {
                 crouchingCap.ticksCrouching = 0;
                 crouchingCap.ticksUrinating = 0;
             });
         };
 
-        int ticksUrinating = player.getCapability(PlayerCrouchingCapability.CAPABILITY).map(crouchingCap -> crouchingCap.ticksUrinating).orElse(0);
+        int ticksUrinating = PlayerCrouchingCapability.of(player).map(crouchingCap -> crouchingCap.ticksUrinating).orElse(0);
         if (ticksUrinating > 0) {
             Vec3 pos = player.position();
             if (player.level().isClientSide()) player.level().addParticle(FluidFX.getFluidParticle(new FluidStack(DestroyFluids.URINE.get(), 1000)), pos.x, pos.y + 0.5f, pos.z, 0d, -0.07d, 0d);

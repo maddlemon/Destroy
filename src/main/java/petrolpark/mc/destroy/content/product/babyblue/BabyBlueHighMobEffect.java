@@ -36,7 +36,7 @@ public class BabyBlueHighMobEffect extends UncurableMobEffect {
             if (duration == 1) {
                 // Apply the Baby Blue Withdrawal Effect as the BabyBlue High Effect runs out.
                 if (livingEntity instanceof Player player) {
-                    player.getCapability(PlayerBabyBlueAddictionCapability.CAPABILITY).ifPresent(babyBlueAddiction -> {
+                    PlayerBabyBlueAddictionCapability.of(player).ifPresent(babyBlueAddiction -> {
                         player.addEffect(new MobEffectInstance(DestroyMobEffects.BABY_BLUE_WITHDRAWAL, (10 + babyBlueAddiction.getBabyBlueAddiction()) * 20)); // Change the length of the effect depending on the Addiction level
                     });
                 };

@@ -17,7 +17,6 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeMap;
 import net.neoforged.neoforge.client.extensions.common.IClientMobEffectExtensions;
-import net.neoforged.neoforge.common.util.LazyOptional;
 
 public class ChemicalPoisonMobEffect extends UncurableMobEffect {
 
@@ -42,9 +41,7 @@ public class ChemicalPoisonMobEffect extends UncurableMobEffect {
         if (!livingEntity.level().isClientSide()) {
             int duration = livingEntity.getEffect(DestroyMobEffects.CHEMICAL_POISON).getDuration(); // This is the bit it says is null
             if (duration % 50 == 0) {
-                LegacySpecies molecule = null;
-                LazyOptional<EntityChemicalPoisonCapability> cap = getCap(livingEntity);
-                if (cap.isPresent()) molecule = cap.resolve().get().getMolecule();
+                LegacySpecies molecule = EntityChemicalPoisonCapability.of(livingEntity).map(EntityChemicalPoisonCapability::getMolecule).orElse(null);
                 livingEntity.hurt(DestroyDamageSources.chemicalPoison(livingEntity.level(), molecule), 1f);
             };
         };
@@ -56,10 +53,6 @@ public class ChemicalPoisonMobEffect extends UncurableMobEffect {
         return true;
     };
 
-    private static LazyOptional<EntityChemicalPoisonCapability> getCap(LivingEntity livingEntity) {
-        return livingEntity.getCapability(EntityChemicalPoisonCapability.Provider.ENTITY_CHEMICAL_POISON);
-    };
-
     public static class ChemicalPoisonMobEffectExtensions extends DestroyMobEffectExtensions {
 
         @Override
@@ -67,7 +60,7 @@ public class ChemicalPoisonMobEffect extends UncurableMobEffect {
             super.addToTooltip(tooltip, instance);
             Minecraft minecraft = Minecraft.getInstance();
             if (minecraft.player != null) {
-                minecraft.player.getCapability(EntityChemicalPoisonCapability.Provider.ENTITY_CHEMICAL_POISON).ifPresent(cp -> {
+                EntityChemicalPoisonCapability.of(minecraft.player).ifPresent(cp -> {
                     LegacySpecies molecule = cp.getMolecule();
                     if (molecule != null) tooltip.set(0, Component.translatable("effect.destroy.chemical_poison.molecule", cp.getMolecule().getName(DestroyAllConfigs.CLIENT.chemistry.iupacNames.get())));
                 });

@@ -87,6 +87,13 @@ public class Destroy {
         DestroyMovementChecks.register();
         DestroyDisplaySources.register();
         DestroyCriteriaTriggers.register();
+        // Registries from the author's 1.21.1-neo branch (dropped when the 1.20.1 Destroy.java was restored)
+        DestroyAttachmentTypes.register(modEventBus);
+        DestroyDataComponentTypes.register(modEventBus);
+        DestroyNumberProviderTypes.register();
+        DestroyPollutionTypes.register();
+        DestroySeismologyProviders.register();
+        DestroyPackets.register(); // Payload types must exist before RegisterPayloadHandlersEvent, so not in common setup
 
         // Events
         NeoForge.EVENT_BUS.register(this);
@@ -111,7 +118,6 @@ public class Destroy {
     public static void init(final FMLCommonSetupEvent event) {
         event.enqueueWork(() -> {
             Chemistry.initiate(new ForgeChemistryEventFirer(), Destroy.LOGGER::info);
-            DestroyPackets.register();
             DestroyCompostables.register();
         });
         DestroyStats.register();

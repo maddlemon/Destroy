@@ -28,7 +28,7 @@ public class ChorusWineItem extends AlcoholicDrinkItem implements IDynamicItemDe
     public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity entityLiving) {
         stack = super.finishUsingItem(stack, level, entityLiving);
         if (!level.isClientSide() && entityLiving instanceof Player player) {
-            player.getCapability(PlayerPreviousPositionsCapability.CAPABILITY).ifPresent(previousPositions -> {
+            PlayerPreviousPositionsCapability.of(player).ifPresent(previousPositions -> {
                 if (player.isPassenger()) player.stopRiding();
                 BlockPos pos = previousPositions.getOldestPosition();
                 if (pos == null) return;
