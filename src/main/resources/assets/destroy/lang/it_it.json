@@ -294,8 +294,8 @@
     "commands.destroy.pollution.set":"Set level of Pollution of type %s to %s. A reload may be required for some changes to take effect.",
     "commands.destroy.regeneratecircuitpattern":"Reset the circuit pattern %s",
 
-    "contaminant.destroy.fireproof":"\uED11 Ignifugo",
-    "contaminant.destroy.fireproof.absent":"\ued06 Infiammabile",
+    "flag.destroy.fireproof":"\uED11 Ignifugo",
+    "flag.destroy.fireproof.absent":"\ued06 Infiammabile",
 
     "death.attack.destroy.alcohol":"%1$s Ha bevuto un po' troppo",
     "death.attack.destroy.chemical_burn":"%1$s è morto di ustioni di terzo grado",

@@ -1,30 +1,37 @@
 package petrolpark.mc.destroy.content.product.fireretardant;
 
-import com.petrolpark.PetrolparkRegistries;
-import com.petrolpark.contamination.Contaminables;
-import com.petrolpark.contamination.Contaminant;
-import com.petrolpark.contamination.ItemContamination;
+import java.util.Optional;
+
 import petrolpark.mc.destroy.Destroy;
 import petrolpark.mc.destroy.DestroyRecipeTypes;
 import petrolpark.mc.destroy.core.recipe.SingleFluidRecipe;
 import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 
+import net.minecraft.core.Holder;
 import net.minecraft.core.RegistryAccess;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.items.ItemStackHandler;
 import net.neoforged.neoforge.items.wrapper.RecipeWrapper;
+import petrolpark.mc.library.core.flags.Flag;
+import petrolpark.mc.library.core.flags.Flaggables;
+import petrolpark.mc.library.core.flags.ItemFlagPole;
+import petrolpark.mc.library.registry.PetrolparkRegistries;
 
 public class FireproofingHelper {
 
-    public static final ResourceLocation CONTAMINANT_RL = Destroy.asResource("fireproof");
+    /**
+     * The library Flag (1.20.1: Contaminant) which makes Items fireproof. Defined in {@code data/destroy/petrolpark/flag/fireproof.json}.
+     */
+    public static final ResourceKey<Flag> FLAG_KEY = ResourceKey.create(PetrolparkRegistries.Keys.FLAG, Destroy.asResource("fireproof"));
 
     private static final RecipeWrapper WRAPPER = new RecipeWrapper(new ItemStackHandler());
 
-    public static final Contaminant getFireproofContaminanant(RegistryAccess registryAccess) {
-        return registryAccess.registry(PetrolparkRegistries.Keys.CONTAMINANT).orElseThrow().get(CONTAMINANT_RL);
+    public static final Optional<Holder<Flag>> getFireproofFlag(RegistryAccess registryAccess) {
+        return registryAccess.registry(PetrolparkRegistries.Keys.FLAG).orElseThrow().getHolder(FLAG_KEY).<Holder<Flag>>map(holder -> holder);
     };
 
     public static boolean canApply(Level world, ItemStack stack) {
@@ -32,8 +39,8 @@ public class FireproofingHelper {
     };
 
     public static boolean couldApply(Level world, ItemStack stack) {
-        if (stack.getItem().isFireResistant() || isFireproof(world.registryAccess(), stack)) return false;
-        return Contaminables.ITEM.isContaminableStack(stack);
+        if (stack.has(DataComponents.FIRE_RESISTANT) || isFireproof(world.registryAccess(), stack)) return false;
+        return Flaggables.ITEM.isFlaggableStack(stack);
     };
 
     public static int getRequiredAmountForItem(Level world, ItemStack stack, FluidStack availableFluid) {
@@ -63,11 +70,10 @@ public class FireproofingHelper {
     };
 
     public static void apply(Level world, ItemStack stack) {
-        if (getFireproofContaminanant(world.registryAccess()) != null) ItemContamination.get(stack).contaminate(getFireproofContaminanant(world.registryAccess()));
+        getFireproofFlag(world.registryAccess()).ifPresent(ItemFlagPole.get(stack)::flag);
     };
 
     public static boolean isFireproof(RegistryAccess registryAccess, ItemStack stack) {
-        if (getFireproofContaminanant(registryAccess) == null) return false;
-        return ItemContamination.get(stack).has(getFireproofContaminanant(registryAccess));
+        return getFireproofFlag(registryAccess).map(ItemFlagPole.get(stack)::has).orElse(false);
     };
 };

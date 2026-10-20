@@ -169,6 +169,10 @@ item capabilities + NBT) are done at the code level — the only errors left in 
    luck like 1.20.1); glassblowing `"shape"` unchanged. Sequenced assembly: `transitionalItem` →
    `transitional_item`; deployer `keepHeldItem` → `keep_held_item`. Crafting results (incl.
    `circuit_board_manual_crafting`) `{"item": …}` → `{"id": …}`.
+   **Item data from old worlds:** 1.20.1 fireproof Items stored `Contamination: ["destroy:fireproof"]` in NBT
+   (lands in `minecraft:custom_data` after the vanilla upgrade) — convert to the `destroy:fireproof` flag. Saved
+   Circuit Pattern filter attributes (old key `CircuitPositionPunched`, `Position` / `Punched`) — Create 6 has no
+   legacy attribute loading, so convert or accept they reset.
 8. **Clean compile → datagen → `./gradlew build` → runtime test** in the dev client (`runClient`):
    watch for mixin apply failures, missing registries, recipe parse errors; test with Sodium and
    Farmer's Delight installed too. Also start a **dedicated server** (`runServer`) and join it: clientbound
@@ -259,6 +263,11 @@ JAVA_HOME=$JDK ./gradlew compileJava --console=plain    # log to a file, run det
 
 Intended to be empty. Current entries:
 
+- **Fireproofing / flags:** the same items can be fireproofed as in 1.20.1 (every non-Block Item, plus the
+  library's `#petrolpark:flaggable`). That tag also lists some Create Block Items (shafts, cogwheels, machines),
+  which 1.20.1 did not allow — new, from the library. A fireproof Item is fireproof in the same situations as before.
+- **Bug fix:** the Circuit Pattern filter attribute's type created a "has contaminant" attribute (1.20.1
+  copy-paste error), so saved Circuit Pattern filters did not load correctly. Now it creates its own.
 - **Decaying Items (Sodium Ingot, Quicklime):** 1.20.1 read the lifetime config whenever it was needed. The
   1.21.1 library stores the lifetime on the Item Stack, so a stack gets the configured value when it is crafted
   or ticked in an inventory (server side); stacks that have not been since a config change (in a container,

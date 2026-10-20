@@ -13,9 +13,9 @@ Maddie (Windows, git identity `Meowfoe`). **Pull before starting.**
 - Compile: **166 deduped javac errors** (334 error lines, compile11 — the state of the pushed
   tree). Error history: 567 (start of step 5) → 327 (compile6) → 213 (compile8) → 178 (compile9)
   → 166 (compile11).
-- **Windows (Maddie): 128 unique errors / 258 error lines** after the decay-item batch
+- **Windows (Maddie): 110 unique errors / 222 error lines** after the contamination batch
   (`python port-tools/errsummary.py <log>`; the same tree as compile11 counted 164 / 332 there;
-  149 / 302 after the block `codec()` batch).
+  149 / 302 after block `codec()`, 128 / 258 after decay items).
 - Latest logs on Azzie's box: `/var/home/azziee/Documents/Azziecraft/build/compileN.log`;
   parse with `python3 /var/home/azziee/Documents/Azziecraft/build/parse_errors.py <log>`.
 - Everything below is committed and pushed in the hand-off commit (see History). The working
@@ -162,13 +162,27 @@ Maddie (Windows, git identity `Meowfoe`). **Pull before starting.**
    (`CauldronInteraction.CODEC`). Only the classes that had errors (plus their subclasses) got one;
    plain `Block` subclasses inherit `Block.CODEC` like Create's blocks.
 2. **Decay items — DONE**, see "Decay items" below (also cleared the `DestroyReactions:894` cascade).
-3. **Contamination** (FireproofingHelper 20, CircuitPatternItemAttribute 16): old
-   `com.petrolpark.contamination.*`, `PetrolparkRegistries`, `Contaminables`,
-   `HasContaminantItemAttribute`, `LegacyDeserializer`, old library `ItemAttribute` all GONE;
-   `Item.isFireResistant()` GONE (1.21.1: check `DataComponents.FIRE_RESISTANT`). Reimplement
-   minimally on Create 6 `com.simibubi.create.content.logistics.item.filter.attribute.ItemAttribute`
-   + library `petrolpark.mc.library.compat.create.core.world.item.attribute.*` — **not yet designed**.
-   Note `CircuitPatternItemAttribute.java:73`: anonymous `ItemAttributeType` needs `streamCodec()`.
+3. **Contamination — DONE.** The 1.21.1 library renamed contamination to **flags** (same model:
+   datapack registry `petrolpark:flag` at `data/<ns>/petrolpark/flag/`, snake_case keys
+   `preservation_proportion` / `color` / `absent_color` / optional `children`; stored in the
+   `petrolpark:flags` component; `ItemFlagPole.get(stack)` → `IFlagPole.has/flag/unflag`, `flag()` saves
+   itself; propagation through crafting and Create processing, the tooltip line and Create's "flagged"
+   filter attribute all come from the library). Destroy only used it for fireproofing:
+   - `destroy:fireproof` is a Flag (`data/destroy/petrolpark/flag/fireproof.json`, 1.20.1 values); lang
+     keys `contaminant.destroy.fireproof[.absent]` → `flag.destroy.fireproof[.absent]` (5 lang files).
+   - `FireproofingHelper`: same public methods; `getFireproofFlag(RegistryAccess)` →
+     `Optional<Holder<Flag>>`; `Item.isFireResistant()` → `stack.has(DataComponents.FIRE_RESISTANT)`;
+     flaggability via `Flaggables.ITEM.isFlaggableStack`.
+   - **Which items can be flagged (decided by the humans: exact 1.20.1).** The new library only flags
+     `#petrolpark:flaggable` (vanilla + Create items); 1.20.1 allowed every non-Block Item from any mod.
+     `mixin/FlaggableItemsMixin` ORs `!(item instanceof BlockItem)` into the library's
+     `Flaggables$2.isFlaggable(Item)` (the anonymous `Flaggables.ITEM`; `$1` = `NOT`, `$3` = `FLUID` in
+     library 1.21.1-1.5.11 — **re-check the numbering when updating the library**; the mixin fails loudly
+     if the method is gone). Destroy's `data/petrolpark/tags/item/flaggable.json` adds
+     `#minecraft:villager_plantable_seeds` (carrot, potato, pitcher pod: Block Items 1.20.1 allowed by tag).
+   - `CircuitPatternItemAttribute`: Create 6 record + `MapCodec` (`position`, `punched`) + `StreamCodec`;
+     save/load/`LegacyDeserializer` gone (Create 6 has no legacy attribute loading).
+     `Type.createAttribute()` returned a `HasContaminantItemAttribute` in 1.20.1 (copy-paste bug) — fixed.
 4. **Plant blocks** (MagicBeetrootShootsBlock 22, FullyGrownCropBlock 12): `PlantType` GONE,
    `EventHooks.getMobGriefingEvent` GONE, `ForgeHooks` usage (2 sites) — inspect.
    MagicBeetrootShootsBlock also needs 1.21.1 `BonemealableBlock.isValidBonemealTarget(LevelReader,
@@ -302,3 +316,4 @@ String translationKey`). `OxidizingItem` / `CarboxylatingItem` extend it with th
 | `5822036a` | Step 5 WIP: other agents' uncommitted work (pack finders, `DestroyBlockEntityBuilder`, `AbstractDestroyRegistrate` additions, SmartExplosion, vibration listener, ExtendedBasinBehaviour, potato projectile MapCodecs, untracked jukebox-song/combustible/mob-effect files) + phase_b2/b3 batches + this session's fixes (AT skipRendering saga resolved, particle data rewrite, residual renames) + this doc. Errors: 327 → 166. |
 | `ce2f5524` | (Maddie, Windows) Block `codec()` for 13 blocks + 3 subclasses; urine cauldron `InteractionMap`. Errors (Windows, `port-tools/errsummary.py`): 164 unique / 332 lines → 149 / 302. |
 | `e00baa3c` | (Maddie, Windows) Decay items: `DecayingItem` on the library's decay components (defaults via `ModifyDefaultComponentsEvent`, live config per stack), stacking merge, Oxidizing / Carboxylating items. Errors 149 / 302 → 128 / 258. |
+| `COMMIT_FLAGS` | (Maddie, Windows) Contamination → library flags: `destroy:fireproof` Flag, `FireproofingHelper`, `FlaggableItemsMixin` (every non-Block Item flaggable, as 1.20.1), seeds tag, `CircuitPatternItemAttribute` on Create 6. Errors 128 / 258 → 110 / 222. |

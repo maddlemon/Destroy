@@ -294,8 +294,8 @@
     "commands.destroy.pollution.set": "%sの汚染レベルを%sに設定します。 一部の変更を有効にするには、リロードが必要な場合があります。",
     "commands.destroy.regeneratecircuitpattern": "回路パターン %s をリセット",
 
-    "contaminant.destroy.fireproof": "\ued11 耐火",
-    "contaminant.destroy.fireproof.absent": "\ued06 可燃性",
+    "flag.destroy.fireproof": "\ued11 耐火",
+    "flag.destroy.fireproof.absent": "\ued06 可燃性",
 
     "death.attack.destroy.alcohol": "%1$sはアルコール中毒で死んだ",
     "death.attack.destroy.chemical_burn": "%1$sは化学的やけどで死んだ",

@@ -29,6 +29,7 @@
         "ConnectivityHandlerMixin",
         "DestroyFrictionModifier",
         "FilterItemStackMixin",
+        "FlaggableItemsMixin",
         "FluidNetworkMixin",
         "FluidPropagatorMixin",
         "FluidTankBlockEntityMixin",

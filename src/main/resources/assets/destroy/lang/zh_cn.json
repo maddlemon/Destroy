@@ -296,8 +296,8 @@
     "commands.destroy.pollution.set": "将%s的污染等级设定为 %s，一些效果可能需重新加载以显现",
     "commands.destroy.regeneratecircuitpattern": "重置了电路板图样：%s",
 
-    "contaminant.destroy.fireproof": "\uED11 防火",
-    "contaminant.destroy.fireproof.absent": "\ued06 易燃",
+    "flag.destroy.fireproof": "\uED11 防火",
+    "flag.destroy.fireproof.absent": "\ued06 易燃",
 
     "death.attack.destroy.alcohol": "%1$s死于酒精中毒",
     "death.attack.destroy.chemical_burn": "%1$s死于化学灼伤",
