@@ -7,7 +7,7 @@ import petrolpark.mc.destroy.core.seismology.Seismograph;
 public class SeismographTest {
     
     public static void main(String[] args) {
-        Seismograph seismograph = new Seismograph();
+        Seismograph.Mutable seismograph = Seismograph.EMPTY.mutable();
         byte sequence = 0;
         System.out.println(sequence);
         seismograph.getRows()[0] = sequence;

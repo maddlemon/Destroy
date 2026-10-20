@@ -58,6 +58,10 @@ public class DestroyLang {
         return builder().translate(langKey, args);
     };
 
+    public static MutableComponent tooltip(String keyEnd, Object... args) {
+        return translateDirect("tooltip." + keyEnd, args);
+    };
+
     public static MutableComponent translateDirect(String langKey, Object... args) {
         Object[] args1 = LangBuilder.resolveBuilders(args);
         return Component.translatable(Destroy.MOD_ID + "." + langKey, args1);

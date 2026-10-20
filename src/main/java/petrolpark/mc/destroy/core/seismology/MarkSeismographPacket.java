@@ -8,6 +8,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import petrolpark.mc.destroy.DestroyPackets;
 import petrolpark.mc.destroy.DestroyDataComponentTypes;
+import petrolpark.mc.destroy.DestroyItems;
 
 public record MarkSeismographPacket(byte x, byte z, Seismograph.Mark mark, boolean mainHand) implements ServerboundPacketPayload {
 
@@ -28,8 +29,10 @@ public record MarkSeismographPacket(byte x, byte z, Seismograph.Mark mark, boole
     @SuppressWarnings("null")
     public void handle(ServerPlayer player) {
         final ItemStack stack = player.getItemInHand(mainHand() ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND);
-        if (stack.has(DestroyDataComponentTypes.SEISMOGRAPH)) {
-            final Seismograph.Mutable seismograph = stack.get(DestroyDataComponentTypes.SEISMOGRAPH).mutable();
+        // As 1.20.1: players may only add guesses (definite marks come from Seismometers), on any Seismograph, even one with no data yet
+        if (mark() != Seismograph.Mark.NONE && mark() != Seismograph.Mark.GUESSED_ACTIVE && mark() != Seismograph.Mark.GUESSED_INACTIVE) return;
+        if (DestroyItems.SEISMOGRAPH.isIn(stack)) {
+            final Seismograph.Mutable seismograph = stack.getOrDefault(DestroyDataComponentTypes.SEISMOGRAPH, Seismograph.EMPTY).mutable();
             seismograph.setMark(x(), z(), mark());
             seismograph.fillInIfCorrect(player);
             stack.set(DestroyDataComponentTypes.SEISMOGRAPH, seismograph.immutable());

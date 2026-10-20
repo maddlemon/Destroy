@@ -17,6 +17,7 @@ import com.simibubi.create.foundation.item.render.SimpleCustomRenderer;
 import it.unimi.dsi.fastutil.objects.Object2FloatMap;
 import it.unimi.dsi.fastutil.objects.Object2FloatOpenHashMap;
 import net.createmod.catnip.platform.CatnipServices;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.SectionPos;
@@ -25,12 +26,14 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.MapItem;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
 import net.minecraft.world.phys.AABB;
 import net.neoforged.api.distmarker.Dist;
@@ -39,12 +42,15 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.neoforged.neoforge.event.level.ExplosionEvent;
+import petrolpark.mc.destroy.DestroyAttachmentTypes;
 import petrolpark.mc.destroy.DestroyCriteriaTriggers;
 import petrolpark.mc.destroy.DestroyDataComponentTypes;
 import petrolpark.mc.destroy.DestroyItems;
 import petrolpark.mc.destroy.DestroyRegistries;
+import petrolpark.mc.destroy.DestroySeismologyProviders;
 import petrolpark.mc.destroy.DestroyTags;
 import petrolpark.mc.destroy.config.DestroyConfigs;
+import petrolpark.mc.destroy.core.oil.ChunkCrudeOil;
 import petrolpark.mc.destroy.util.DestroyLang;
 import petrolpark.mc.library.compat.create.core.world.item.valueSettings.IValueSettingsItem;
 import petrolpark.mc.library.compat.pquality.OptionalQuality;
@@ -58,6 +64,13 @@ public class SeismometerItem extends Item implements IValueSettingsItem {
             .flatMap(HolderSet.Named::stream)
             .toList();
         return providers.isEmpty() ? Collections.singletonList(ISeismologyProvider.noneHolder()) : providers;
+    };
+
+    /**
+     * The Seismology Provider this Seismometer detects. Unset means Crude Oil, so a new Seismometer works like 1.20.1's (which could only detect Crude Oil).
+     */
+    public static Holder<ISeismologyProvider> getProvider(ItemStack stack) {
+        return stack.getOrDefault(DestroyDataComponentTypes.SEISMOLOGY_PROVIDER, DestroySeismologyProviders.CRUDE_OIL.getDelegate());
     };
 
     public SeismometerItem(Item.Properties properties) {
@@ -89,7 +102,7 @@ public class SeismometerItem extends Item implements IValueSettingsItem {
 
     @Override
     public ValueSettings getValueSettings(ItemStack stack) {
-        return new ValueSettings(getProviders().indexOf(stack.getOrDefault(DestroyDataComponentTypes.SEISMOLOGY_PROVIDER, ISeismologyProvider.noneHolder())), 0);
+        return new ValueSettings(getProviders().indexOf(getProvider(stack)), 0);
     };
 
     @Override
@@ -101,7 +114,7 @@ public class SeismometerItem extends Item implements IValueSettingsItem {
 
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
-        stack.getOrDefault(DestroyDataComponentTypes.SEISMOLOGY_PROVIDER, ISeismologyProvider.noneHolder()).value().addToTooltip(context, tooltipComponents::add, tooltipFlag);
+        getProvider(stack).value().addToTooltip(context, tooltipComponents::add, tooltipFlag);
         super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
     };
 
@@ -119,7 +132,7 @@ public class SeismometerItem extends Item implements IValueSettingsItem {
             final ItemStack stack = player.getInventory().getItem(slot);
 
             if (DestroyItems.SEISMOMETER.isIn(stack)) {
-                final Holder<ISeismologyProvider> seismologyProvider = stack.getOrDefault(DestroyDataComponentTypes.SEISMOLOGY_PROVIDER, ISeismologyProvider.noneHolder());
+                final Holder<ISeismologyProvider> seismologyProvider = getProvider(stack);
                 if (seismologyProvider.value() != ISeismologyProvider.none())
                     seismometerErrorRates.merge(
                         seismologyProvider,
@@ -173,9 +186,23 @@ public class SeismometerItem extends Item implements IValueSettingsItem {
             };
         };
 
-        // if (seismographs.isEmpty()) player.displayClientMessage(DestroyLang.translate("tooltip.seismometer.no_seismograph").style(ChatFormatting.RED).component(), true);
-        //     else if (newInfo) player.displayClientMessage(DestroyLang.translate("tooltip.seismometer.added_info").component(), true);
-        //     else player.displayClientMessage(DestroyLang.translate("tooltip.seismometer.no_new_info").style(ChatFormatting.RED).component(), true);
+        // Generate the Oil in this chunk (as 1.20.1)
+        final LevelChunk chunk = level.getChunk(chunkX, chunkZ);
+        final ChunkCrudeOil crudeOil = chunk.getData(DestroyAttachmentTypes.CHUNK_CRUDE_OIL);
+        int newOilGenerated = 0;
+        if (!crudeOil.isGenerated()) {
+            crudeOil.generate(chunk, player);
+            chunk.setUnsaved(true);
+            newOilGenerated = crudeOil.getAmount();
+        };
+
+        // Show message (and award XP if necessary), as 1.20.1
+        if (newOilGenerated > 0) {
+            player.displayClientMessage(DestroyLang.translate("tooltip.seismometer.struck_oil", newOilGenerated / 1000).component(), true);
+            ExperienceOrb.award(level, player.position(), newOilGenerated / 10000);  
+        } else if (seismographs.values().stream().allMatch(List::isEmpty)) player.displayClientMessage(DestroyLang.translate("tooltip.seismometer.no_seismograph").style(ChatFormatting.RED).component(), true);
+        else if (newInfo) player.displayClientMessage(DestroyLang.translate("tooltip.seismometer.added_info").component(), true);
+        else player.displayClientMessage(DestroyLang.translate("tooltip.seismometer.no_new_info").style(ChatFormatting.RED).component(), true);
         
         // Update the animation of the Seismometer(s)
         CatnipServices.NETWORK.sendToClient(player, SeismometerSpikePacket.INSTANCE);

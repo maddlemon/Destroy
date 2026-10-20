@@ -15,7 +15,8 @@ import petrolpark.mc.destroy.DestroyBlocks;
 import petrolpark.mc.destroy.DestroyFluids;
 import petrolpark.mc.destroy.DestroySoundEvents;
 import petrolpark.mc.destroy.config.DestroyAllConfigs;
-import petrolpark.mc.destroy.content.oil.ChunkCrudeOil;
+import petrolpark.mc.destroy.DestroyAttachmentTypes;
+import petrolpark.mc.destroy.core.oil.ChunkCrudeOil;
 import petrolpark.mc.destroy.core.data.advancement.DestroyAdvancementBehaviour;
 import petrolpark.mc.destroy.core.pollution.PollutingBehaviour;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntityRenderer;
@@ -106,19 +107,17 @@ public class PumpjackBlockEntity extends SmartBlockEntity implements IHaveGoggle
         if (cam.getSpeed() == 0) return; // Don't go any further if we're not pumping
         BlockPos pipePos = getBlockPos().relative(facing);
         LevelChunk chunk = level.getChunkAt(pipePos);
-        LazyOptional<ChunkCrudeOil> crudeOilOptional = chunk.getCapability(ChunkCrudeOil.Provider.CHUNK_CRUDE_OIL);
-        if (!crudeOilOptional.isPresent()) return; // Don't go any further if there's somehow no capability
-        int oilAmount = crudeOilOptional.map(crudeOilCap -> {
-            crudeOilCap.generate(chunk, prospectingBehaviour.getPlayer());
-            return crudeOilCap.getAmount();
-        }).orElse(0);
+        ChunkCrudeOil crudeOil = chunk.getData(DestroyAttachmentTypes.CHUNK_CRUDE_OIL);
+        crudeOil.generate(chunk, prospectingBehaviour.getPlayer());
+        int oilAmount = crudeOil.getAmount();
         if (oilAmount == 0) return; // Don't go any further if there's no oil
         advancementBehaviour.awardDestroyAdvancement(DestroyAdvancementTrigger.USE_PUMPJACK);
         // Add the oil to the Pumpjack's internal tank
         tank.allowInsertion();
         int amountPumped = tank.getPrimaryHandler().fill(new FluidStack(DestroyFluids.CRUDE_OIL.get(), (int)Math.min(oilAmount, DestroyAllConfigs.SERVER.blocks.pumpjackExtractionSpeed.getF() * Math.abs(cam.getSpeed() / 16f))), FluidAction.EXECUTE);
         tank.forbidInsertion();
-        crudeOilOptional.ifPresent(crudeOilCap -> crudeOilCap.decreaseAmount(amountPumped));
+        crudeOil.decreaseAmount(amountPumped);
+        chunk.setUnsaved(true);
     };
 
     public IFluidHandler getFluidHandler(Direction side) {
@@ -215,7 +214,7 @@ public class PumpjackBlockEntity extends SmartBlockEntity implements IHaveGoggle
         public boolean shouldRememberPlacer(Player placer) {
             LevelChunk chunk = getLevel().getChunkAt(getBlockPos());
             if (chunk == null) return true;
-            return chunk.getCapability(ChunkCrudeOil.Provider.CHUNK_CRUDE_OIL).map(ChunkCrudeOil::isGenerated).orElse(true);
+            return chunk.getData(DestroyAttachmentTypes.CHUNK_CRUDE_OIL).isGenerated();
         };
 
         @Override

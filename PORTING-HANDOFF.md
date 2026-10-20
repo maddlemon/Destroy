@@ -27,9 +27,9 @@ Library to the pack.
 
 ## START HERE — current state and next steps
 
-**State:** compile has **764 javac errors**. Recipes (step 1), packets (step 2) and the pollution half of
-step 3 are done at the code level — the only errors left in their files depend on other steps (see each
-step's status). Next: the crude oil / seismology half of step 3 (`GUESSED_TICK`, `OilPonderScenes`, pumpjack).
+**State:** compile has **693 javac errors**. Steps 1–3 (recipes, packets, pollution / crude oil / seismology)
+are done at the code level — the only errors left in their files depend on later steps (see each step's
+status). Next: step 4 (item capabilities + leftover NBT).
 
 **Do next, in this order** (each is a self-contained batch; compile + commit after each):
 
@@ -92,7 +92,7 @@ step's status). Next: the crude oil / seismology half of step 3 (`GUESSED_TICK`,
    **Left for step 3:** the pollution sends in `DestroyCommonEvents` and `ServerLevelMixin` already use
    `CatnipServices.NETWORK` but still construct the deleted 1.20.1 `LevelPollutionS2CPacket` /
    `SyncChunkPollutionS2CPacket` — switch them to the author's `LevelPollutionPacket` / `ChunkPollutionPacket`.
-3. **Pollution / crude oil consumers.**
+3. **Pollution / crude oil consumers — DONE (code level).**
    **Pollution — DONE (code level).** Decided by the humans: the author's framework (attachments,
    `DestroyPollutionTypes` registry, data maps, packets, commands) but **1.20.1 behaviour**, except the author's
    new acid rain, which is kept (see Behaviour differences). Rule used: what was a server config in 1.20.1
@@ -116,10 +116,19 @@ step's status). Next: the crude oil / seismology half of step 3 (`GUESSED_TICK`,
    1.20.1 handlers in `DestroyCommonEvents`, `ClientLevelPollutionData`, `ClientPollutionConfigs`, old
    `DestroyNumberProviders` (duplicate `destroy:pollution` id). `PollutionNumberProvider` reads 1.20.1 JSON
    (`"SMOG"`, `scale`, `invert`). Added `pollution_type.destroy.*` lang keys (author's `getName()`).
-   **Left in step 3:** crude oil / seismology — compare the author's `core.oil` / `core.seismology` with 1.20.1's
-   `content.oil` (same behaviour question as pollution: ask before adopting author rebalances); `PumpjackBlockEntity`,
-   `OilPonderScenes`, `SeismometerItem`/`SeismographItem` in `DestroyItems`; then port `PollutionPonderScenes` from
-   upstream `1.20.1` and re-enable the storyboards marked `TODO(port)` in `DestroyPonderScenes`.
+   **Crude oil / seismology — DONE (code level).** Decided by the humans: **1.20.1 behaviour plus the author's
+   extras** (provider menu, `seismometerErrorRate` config, Petrolpark Quality accuracy). Kept the author's
+   `core.oil` / `core.seismology` (oil amounts are identical to 1.20.1; same salt). Restored from 1.20.1:
+   an unset Seismometer detects Crude Oil (`SeismometerItem.getProvider`), so it works out of the box;
+   strike-oil generation + message + XP and the no-seismograph / added-info / no-new-info messages in
+   `SeismometerItem.trigger`; `Seismograph.Mutable.setMark` is a plain set (the author's unfinished "plus"
+   auto-marking is not ported); `MarkSeismographPacket` only accepts guesses (`NONE`/`GUESSED_*`) and works on a
+   blank Seismograph; `Seismograph.Mutable.clear()` for Ponder. Marks map `TICK/CROSS/GUESSED_TICK/GUESSED_CROSS`
+   → `ACTIVE/INACTIVE/GUESSED_ACTIVE/GUESSED_INACTIVE` (same textures). Pumpjack uses the `CHUNK_CRUDE_OIL`
+   attachment. Added from the author's branch: `DestroyTags.SeismologyProviders` + its tag JSON,
+   `DestroyLang.tooltip`, 4 lang keys, `ItemInHandRenderer` `MAP_*` AT entries. `OilPonderScenes` ported;
+   `PollutionPonderScenes` ported from upstream `1.20.1` (already on Ponder 1.0) and its storyboards re-enabled.
+   Left (later steps): pumpjack blocks' `codec()`/`use`/`playerWillDestroy` (step 5).
 4. **Item capabilities + leftover NBT.** `ItemMixtureTank`, Blowpipe spout handler, measuring
    cylinder, test tube → `Capabilities.FluidHandler.ITEM` registered with `event.registerItem` in
    `DestroyCapabilities` (handlers backed by `ItemStackNBT` / data components). Inventory
@@ -254,6 +263,12 @@ Intended to be empty. Current entries:
 - Upstream quirks kept: `PollutionHelper.pollute` always sends evaporation particles to all clients
   (`particleWeight` unused because of a stray semicolon); outdoor temperature only rises at maximum greenhouse /
   ozone depletion (integer division); Level pollution decays at twice the configured rate (phase-less tick handler).
+- **New (approved by the humans): Seismometer extras from the author.** A Seismometer can be set to a seismology
+  provider (only Crude Oil exists; unset = Crude Oil, like 1.20.1); false positives are a config
+  (`seismometerErrorRate`, default 0.25 like 1.20.1's 1 in 4) and fewer with Petrolpark Quality. The decoy chunks
+  for a given seed differ from 1.20.1's (`nextFloat() < rate` vs `nextInt(4) == 0`); oil locations are identical.
+- **Bug fix (author code):** the Fill / Complete Seismograph advancements compared the discovered rows and columns
+  with `Byte.MAX_VALUE` (7 bits), so they could never trigger; now all 8 bits, as 1.20.1.
 - Pollution Type names: `pollution_type.destroy.*` lang keys added (same English names as 1.20.1).
 
 - **Bug fix:** `ExtendedBasinBehaviour` wrote `"EvaporatedFluid"` but read `"EvaporatedFluidStack"`,
@@ -329,8 +344,9 @@ Intended to be empty. Current entries:
 | `26b63081` | Recipes part 4: trypolithography + disc stamping recipes, sequenced assembly mixin, recipe consumers (sieve, dynamo, distillation, blowpipe, basin reactions, vat materials) |
 | `6f5d02b0` | Packets: 21 packets → Catnip payloads in `DestroyPackets`, `DestroyMessages` deleted, 38 send sites → `CatnipServices.NETWORK`, `NetworkHooks` replaced, creative-slot mixin retargeted |
 | `d508622e` | Pollution: author's framework with 1.20.1 behaviour (configs, data maps, decay/spreading, sources, effects, temperature, radioactivity, client visuals), author's acid rain kept |
+| _(this commit)_ | Crude oil + seismology: 1.20.1 behaviour plus the author's provider menu / error rate / quality; Oil and Pollution Ponder scenes ported and re-enabled |
 
-Error counts: 2,301 error lines (batch 1) → 2,178 javac → 2,050 → 1,940 → 1,892 → 1,718 → 1,621 → 1,502 → 1,501 → 1,281 (recipes 1) → 1,217 (recipes 2) → 1,184 → 1,071 (recipes 4) → 863 (packets) → 764 (pollution).
+Error counts: 2,301 error lines (batch 1) → 2,178 javac → 2,050 → 1,940 → 1,892 → 1,718 → 1,621 → 1,502 → 1,501 → 1,281 (recipes 1) → 1,217 (recipes 2) → 1,184 → 1,071 (recipes 4) → 863 (packets) → 764 (pollution) → 693 (oil, seismology, Ponder).
 
 ## Verified API mappings (NeoForge 21.1.262 / MC 1.21.1 / Create 6.0.10 / library 1.21.1-1.5.11)
 

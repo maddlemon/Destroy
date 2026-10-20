@@ -1,6 +1,7 @@
 package petrolpark.mc.destroy;
 
 
+import petrolpark.mc.destroy.core.seismology.ISeismologyProvider;
 import net.createmod.catnip.lang.Lang;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
@@ -103,6 +104,18 @@ public class DestroyTags {
         @SuppressWarnings("deprecation") // Create does it therefore so can I
         public boolean matches(Block block) {
             return block.builtInRegistryHolder().containsTag(tag);
+        };
+    };
+
+    public enum SeismologyProviders {
+
+        FOR_SEISMOMETER,
+        ;
+
+        public final TagKey<ISeismologyProvider> tag;
+
+        private SeismologyProviders() {
+            tag = TagKey.create(DestroyRegistries.Keys.SEISMOLOGY_PROVIDER, Destroy.asResource(Lang.asId(name())));
         };
     };
 

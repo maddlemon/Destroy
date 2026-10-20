@@ -157,6 +157,8 @@ public class Seismograph {
         };
 
         /**
+         * Set a mark, as 1.20.1 did. (The author's unfinished version also detected "plus" shapes of active Chunks and marked
+         * their centres as {@link Seismograph.Mark#PRESENT}; not ported, as 1.20.1 had no such thing.)
          * @param x
          * @param z
          * @param mark
@@ -164,79 +166,7 @@ public class Seismograph {
          */
         public boolean setMark(int x, int z, Seismograph.Mark mark) {
             if (x < 0 || x > 7 || z < 0 || z > 7) return false;
-
-            final Seismograph.Mark markBefore = getMark(x, z);
-            getMarks().set(x * 8 + z, mark);
-
-            boolean changed = false;
-            boolean actuallyPresent = mark.actuallyActive();
-            boolean guessedPresent = mark.guessedActive();
-            for (int xx = x - 1; xx <= x + 1; xx++) {
-                if (xx < 0 || xx >= 8) {
-                    actuallyPresent = guessedPresent = false;
-                    continue;
-                };
-                for (int zz = z - 1; zz <= z + 1; zz++) {
-                    if ((xx == 0) == (zz == 0)) continue;
-                    if (zz < 0 || zz >= 8) {
-                        actuallyPresent = guessedPresent = false;
-                        continue;
-                    };
-
-                    final Seismograph.Mark adjMark = getMark(xx, zz);
-                    boolean adjActuallyPresent = adjMark.actuallyActive();
-                    boolean adjGuessedPresent = adjMark.guessedActive();
-                    if (!adjActuallyPresent) actuallyPresent = false;
-                    if (!adjGuessedPresent) guessedPresent = false;
-
-                    if (!adjActuallyPresent || !adjGuessedPresent) continue;
-  
-                    adj: for (int xxx = xx - 1; xxx <= xx + 1; xxx++) {
-                        if (xxx < 0 || xxx >= 8) {
-                            adjActuallyPresent = adjGuessedPresent = false;
-                            continue;
-                        };
-                        for (int zzz = zz - 1; zzz <= zz + 1; zzz++) {
-                            if ((xxx == 0) == (zzz == 0)) continue;
-                            if (zzz < 0 || zzz >= 8) {
-                                adjActuallyPresent = adjGuessedPresent = false;
-                                continue;
-                            };
-
-                            final Seismograph.Mark adjAdjMark = getMark(xxx, zzz);
-                            if (!adjAdjMark.actuallyActive()) {
-                                adjActuallyPresent = false;
-                            };
-                            if (!adjAdjMark.guessedActive()) {
-                                adjGuessedPresent = false;
-                            };
-
-                            if (!adjActuallyPresent && !adjGuessedPresent) break adj;
-                        };
-                    };
-
-                    if (adjActuallyPresent) {
-                        getMarks().set(xx * 8 + zz, Seismograph.Mark.PRESENT);
-                        changed = true;
-                    } else if (adjGuessedPresent) {
-                        getMarks().set(xx * 8 + zz, Seismograph.Mark.GUESSED_PRESENT);
-                        changed = true;
-                    };
-                };
-            };
-
-            final Seismograph.Mark newMark;
-            if (actuallyPresent) {
-                newMark = Seismograph.Mark.PRESENT;
-            } else if (guessedPresent) {
-                newMark = Seismograph.Mark.GUESSED_PRESENT;
-            } else {
-                newMark = mark;
-            };
-
-            getMarks().set(x * 8 + z, newMark);
-
-            return changed || markBefore != newMark;
+            return getMarks().set(x * 8 + z, mark) != mark;
         };
 
         /**
@@ -282,7 +212,7 @@ public class Seismograph {
          * @return {@code true} if all columns and rows have been discovered, whether or not the player already has the advancement
          */
         private boolean triggerFillSeismographAdvancement(@Nullable ServerPlayer player) {
-            if (rowsDiscovered == Byte.MAX_VALUE && columnsDiscovered == Byte.MAX_VALUE) {
+            if (rowsDiscovered == (byte)0xFF && columnsDiscovered == (byte)0xFF) { // All 8 bits, as 1.20.1 (Byte.MAX_VALUE is only 7, so the advancements could never be awarded)
                 if (player != null) DestroyCriteriaTriggers.FILL_SEISMOGRAPH.get().trigger(player);
                 return true;
             };
@@ -307,6 +237,17 @@ public class Seismograph {
                 };
                 if (player != null) DestroyCriteriaTriggers.COMPLETE_SEISMOGRAPH.get().trigger(player);
             };
+        };
+
+        /**
+         * Reset everything (as 1.20.1's {@code Seismograph.clear()}; used by Ponder scenes).
+         */
+        public void clear() {
+            Arrays.fill(rows, (byte)0);
+            Arrays.fill(columns, (byte)0);
+            rowsDiscovered = 0;
+            columnsDiscovered = 0;
+            Collections.fill(getMarks(), Seismograph.Mark.NONE);
         };
 
         @Override

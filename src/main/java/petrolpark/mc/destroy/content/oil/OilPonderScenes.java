@@ -6,8 +6,8 @@ import petrolpark.mc.destroy.DestroyItems;
 import petrolpark.mc.destroy.content.oil.pumpjack.PumpjackBlockEntity;
 import petrolpark.mc.destroy.core.seismology.Seismograph;
 import petrolpark.mc.destroy.core.seismology.Seismograph.Mark;
-import petrolpark.mc.destroy.content.oil.seismology.ShowSeismographPonderInstruction;
-import petrolpark.mc.destroy.content.oil.seismology.ShowSeismographPonderInstruction.SeismographElement;
+import petrolpark.mc.destroy.core.seismology.ShowSeismographPonderInstruction;
+import petrolpark.mc.destroy.core.seismology.ShowSeismographPonderInstruction.SeismographElement;
 import com.simibubi.create.foundation.ponder.CreateSceneBuilder;
 
 import net.createmod.catnip.math.Pointing;
@@ -104,8 +104,8 @@ public class OilPonderScenes {
 
         BlockPos playerPos = util.grid().at(1, 1, 0);
 
-        Seismograph seismograph = newSeismograph(scene);
-        markSeismograph(scene, seismograph, 3, 5, Mark.CROSS);
+        Seismograph.Mutable seismograph = newSeismograph(scene);
+        markSeismograph(scene, seismograph, 3, 5, Mark.INACTIVE);
         setSeismographRow(scene, seismograph, 5, (byte)0b111);
         setSeismographColumn(scene, seismograph, 3, (byte)0b1011);
 
@@ -136,7 +136,7 @@ public class OilPonderScenes {
             .attachKeyFrame()
             .independent();
         element.highlightCell(scene, PonderPalette.WHITE, 5, 1, 120);
-        for (Mark mark : new Mark[]{Mark.GUESSED_TICK, Mark.GUESSED_CROSS, Mark.NONE}) {
+        for (Mark mark : new Mark[]{Mark.GUESSED_ACTIVE, Mark.GUESSED_INACTIVE, Mark.NONE}) {
             scene.idle(30);
             markSeismograph(scene, seismograph, 5, 1, mark);
         };
@@ -160,7 +160,7 @@ public class OilPonderScenes {
         scene.idle(20);
         for (int i : new int[]{0, 4, 5}) {
             for (int j = 0; j < 8; j++) {
-                if (j != 3) markSeismograph(scene, seismograph, j, 5, (j >= i && j <= i + 2) ? Mark.GUESSED_TICK : Mark.GUESSED_CROSS);
+                if (j != 3) markSeismograph(scene, seismograph, j, 5, (j >= i && j <= i + 2) ? Mark.GUESSED_ACTIVE : Mark.GUESSED_INACTIVE);
             };
             scene.idle(40);
         };
@@ -181,7 +181,7 @@ public class OilPonderScenes {
         scene.idle(20);
         for (int i = 3; i >= 0; i--) {
             for (int j = 0; j <= 4; j++) {
-                markSeismograph(scene, seismograph, 3, j, (j == i || j == i + 1) ? Mark.GUESSED_TICK : Mark.GUESSED_CROSS);
+                markSeismograph(scene, seismograph, 3, j, (j == i || j == i + 1) ? Mark.GUESSED_ACTIVE : Mark.GUESSED_INACTIVE);
             };
             scene.idle(30);
         };
@@ -191,7 +191,7 @@ public class OilPonderScenes {
         scene.idle(20);
         for (int i : new int[]{7, 6, 4, 3}) {
             for (int j = 3; j <= 8; j++) {
-                if (j != 5) markSeismograph(scene, seismograph, 3, j, (j == i) ? Mark.GUESSED_TICK : Mark.GUESSED_CROSS);
+                if (j != 5) markSeismograph(scene, seismograph, 3, j, (j == i) ? Mark.GUESSED_ACTIVE : Mark.GUESSED_INACTIVE);
             };
             scene.idle(30);
         };
@@ -211,8 +211,8 @@ public class OilPonderScenes {
             .colored(PonderPalette.RED)
             .independent(50);
         element.highlightColumn(scene, PonderPalette.RED, 3, 80);
-        markSeismograph(scene, seismograph, 3, 2, Mark.GUESSED_TICK);
-        markSeismograph(scene, seismograph, 3, 3, Mark.GUESSED_CROSS);
+        markSeismograph(scene, seismograph, 3, 2, Mark.GUESSED_ACTIVE);
+        markSeismograph(scene, seismograph, 3, 3, Mark.GUESSED_INACTIVE);
         scene.idle(100);
         for (int j = 0; j < 8; j++) {
             if (j != 5) markSeismograph(scene, seismograph, 3, j, Mark.NONE);
@@ -250,7 +250,7 @@ public class OilPonderScenes {
             scene.idle(10);
             element.highlightRow(scene, PonderPalette.WHITE, z, 20);
             element.highlightColumn(scene, PonderPalette.WHITE, x, 20);
-            markSeismograph(scene, seismograph, x, z, tick ? Mark.TICK : Mark.CROSS);
+            markSeismograph(scene, seismograph, x, z, tick ? Mark.ACTIVE : Mark.INACTIVE);
             setSeismographRow(scene, seismograph, z, row);
             setSeismographColumn(scene, seismograph, x, column);
         };
@@ -268,84 +268,84 @@ public class OilPonderScenes {
         element.highlightColumn(scene, PonderPalette.GREEN, 1, 30);
         scene.idle(5);
         for (int i = 0; i < 7; i++) {
-            markSeismograph(scene, seismograph, 1, i, Mark.GUESSED_TICK);
+            markSeismograph(scene, seismograph, 1, i, Mark.GUESSED_ACTIVE);
             scene.idle(3);
         };
         scene.idle(15);
         element.highlightRow(scene, PonderPalette.GREEN, 5, 30);
         scene.idle(10);
         for (int i = 0; i < 3; i++) {
-            markSeismograph(scene, seismograph, i, 5, Mark.GUESSED_TICK);
+            markSeismograph(scene, seismograph, i, 5, Mark.GUESSED_ACTIVE);
             scene.idle(3);
         };
         for (int i = 4; i < 8; i++) {
-            markSeismograph(scene, seismograph, i, 5, Mark.GUESSED_CROSS);
+            markSeismograph(scene, seismograph, i, 5, Mark.GUESSED_INACTIVE);
             scene.idle(3);
         };
         scene.idle(15);
         element.highlightColumn(scene, PonderPalette.GREEN, 7, 30);
         for (int i = 0; i < 8; i++) {
-            if (i != 1) markSeismograph(scene, seismograph, 7, i, i <= 4 ? Mark.GUESSED_TICK : Mark.GUESSED_CROSS);
+            if (i != 1) markSeismograph(scene, seismograph, 7, i, i <= 4 ? Mark.GUESSED_ACTIVE : Mark.GUESSED_INACTIVE);
             scene.idle(3);
         };
         scene.idle(15);
         element.highlightRow(scene, PonderPalette.GREEN, 0, 30);
         for (int i = 2; i < 7; i++) {
-            markSeismograph(scene, seismograph, i, 0, i == 2 ? Mark.GUESSED_TICK : Mark.GUESSED_CROSS);
+            markSeismograph(scene, seismograph, i, 0, i == 2 ? Mark.GUESSED_ACTIVE : Mark.GUESSED_INACTIVE);
             scene.idle(3);
         };
         scene.idle(15);
         element.highlightColumn(scene, PonderPalette.GREEN, 2, 30);
         for (int i : new int[]{1, 2, 3, 6, 7}) {
-            markSeismograph(scene, seismograph, 2, i, i <= 3 ? Mark.GUESSED_TICK : Mark.GUESSED_CROSS);
+            markSeismograph(scene, seismograph, 2, i, i <= 3 ? Mark.GUESSED_ACTIVE : Mark.GUESSED_INACTIVE);
             scene.idle(3);
         };
         scene.idle(21);
         element.highlightColumn(scene, PonderPalette.GREEN, 0, 30);
         for (int i = 1; i < 8; i++) {
-            if (i != 5) markSeismograph(scene, seismograph, 0, i, Mark.GUESSED_CROSS);
+            if (i != 5) markSeismograph(scene, seismograph, 0, i, Mark.GUESSED_INACTIVE);
             scene.idle(3);
         };
         scene.idle(18);
         element.highlightRow(scene, PonderPalette.GREEN, 1, 30);
         for (int i = 3; i < 7; i++) {
-            markSeismograph(scene, seismograph, i, 1, i % 3 == 0 ? Mark.GUESSED_TICK : Mark.GUESSED_CROSS);
+            markSeismograph(scene, seismograph, i, 1, i % 3 == 0 ? Mark.GUESSED_ACTIVE : Mark.GUESSED_INACTIVE);
             scene.idle(3);
         };
         scene.idle(21);
         element.highlightRow(scene, PonderPalette.GREEN, 2, 30);
         for (int i = 3; i < 6; i++) {
-            markSeismograph(scene, seismograph, i, 2, i != 4 ? Mark.GUESSED_TICK : Mark.GUESSED_CROSS);
+            markSeismograph(scene, seismograph, i, 2, i != 4 ? Mark.GUESSED_ACTIVE : Mark.GUESSED_INACTIVE);
             scene.idle(3);
         };
         scene.idle(27);
         element.highlightColumn(scene, PonderPalette.GREEN, 6, 30);
         for (int i : new int[]{3, 4, 6, 7}) {
-            markSeismograph(scene, seismograph, 6, i, i != 4 ? Mark.GUESSED_TICK : Mark.GUESSED_CROSS);
+            markSeismograph(scene, seismograph, 6, i, i != 4 ? Mark.GUESSED_ACTIVE : Mark.GUESSED_INACTIVE);
             scene.idle(3);
         };
         scene.idle(27);
         element.highlightRow(scene, PonderPalette.GREEN, 7, 30);
         for (int i = 3; i < 6; i++) {
-            markSeismograph(scene, seismograph, i, 7, i == 5 ? Mark.GUESSED_TICK : Mark.GUESSED_CROSS);
+            markSeismograph(scene, seismograph, i, 7, i == 5 ? Mark.GUESSED_ACTIVE : Mark.GUESSED_INACTIVE);
             scene.idle(3);
         };
         scene.idle(27);
         element.highlightColumn(scene, PonderPalette.GREEN, 4, 30);
         for (int i : new int[]{4, 6}) {
-            markSeismograph(scene, seismograph, 4, i, Mark.GUESSED_TICK);
+            markSeismograph(scene, seismograph, 4, i, Mark.GUESSED_ACTIVE);
             scene.idle(3);
         };
         scene.idle(30);
         element.highlightColumn(scene, PonderPalette.GREEN, 3, 30);
         for (int i : new int[]{3, 4, 6}) {
-            markSeismograph(scene, seismograph, 3, i, i == 4 ? Mark.GUESSED_TICK : Mark.GUESSED_CROSS);
+            markSeismograph(scene, seismograph, 3, i, i == 4 ? Mark.GUESSED_ACTIVE : Mark.GUESSED_INACTIVE);
             scene.idle(3);
         };
         scene.idle(27);
         element.highlightColumn(scene, PonderPalette.GREEN, 5, 30);
         for (int i : new int[]{3, 4}) {
-            markSeismograph(scene, seismograph, 5, i, Mark.GUESSED_CROSS);
+            markSeismograph(scene, seismograph, 5, i, Mark.GUESSED_INACTIVE);
             scene.idle(3);
         };
         scene.idle(60);
@@ -392,27 +392,27 @@ public class OilPonderScenes {
         scene.markAsFinished();
     };
 
-    public static final Seismograph newSeismograph(SceneBuilder scene) {
-        Seismograph seismograph = new Seismograph();
+    public static final Seismograph.Mutable newSeismograph(SceneBuilder scene) {
+        Seismograph.Mutable seismograph = Seismograph.EMPTY.mutable();
         scene.addInstruction(s -> seismograph.clear());
         return seismograph;
     };
 
-    public static final void markSeismograph(SceneBuilder scene, Seismograph seismograph, int x, int z, Mark mark) {
-        scene.addInstruction(s -> seismograph.mark(x, z, mark));
+    public static final void markSeismograph(SceneBuilder scene, Seismograph.Mutable seismograph, int x, int z, Mark mark) {
+        scene.addInstruction(s -> seismograph.setMark(x, z, mark));
     };
 
-    public static final void setSeismographRow(SceneBuilder scene, Seismograph seismograph, int row, byte data) {
+    public static final void setSeismographRow(SceneBuilder scene, Seismograph.Mutable seismograph, int row, byte data) {
         if (row >= 0 && row < 8) scene.addInstruction(s -> {
             seismograph.getRows()[row] = data;
-            seismograph.discoverRow(row, null, null);
+            seismograph.discoverRow(row, null);
         });
     };
 
-    public static final void setSeismographColumn(SceneBuilder scene, Seismograph seismograph, int column, byte data) {
+    public static final void setSeismographColumn(SceneBuilder scene, Seismograph.Mutable seismograph, int column, byte data) {
         if (column >= 0 && column < 8) scene.addInstruction(s -> {
             seismograph.getColumns()[column] = data;
-            seismograph.discoverColumn(column, null, null);
+            seismograph.discoverColumn(column, null);
         });
     };
 
