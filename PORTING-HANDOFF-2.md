@@ -10,9 +10,9 @@ Maddie (Windows, git identity `Meowfoe`). **Pull before starting.**
 
 - Branch `1.21.1-neoforge`. Steps 1–4 (recipes, packets, pollution / crude oil / seismology,
   item capabilities + NBT) are done and pushed through `a7496783`. **Step 5 is in progress.**
-- Compile: **178 deduped javac errors** (356 error lines). Error history:
-  567 (start of step 5) → 327 (compile6) → 213 (compile8) → 178 (compile9) → re-verify with
-  compile10 after this session's last fixes.
+- Compile: **166 deduped javac errors** (334 error lines, compile11 — the state of the pushed
+  tree). Error history: 567 (start of step 5) → 327 (compile6) → 213 (compile8) → 178 (compile9)
+  → 166 (compile11).
 - Latest logs on Azzie's box: `/var/home/azziee/Documents/Azziecraft/build/compileN.log`;
   parse with `python3 /var/home/azziee/Documents/Azziecraft/build/parse_errors.py <log>`.
 - Everything below is committed and pushed in the hand-off commit (see History). The working
@@ -283,4 +283,4 @@ component lifetime (config read at registration = default; refreshed on craft) �
 | Commit | Contents |
 |---|---|
 | `f8900f17` | (previous hand-off point) PORTING-HANDOFF.md filled in |
-| *(hand-off commit)* | Step 5 WIP: other agents' uncommitted work (pack finders, `DestroyBlockEntityBuilder`, `AbstractDestroyRegistrate` additions, SmartExplosion, vibration listener, ExtendedBasinBehaviour, potato projectile MapCodecs, untracked jukebox-song/combustible/mob-effect files) + phase_b2/b3 batches + this session's fixes (AT skipRendering saga resolved, particle data rewrite, residual renames) + this doc. Errors: 327 → 178. |
+| `5822036a` | Step 5 WIP: other agents' uncommitted work (pack finders, `DestroyBlockEntityBuilder`, `AbstractDestroyRegistrate` additions, SmartExplosion, vibration listener, ExtendedBasinBehaviour, potato projectile MapCodecs, untracked jukebox-song/combustible/mob-effect files) + phase_b2/b3 batches + this session's fixes (AT skipRendering saga resolved, particle data rewrite, residual renames) + this doc. Errors: 327 → 166. |
