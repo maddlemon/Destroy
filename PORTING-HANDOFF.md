@@ -259,6 +259,11 @@ JAVA_HOME=$JDK ./gradlew compileJava --console=plain    # log to a file, run det
 
 Intended to be empty. Current entries:
 
+- **Decaying Items (Sodium Ingot, Quicklime):** 1.20.1 read the lifetime config whenever it was needed. The
+  1.21.1 library stores the lifetime on the Item Stack, so a stack gets the configured value when it is crafted
+  or ticked in an inventory (server side); stacks that have not been since a config change (in a container,
+  dropped, or straight from a Create machine) use the previous value, or the config's default. With the
+  default config nothing changes. Tooltip, flashing, water rusting and stack averaging are as in 1.20.1.
 - **New (approved by the humans): the author's acid rain.** Rain changes blocks via the
   `destroy:acid_rain_replacement` block data map (mossy → plain, bricks → cracked, `#destroy:acid_rain_destroys` →
   air, dirt → coarse dirt, …) with chance `acidity × acidRainReplacementChance` (0.1), and oxidizes copper with

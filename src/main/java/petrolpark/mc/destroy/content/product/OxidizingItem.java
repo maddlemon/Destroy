@@ -1,26 +1,22 @@
 package petrolpark.mc.destroy.content.product;
 
-import petrolpark.mc.destroy.util.ItemStackNBT;
 import java.util.function.Supplier;
 
-import com.petrolpark.item.decay.ConfiguredDecayingItem;
-import com.petrolpark.item.decay.IDecayingItem;
+import petrolpark.mc.destroy.core.item.DecayingItem;
+
 import net.createmod.catnip.config.ConfigBase;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import petrolpark.mc.library.core.world.item.decay.ItemDecay;
+import petrolpark.mc.library.registry.PetrolparkDataComponentTypes;
 
-public class OxidizingItem extends ConfiguredDecayingItem {
+public class OxidizingItem extends DecayingItem {
 
-    public OxidizingItem(Properties properties, Supplier<ItemStack> decayProduct, Supplier<ConfigBase.ConfigInt> lifetime) {
-        super(properties, decayProduct, lifetime);
-    };
-
-    @Override
-    public String getDecayTimeTranslationKey(ItemStack stack) {
-        return "item.destroy.oxidizing_item.remaining";
+    public OxidizingItem(Properties properties, Supplier<ItemStack> decayProduct, Supplier<ConfigBase.ConfigInt> lifetime, int defaultLifetime) {
+        super(properties, decayProduct, lifetime, defaultLifetime, "item.destroy.oxidizing_item.remaining");
     };
 
     @Override
@@ -37,8 +33,9 @@ public class OxidizingItem extends ConfiguredDecayingItem {
 
     public void checkForWater(ItemStack stack, Entity entity, boolean rainSensitive) {
         if (entity.isInWaterOrBubble() || (entity.isInWaterRainOrBubble() && (rainSensitive || (entity instanceof LivingEntity livingEntity && livingEntity.getOffhandItem() == stack)))) {
-            IDecayingItem.extendLifetime(stack, (int)-IDecayingItem.getRemainingTime(this, stack, ItemStackNBT.read(stack))); // Instantly rust
+            // Instantly rust: no time remaining, whether or not decay had started (what 1.20.1's extendLifetime by minus the remaining time did)
+            stack.set(PetrolparkDataComponentTypes.DECAY_START_TIME, ItemDecay.getGameTime() - ItemDecay.getLifetimeOrNone(stack));
         };
     };
-    
+
 };

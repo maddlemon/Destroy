@@ -7,6 +7,7 @@ import static com.simibubi.create.AllTags.commonItemTag;
 import petrolpark.mc.library.compat.Mods;
 import petrolpark.mc.library.compat.curios.PetrolparkCuriosSetup;
 import petrolpark.mc.destroy.config.DestroyAllConfigs;
+import petrolpark.mc.destroy.config.DestroySubstancesConfigs;
 import petrolpark.mc.destroy.content.confetti.ConfettiItem;
 import petrolpark.mc.destroy.content.confetti.ConfettoParticleData;
 import petrolpark.mc.destroy.core.seismology.SeismographItem;
@@ -180,7 +181,7 @@ public class DestroyItems {
 
     public static final ItemEntry<OxidizingItem>
 
-    SODIUM_INGOT = REGISTRATE.item("sodium_ingot", p -> new OxidizingItem(p, DestroyItems.OXIDIZED_SODIUM_INGOT::asStack, () -> DestroyAllConfigs.SERVER.substances.sodiumDecayTime))
+    SODIUM_INGOT = REGISTRATE.item("sodium_ingot", p -> new OxidizingItem(p, DestroyItems.OXIDIZED_SODIUM_INGOT::asStack, () -> DestroyAllConfigs.SERVER.substances.sodiumDecayTime, DestroySubstancesConfigs.DEFAULT_SODIUM_DECAY_TIME))
         .tag(DestroyTags.Items.DESTROY_INGOTS.tag, commonItemTag("ingots/sodium"), Tags.Items.INGOTS, ItemTags.TRIM_MATERIALS)
         .register();
 
@@ -311,7 +312,7 @@ public class DestroyItems {
         ).tag(Tags.Items.DUSTS)
         .register();
 
-    public static final ItemEntry<CarboxylatingItem> QUICKLIME = REGISTRATE.item("quicklime", p -> new CarboxylatingItem(p, CHALK_DUST::asStack, () -> DestroyAllConfigs.SERVER.substances.quicklimeBaseDecayTime))
+    public static final ItemEntry<CarboxylatingItem> QUICKLIME = REGISTRATE.item("quicklime", p -> new CarboxylatingItem(p, CHALK_DUST::asStack, () -> DestroyAllConfigs.SERVER.substances.quicklimeBaseDecayTime, DestroySubstancesConfigs.DEFAULT_QUICKLIME_BASE_DECAY_TIME))
         .tag(Tags.Items.DUSTS, commonItemTag("dusts/lime"), DestroyTags.Items.FLUXES.tag)
         .register();
 

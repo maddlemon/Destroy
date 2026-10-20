@@ -13,8 +13,9 @@ Maddie (Windows, git identity `Meowfoe`). **Pull before starting.**
 - Compile: **166 deduped javac errors** (334 error lines, compile11 — the state of the pushed
   tree). Error history: 567 (start of step 5) → 327 (compile6) → 213 (compile8) → 178 (compile9)
   → 166 (compile11).
-- **Windows (Maddie), after the block `codec()` batch: 149 unique errors / 302 error lines**
-  (`python port-tools/errsummary.py <log>`; the same tree as compile11 counted 164 / 332 there).
+- **Windows (Maddie): 128 unique errors / 258 error lines** after the decay-item batch
+  (`python port-tools/errsummary.py <log>`; the same tree as compile11 counted 164 / 332 there;
+  149 / 302 after the block `codec()` batch).
 - Latest logs on Azzie's box: `/var/home/azziee/Documents/Azziecraft/build/compileN.log`;
   parse with `python3 /var/home/azziee/Documents/Azziecraft/build/parse_errors.py <log>`.
 - Everything below is committed and pushed in the hand-off commit (see History). The working
@@ -160,8 +161,7 @@ Maddie (Windows, git identity `Meowfoe`). **Pull before starting.**
    `BuiltInRegistries.ITEM.byNameCodec()`), `TankPeriodicTableBlock` (`color`), `UrineCauldronBlock`
    (`CauldronInteraction.CODEC`). Only the classes that had errors (plus their subclasses) got one;
    plain `Block` subclasses inherit `Block.CODEC` like Create's blocks.
-2. **Decay items** (OxidizingItem 22 error lines, CarboxylatingItem 12, cascade DestroyItems:181/314)
-   — **designed, see below**.
+2. **Decay items — DONE**, see "Decay items" below (also cleared the `DestroyReactions:894` cascade).
 3. **Contamination** (FireproofingHelper 20, CircuitPatternItemAttribute 16): old
    `com.petrolpark.contamination.*`, `PetrolparkRegistries`, `Contaminables`,
    `HasContaminantItemAttribute`, `LegacyDeserializer`, old library `ItemAttribute` all GONE;
@@ -236,7 +236,7 @@ Maddie (Windows, git identity `Meowfoe`). **Pull before starting.**
 Then steps 6–9 per `PORTING-HANDOFF.md` (JEI compat, data migration, clean compile → datagen →
 build → runtime test, release + pack integration).
 
-## Designed but not yet applied: decay items
+## Decay items (done)
 
 Old `com.petrolpark.item.decay.{ConfiguredDecayingItem,IDecayingItem}` GONE. New library model is
 **component-based**: `petrolpark.mc.library.registry.PetrolparkDataComponentTypes.{DECAY_TIME
@@ -252,24 +252,29 @@ library authors). `StackableFlashingDecayingItem` (abstract, extends Item): `are
 empty `appendHoverText`, `onCraftedBy` → `ItemDecay.startDecay(stack, 0)`, `initializeClient` →
 `FlashingDecayingItemRenderer`.
 
-**Plan**: create Destroy's own abstract `DecayingItem extends StackableFlashingDecayingItem`
-(ctor: `Properties, Supplier<ItemStack> decayProduct, Supplier<ConfigBase.ConfigInt> lifetime,
-String translationKey`) that sets `properties.component(DECAY_PRODUCT, new
-ChangeItemDecayProduct(decayProduct.get()))` + `properties.component(DECAY_TIME, new
-DecayTime(translationKey, lifetime.get().get()))` — eager is safe: `OXIDIZED_SODIUM_INGOT` is
-declared line 150 (before SODIUM_INGOT 183), `CHALK_DUST` line 301 (before QUICKLIME 314);
-refresh `DECAY_TIME` from the current config in `onCraftedBy` before `super.onCraftedBy`;
-`appendHoverText` → `ItemDecay.getTooltip(stack).ifPresent(tooltip::add)`; port old
-`overrideOtherStackedOnMe` merge using components (`getRemainingTime(stack, creationTime)`,
-`stack.set(DECAY_START_TIME, ItemDecay.getGameTime() + totalTime / stack.getCount() -
-ItemDecay.getLifetimeOrNone(stack))`); OxidizingItem.checkForWater: if `DECAY_START_TIME` null →
-`stack.set(DECAY_START_TIME, ItemDecay.getGameTime() - ItemDecay.getLifetimeOrNone(stack))`
-(replicates old instant-rust), else `ItemDecay.extendLifetime(stack, -(int)
-ItemDecay.getRemainingTime(stack, creationTime))`; CarboxylatingItem: drop the no-op `getLifetime`
-override. Configs: `sodiumDecayTime` (default 600), `quicklimeBaseDecayTime` (default 12000) in
-`DestroySubstancesConfigs`. **Behaviour note for the doc when done**: the new model uses a static
-component lifetime (config read at registration = default; refreshed on craft) — less dynamic than
-1.20.1, where the config was read per-item.
+Two facts the original plan missed: the library's `ClientEvents` already adds
+`ItemDecay.getTooltip` to **every** Item's tooltip (`ItemTooltipEvent`), so Destroy must not add it again;
+and the library itself starts decay on crafting (`ShapedRecipeMixin`, `CraftingMenuMixin`, ...) and Create
+processing outputs.
+
+**What was done:** `core/item/DecayingItem` (abstract, extends `StackableFlashingDecayingItem`; ctor
+`Properties, Supplier<ItemStack> decayProduct, Supplier<ConfigInt> lifetime, int defaultLifetime,
+String translationKey`). `OxidizingItem` / `CarboxylatingItem` extend it with their old translation keys.
+- The `DECAY_PRODUCT` / `DECAY_TIME` default components are set in NeoForge's
+  `ModifyDefaultComponentsEvent` (`DecayingItem.setDefaultComponents`, subscribed in
+  `DestroyCommonModEvents`), **not** in `Item.Properties`: reading a Server config during item registration
+  throws (`ModConfigSpec` "Cannot get config value before config is loaded"; Server configs load per world),
+  and the event runs once every Item exists, so the product `ItemStack` is safe to build. The prototype
+  lifetime is the config's default (`DestroySubstancesConfigs.DEFAULT_SODIUM_DECAY_TIME` = 600,
+  `DEFAULT_QUICKLIME_BASE_DECAY_TIME` = 12000, also used by the config entries; Catnip's `ConfigInt` has no
+  public default getter).
+- `refreshLifetime(stack)` sets `DECAY_TIME` from the live config, server side only, in `onCraftedBy` (before
+  `super`, which starts decay) and `inventoryTick`. Setting a value equal to the prototype's removes the
+  patch, so with the default config stacks carry no extra component and stack normally.
+- `overrideOtherStackedOnMe`: 1.20.1's averaging merge, ported as-is (same conditions, incl. not comparing
+  the stacks' other data).
+- `OxidizingItem.checkForWater`: `DECAY_START_TIME = gameTime - lifetime`. That is exactly what 1.20.1's
+  `extendLifetime(stack, -remaining)` produced in both cases (decay started or not), so one line covers both.
 
 ## Process
 
@@ -296,3 +301,4 @@ component lifetime (config read at registration = default; refreshed on craft) �
 | `f8900f17` | (previous hand-off point) PORTING-HANDOFF.md filled in |
 | `5822036a` | Step 5 WIP: other agents' uncommitted work (pack finders, `DestroyBlockEntityBuilder`, `AbstractDestroyRegistrate` additions, SmartExplosion, vibration listener, ExtendedBasinBehaviour, potato projectile MapCodecs, untracked jukebox-song/combustible/mob-effect files) + phase_b2/b3 batches + this session's fixes (AT skipRendering saga resolved, particle data rewrite, residual renames) + this doc. Errors: 327 → 166. |
 | `ce2f5524` | (Maddie, Windows) Block `codec()` for 13 blocks + 3 subclasses; urine cauldron `InteractionMap`. Errors (Windows, `port-tools/errsummary.py`): 164 unique / 332 lines → 149 / 302. |
+| `COMMIT_DECAY` | (Maddie, Windows) Decay items: `DecayingItem` on the library's decay components (defaults via `ModifyDefaultComponentsEvent`, live config per stack), stacking merge, Oxidizing / Carboxylating items. Errors 149 / 302 → 128 / 258. |

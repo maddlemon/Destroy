@@ -12,8 +12,11 @@ public class DestroySubstancesConfigs extends DestroyConfigBase {
     public final ConfigFloat aspirinHeal = f(5f, 0f, "aspirinHeal", "How many half-hearts using an Aspirin Syringe heals");
     public final ConfigBool burnIodineForDragonsBreath = b(true, "burnIodineForDragonsBreath", "Whether burning Iodine will release Dragon's Breath");
 
-    public final ConfigInt sodiumDecayTime = i(600, 1, Integer.MAX_VALUE, "sodiumDecayTime", "How many ticks it takes for Sodium to rust");
-    public final ConfigInt quicklimeBaseDecayTime = i(12000, 1, Integer.MAX_VALUE, "quicklimeBaseDecayTime", "The base number of ticks it takes for Quicklime to turn into Calcium Carbonate");
+    /** Also the Items' default Decay Time components, which are set before Server configs are loaded */
+    public static final int DEFAULT_SODIUM_DECAY_TIME = 600, DEFAULT_QUICKLIME_BASE_DECAY_TIME = 12000;
+
+    public final ConfigInt sodiumDecayTime = i(DEFAULT_SODIUM_DECAY_TIME, 1, Integer.MAX_VALUE, "sodiumDecayTime", "How many ticks it takes for Sodium to rust");
+    public final ConfigInt quicklimeBaseDecayTime = i(DEFAULT_QUICKLIME_BASE_DECAY_TIME, 1, Integer.MAX_VALUE, "quicklimeBaseDecayTime", "The base number of ticks it takes for Quicklime to turn into Calcium Carbonate");
 
     public final ConfigGroup babyBlue = group(0, "babyBlue", Comments.babyBlue);
     public final ConfigInt babyBlueMaxAddictionLevel = i(590, 0, "maxAddictionLevel", Comments.toDisable, Comments.maxAddictionLevel);

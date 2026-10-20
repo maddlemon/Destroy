@@ -2,26 +2,16 @@ package petrolpark.mc.destroy.content.product;
 
 import java.util.function.Supplier;
 
+import petrolpark.mc.destroy.core.item.DecayingItem;
 
-import com.petrolpark.item.decay.ConfiguredDecayingItem;
 import net.createmod.catnip.config.ConfigBase;
 import net.minecraft.world.item.ItemStack;
 
-public class CarboxylatingItem extends ConfiguredDecayingItem {
+public class CarboxylatingItem extends DecayingItem {
 
-    public CarboxylatingItem(Properties properties, Supplier<ItemStack> decayProduct, Supplier<ConfigBase.ConfigInt> lifetime) {
-        super(properties, decayProduct, lifetime);
+    // It would be cool if the lifetime was affected by the Greenhouse Gas level of the world but that is going to be a bit complicated to implement right now
+    public CarboxylatingItem(Properties properties, Supplier<ItemStack> decayProduct, Supplier<ConfigBase.ConfigInt> lifetime, int defaultLifetime) {
+        super(properties, decayProduct, lifetime, defaultLifetime, "item.destroy.carboxylating_item.remaining");
     };
 
-    @Override
-    public String getDecayTimeTranslationKey(ItemStack stack) {
-        return "item.destroy.carboxylating_item.remaining";
-    };
-
-    @Override
-    public long getLifetime(ItemStack stack) {
-        // It would be cool if this was affected by the Greenhouse Gas level of the world but that is going to be a bit complicated to implement right now
-        return super.getLifetime(stack);
-    };
-    
 };

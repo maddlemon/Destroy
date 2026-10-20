@@ -2,6 +2,7 @@ package petrolpark.mc.destroy.core.event;
 
 import petrolpark.mc.destroy.Destroy;
 import petrolpark.mc.destroy.DestroyAttributes;
+import petrolpark.mc.destroy.core.item.DecayingItem;
 import petrolpark.mc.destroy.content.processing.trypolithography.RegenerateCircuitPatternCommand.CircuitPatternIdArgument;
 
 import net.minecraft.commands.synchronization.ArgumentTypeInfos;
@@ -13,6 +14,7 @@ import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.repository.PackSource;
 import net.minecraft.world.entity.EntityType;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
+import net.neoforged.neoforge.event.ModifyDefaultComponentsEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeModificationEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -25,6 +27,11 @@ public class DestroyCommonModEvents {
     public static final void onCreateAttributes(EntityAttributeModificationEvent event) {
         event.add(EntityType.PLAYER, DestroyAttributes.EXTRA_INVENTORY_SIZE);
         event.add(EntityType.PLAYER, DestroyAttributes.EXTRA_HOTBAR_SLOTS);
+    };
+
+    @SubscribeEvent
+    public static final void modifyDefaultComponents(ModifyDefaultComponentsEvent event) {
+        DecayingItem.setDefaultComponents(event);
     };
 
     /**
