@@ -20,7 +20,7 @@ public class IonFluidIngredient extends MoleculeFluidIngredient {
     public static final Type TYPE = new Type();
 
     @Override
-    public MixtureFluidIngredientSubType<MoleculeFluidIngredient> getType() {
+    public MixtureFluidIngredientSubType<MoleculeFluidIngredient> getSubType() {
         return TYPE;
     };
 

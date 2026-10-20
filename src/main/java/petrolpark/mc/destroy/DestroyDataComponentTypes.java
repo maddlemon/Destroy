@@ -37,6 +37,15 @@ public class DestroyDataComponentTypes {
         .networkSynchronized(ByteBufCodecs.COMPOUND_TAG)
     );
 
+    /**
+     * On the example Fluid Stacks of a {@link petrolpark.mc.destroy.core.recipe.ingredient.fluid.MixtureFluidIngredient}: which
+     * ingredient Sub-Type it is and its parameters, for its description in recipe viewers (was extra Fluid Stack NBT in 1.20.1).
+     */
+    public static final DataComponentType<CompoundTag> MIXTURE_INGREDIENT_DISPLAY = register("mixture_ingredient_display", b -> b
+        .persistent(CompoundTag.CODEC)
+        .networkSynchronized(ByteBufCodecs.COMPOUND_TAG)
+    );
+
     private static <T> DataComponentType<T> register(String name, UnaryOperator<DataComponentType.Builder<T>> builder) {
 		DataComponentType<T> type = builder.apply(DataComponentType.builder()).build();
 		DATA_COMPONENTS.register(name, () -> type);

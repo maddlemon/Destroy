@@ -15,7 +15,7 @@ import petrolpark.mc.destroy.util.DestroyLang;
 import petrolpark.mc.destroy.core.block.IPickUpPutDownBlock;
 import petrolpark.mc.destroy.core.chemistry.hazard.ChemistryHazardHelper;
 import com.simibubi.create.content.kinetics.deployer.DeployerFakePlayer;
-import com.simibubi.create.foundation.fluid.FluidIngredient;
+import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 import com.simibubi.create.foundation.item.CustomArmPoseItem;
 import com.simibubi.create.foundation.item.render.SimpleCustomRenderer;
 
@@ -100,7 +100,7 @@ public class BlowpipeItem extends BlockItem implements CustomArmPoseItem {
         return result;
     };
 
-    public static FluidIngredient getFluidIngredient(CompoundTag tag) {
+    public static SizedFluidIngredient getFluidIngredient(CompoundTag tag) {
         if (!tag.contains("RequiredFluid", Tag.TAG_STRING)) return null;
         return FluidIngredient.deserialize(GsonHelper.parse(tag.getString("RequiredFluid"), true));  
     };
@@ -110,7 +110,7 @@ public class BlowpipeItem extends BlockItem implements CustomArmPoseItem {
         Level level = context.getLevel();
         ItemStack stack = context.getItemInHand();
         CompoundTag tag = ItemStackNBT.read(stack);
-        FluidIngredient ingredient = getFluidIngredient(tag);
+        SizedFluidIngredient ingredient = getFluidIngredient(tag);
         if (ingredient != null) {
             BlockPos pos = context.getClickedPos();
             Direction face = context.getClickedFace();
@@ -122,8 +122,8 @@ public class BlowpipeItem extends BlockItem implements CustomArmPoseItem {
                     IFluidHandler fh = DestroyCapabilities.fluidHandler(be, face);
                     if (fh != null) {
                         for (boolean simulate : Iterate.trueAndFalse) {
-                            FluidStack drained = fh.drain(ingredient.getRequiredAmount(), simulate ? FluidAction.SIMULATE : FluidAction.EXECUTE);
-                            if (!ingredient.test(drained) || drained.getAmount() < ingredient.getRequiredAmount()) return InteractionResult.FAIL;
+                            FluidStack drained = fh.drain(ingredient.amount(), simulate ? FluidAction.SIMULATE : FluidAction.EXECUTE);
+                            if (!ingredient.test(drained) || drained.getAmount() < ingredient.amount()) return InteractionResult.FAIL;
                             if (!simulate) {
                                 blowpipeTank.fill(drained, FluidAction.EXECUTE);
                                 tag.put("Tank", blowpipeTank.writeToNBT(new CompoundTag()));
@@ -294,8 +294,8 @@ public class BlowpipeItem extends BlockItem implements CustomArmPoseItem {
         @Override
         public int fill(FluidStack resource, FluidAction action) {
             CompoundTag tag = ItemStackNBT.read(stack);
-            FluidIngredient ingredient = getFluidIngredient(tag);
-            if (ingredient != null && ingredient.test(resource) && resource.getAmount() >= ingredient.getRequiredAmount()) {
+            SizedFluidIngredient ingredient = getFluidIngredient(tag);
+            if (ingredient != null && ingredient.test(resource) && resource.getAmount() >= ingredient.amount()) {
                 FluidTank tank = new FluidTank(getTankCapacity(0));
                 tank.readFromNBT(tag.getCompound("Tank"));
                 if (!tank.isEmpty()) return 0;
@@ -304,7 +304,7 @@ public class BlowpipeItem extends BlockItem implements CustomArmPoseItem {
                     tag.put("Tank", tank.writeToNBT(new CompoundTag()));
                     ItemStackNBT.set(stack, tag);
                 };
-                return ingredient.getRequiredAmount();
+                return ingredient.amount();
             };
             return 0;
         };

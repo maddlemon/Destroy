@@ -439,7 +439,7 @@ public class CentrifugeBlockEntity extends KineticBlockEntity implements IDirect
             };
         } else { // If there is a Recipe
             if (!canFitFluidInTank(lastRecipe.getDenseOutputFluid(), getDenseOutputTank()) || !canFitFluidInTank(lastRecipe.getLightOutputFluid(), getLightOutputTank()) || hasFluidInTank(lastRecipe.getRequiredFluid(), getLightOutputTank())) return; // Ensure the Recipe can still be Processed
-            getInputTank().drain(lastRecipe.getRequiredFluid().getRequiredAmount(), FluidAction.EXECUTE);
+            getInputTank().drain(lastRecipe.getRequiredFluid().amount(), FluidAction.EXECUTE);
             getDenseOutputTank().fill(lastRecipe.getDenseOutputFluid(), FluidAction.EXECUTE);
             getLightOutputTank().fill(lastRecipe.getLightOutputFluid(), FluidAction.EXECUTE);
         };

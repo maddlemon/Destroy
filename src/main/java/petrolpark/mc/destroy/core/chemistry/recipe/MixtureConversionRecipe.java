@@ -1,21 +1,21 @@
 package petrolpark.mc.destroy.core.chemistry.recipe;
 
+import petrolpark.mc.library.compat.create.core.data.recipe.AdvancedProcessingRecipeParams;
 import petrolpark.mc.destroy.Destroy;
 import petrolpark.mc.destroy.DestroyFluids;
 import petrolpark.mc.destroy.DestroyRecipeTypes;
 import petrolpark.mc.destroy.core.recipe.SingleFluidRecipe;
-import com.simibubi.create.content.processing.recipe.ProcessingRecipeParams;
 
 import net.neoforged.neoforge.fluids.FluidStack;
 
 public class MixtureConversionRecipe extends SingleFluidRecipe {
 
-    public MixtureConversionRecipe(ProcessingRecipeParams params) {
+    public MixtureConversionRecipe(AdvancedProcessingRecipeParams params) {
         super(DestroyRecipeTypes.MIXTURE_CONVERSION, params);
         if (
             getFluidIngredients().size() != 1
             || getFluidResults().size() != 1
-            || getFluidIngredients().get(0).getRequiredAmount() != 1
+            || getFluidIngredients().get(0).amount() != 1
             || getFluidResults().get(0).getAmount() != 1
             || !DestroyFluids.isMixture(getFluidResults().get(0))
         )

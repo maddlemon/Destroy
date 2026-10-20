@@ -19,7 +19,6 @@ public class RefrigerantDummyFluidIngredient extends MoleculeTagFluidIngredient 
 
     public RefrigerantDummyFluidIngredient() {
         super(DestroyMolecules.Tags.REFRIGERANT, 0.9f, 1.1f);
-        amountRequired = 1000;
     };
 
     @Override

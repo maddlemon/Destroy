@@ -25,7 +25,7 @@ public class PureSpeciesFluidIngredient extends MixtureFluidIngredient<PureSpeci
     public LegacySpecies species;
 
     @Override
-    public MixtureFluidIngredientSubType<PureSpeciesFluidIngredient> getType() {
+    public MixtureFluidIngredientSubType<PureSpeciesFluidIngredient> getSubType() {
         return TYPE;
     };
 

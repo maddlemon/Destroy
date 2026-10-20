@@ -1,9 +1,9 @@
 package petrolpark.mc.destroy.content.product.periodictable;
 
+import petrolpark.mc.library.compat.create.core.data.recipe.AdvancedProcessingRecipeParams;
 import com.google.gson.JsonSyntaxException;
 import petrolpark.mc.destroy.DestroyRecipeTypes;
 import petrolpark.mc.destroy.core.recipe.SingleFluidRecipe;
-import com.simibubi.create.content.processing.recipe.ProcessingRecipeParams;
 
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
@@ -15,7 +15,7 @@ public class ElementTankFillingRecipe extends SingleFluidRecipe {
 
     public final Block blockResult;
 
-    public ElementTankFillingRecipe(ProcessingRecipeParams params) {
+    public ElementTankFillingRecipe(AdvancedProcessingRecipeParams params) {
         super(DestroyRecipeTypes.ELEMENT_TANK_FILLING, params);
         ItemStack result = getRollableResultsAsItemStacks().get(0);
         if (result.getItem() instanceof BlockItem blockItem) {

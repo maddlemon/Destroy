@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.content.processing.trypolithography.recipe;
 
+import com.simibubi.create.content.kinetics.deployer.ItemApplicationRecipe;
 import petrolpark.mc.destroy.util.ItemStackNBT;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -17,7 +18,6 @@ import petrolpark.mc.destroy.mixin.accessor.ProcessingRecipeAccessor;
 import com.simibubi.create.content.kinetics.deployer.DeployerApplicationRecipe;
 import com.simibubi.create.content.kinetics.deployer.DeployerRecipeSearchEvent;
 import com.simibubi.create.content.processing.recipe.ProcessingOutput;
-import com.simibubi.create.content.processing.recipe.ProcessingRecipeBuilder;
 import com.simibubi.create.content.processing.recipe.ProcessingRecipeSerializer;
 import com.simibubi.create.content.processing.recipe.ProcessingRecipeBuilder.ProcessingRecipeFactory;
 import com.simibubi.create.content.processing.recipe.ProcessingRecipeParams;
@@ -125,7 +125,7 @@ public class CircuitDeployerApplicationRecipe extends DeployerApplicationRecipe 
     };
 
     public DeployerApplicationRecipe specify(RecipeWrapper inv) {
-        DeployerApplicationRecipe recipe = new ProcessingRecipeBuilder<>(params -> new SpecificCircuitDeployerApplicationRecipe(params, inv), ResourceLocation.fromNamespaceAndPath(getId().getNamespace(), getId().getPath() + recipeId++))
+        DeployerApplicationRecipe recipe = new ItemApplicationRecipe.Builder<>(params -> new SpecificCircuitDeployerApplicationRecipe(params, inv), ResourceLocation.fromNamespaceAndPath(getId().getNamespace(), getId().getPath() + recipeId++))
             .withItemIngredients(ingredients)
             .withItemOutputs(results)
             .build();

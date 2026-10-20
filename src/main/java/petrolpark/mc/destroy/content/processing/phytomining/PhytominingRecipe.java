@@ -1,12 +1,11 @@
 package petrolpark.mc.destroy.content.processing.phytomining;
 
+import petrolpark.mc.library.compat.create.core.data.recipe.AdvancedProcessingRecipeParams;
+import petrolpark.mc.library.compat.create.core.data.recipe.AdvancedProcessingRecipe;
 import petrolpark.mc.destroy.Destroy;
 import petrolpark.mc.destroy.DestroyItems;
 import petrolpark.mc.destroy.DestroyRecipeTypes;
 import com.simibubi.create.content.processing.recipe.ProcessingOutput;
-import com.simibubi.create.content.processing.recipe.ProcessingRecipe;
-import com.simibubi.create.content.processing.recipe.ProcessingRecipeBuilder;
-import com.simibubi.create.content.processing.recipe.ProcessingRecipeParams;
 
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -14,14 +13,14 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.items.wrapper.RecipeWrapper;
 
-public class PhytominingRecipe extends ProcessingRecipe<RecipeWrapper> {
+public class PhytominingRecipe extends AdvancedProcessingRecipe<RecipeWrapper> {
 
     private static int counter = 0;
 
     private CropMutation mutation;
 
     public static PhytominingRecipe create(CropMutation mutation) {
-        ProcessingRecipeBuilder<PhytominingRecipe> recipeBuilder = new ProcessingRecipeBuilder<>(PhytominingRecipe::new, Destroy.asResource("mutation_" + counter++))
+        AdvancedProcessingRecipe.Builder<PhytominingRecipe> recipeBuilder = new AdvancedProcessingRecipe.Builder<>(PhytominingRecipe::new, Destroy.asResource("mutation_" + counter++))
             .withItemIngredients(Ingredient.of(new ItemStack(mutation.getStartCropSupplier().get().asItem(), 1)), Ingredient.of(new ItemStack(DestroyItems.HYPERACCUMULATING_FERTILIZER.get(), 1)))
             .withItemOutputs(new ProcessingOutput(new ItemStack(mutation.getResultantCropSupplier().get().getBlock().asItem(), 1), 1.0f));
         if (mutation.isOreSpecific()) {
@@ -35,7 +34,7 @@ public class PhytominingRecipe extends ProcessingRecipe<RecipeWrapper> {
         return recipe;
     };
 
-    public PhytominingRecipe(ProcessingRecipeParams params) {
+    public PhytominingRecipe(AdvancedProcessingRecipeParams params) {
         super(DestroyRecipeTypes.MUTATION, params);
     };
 

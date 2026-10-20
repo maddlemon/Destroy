@@ -1,5 +1,7 @@
 package petrolpark.mc.destroy.content.processing.dynamo;
 
+import petrolpark.mc.library.compat.create.core.data.recipe.AdvancedProcessingRecipeParams;
+import petrolpark.mc.library.compat.create.core.data.recipe.AdvancedProcessingRecipe;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -8,8 +10,6 @@ import petrolpark.mc.destroy.DestroyBlocks;
 import petrolpark.mc.destroy.DestroyRecipeTypes;
 import petrolpark.mc.destroy.util.DestroyLang;
 import com.simibubi.create.compat.jei.category.sequencedAssembly.SequencedAssemblySubCategory;
-import com.simibubi.create.content.processing.recipe.ProcessingRecipe;
-import com.simibubi.create.content.processing.recipe.ProcessingRecipeParams;
 import com.simibubi.create.content.processing.sequenced.IAssemblyRecipe;
 
 import net.minecraft.network.chat.Component;
@@ -20,9 +20,9 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.items.wrapper.RecipeWrapper;
 
-public class ChargingRecipe extends ProcessingRecipe<RecipeWrapper> implements IAssemblyRecipe {
+public class ChargingRecipe extends AdvancedProcessingRecipe<RecipeWrapper> implements IAssemblyRecipe {
 
-    public ChargingRecipe(ProcessingRecipeParams params) {
+    public ChargingRecipe(AdvancedProcessingRecipeParams params) {
         super(DestroyRecipeTypes.CHARGING, params);
         if (processingDuration == 0) processingDuration = 200;
     };

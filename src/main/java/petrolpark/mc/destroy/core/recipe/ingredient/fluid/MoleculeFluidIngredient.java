@@ -24,7 +24,7 @@ public class MoleculeFluidIngredient extends ConcentrationRangeFluidIngredient<M
     protected LegacySpecies molecule;
 
     @Override
-    public MixtureFluidIngredientSubType<MoleculeFluidIngredient> getType() {
+    public MixtureFluidIngredientSubType<MoleculeFluidIngredient> getSubType() {
         return TYPE;
     };
 

@@ -15,7 +15,7 @@ import petrolpark.mc.destroy.core.pollution.PollutingBehaviour;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
 import com.simibubi.create.foundation.blockEntity.behaviour.fluid.SmartFluidTankBehaviour;
-import com.simibubi.create.foundation.fluid.FluidIngredient;
+import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 import com.simibubi.create.foundation.recipe.RecipeFinder;
 
 import net.minecraft.core.BlockPos;
@@ -51,8 +51,8 @@ public class ElementTankBlockEntity extends SmartBlockEntity implements IHaveLab
     public void checkRecipe() {
         FluidStack fs = tank.getPrimaryHandler().getFluid();
         RecipeFinder.get(recipeCacheKey, getLevel(), r -> r.getType() == DestroyRecipeTypes.ELEMENT_TANK_FILLING.getType()).stream().map(r -> (ElementTankFillingRecipe)r).filter(r -> {
-            FluidIngredient ingredient = r.getFluidIngredients().get(0);
-            return ingredient.test(fs) && ingredient.getRequiredAmount() <= fs.getAmount();
+            SizedFluidIngredient ingredient = r.getFluidIngredients().get(0);
+            return ingredient.test(fs) && ingredient.amount() <= fs.getAmount();
         }).findFirst().ifPresent(r -> {
             BlockState state = r.blockResult.defaultBlockState();
             if (state.hasProperty(BlockStateProperties.HORIZONTAL_FACING)) state = state.setValue(BlockStateProperties.HORIZONTAL_FACING, getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING));

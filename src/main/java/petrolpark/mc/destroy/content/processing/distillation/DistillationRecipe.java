@@ -1,19 +1,16 @@
 package petrolpark.mc.destroy.content.processing.distillation;
 
-import java.util.HashSet;
-import java.util.Set;
+import petrolpark.mc.library.compat.create.core.data.recipe.AdvancedProcessingRecipeParams;
 
-import com.google.common.collect.ImmutableSet;
 import petrolpark.mc.destroy.DestroyRecipeTypes;
 import petrolpark.mc.destroy.core.recipe.SingleFluidRecipe;
-import petrolpark.mc.library.core.data.recipe.IBiomeSpecificRecipe;
-import com.simibubi.create.content.processing.recipe.ProcessingRecipeParams;
 
-public class DistillationRecipe extends SingleFluidRecipe implements IBiomeSpecificProcessingRecipe {
+/**
+ * Allowed biomes come from {@code AdvancedProcessingRecipe} ({@code "biomes"} in JSON).
+ */
+public class DistillationRecipe extends SingleFluidRecipe {
 
-    private Set<BiomeValue> biomes = new HashSet<>();
-
-    public DistillationRecipe(ProcessingRecipeParams params) {
+    public DistillationRecipe(AdvancedProcessingRecipeParams params) {
         super(DestroyRecipeTypes.DISTILLATION, params);
     };
 
@@ -44,14 +41,5 @@ public class DistillationRecipe extends SingleFluidRecipe implements IBiomeSpeci
         return "distillation";
     }
 
-    @Override
-    public void setAllowedBiomes(Set<BiomeValue> biomes) {
-        this.biomes = ImmutableSet.copyOf(biomes);
-    };
-
-    @Override
-    public Set<BiomeValue> getAllowedBiomes() {
-        return biomes;
-    };
     
 }

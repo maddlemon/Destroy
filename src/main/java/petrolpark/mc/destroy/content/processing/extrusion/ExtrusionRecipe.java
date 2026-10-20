@@ -1,14 +1,13 @@
 package petrolpark.mc.destroy.content.processing.extrusion;
 
+import petrolpark.mc.library.compat.create.core.data.recipe.AdvancedProcessingRecipeParams;
+import petrolpark.mc.library.compat.create.core.data.recipe.AdvancedProcessingRecipe;
 import java.util.ArrayList;
 import java.util.List;
 
 import petrolpark.mc.destroy.Destroy;
 import petrolpark.mc.destroy.DestroyRecipeTypes;
 import com.simibubi.create.content.processing.recipe.ProcessingOutput;
-import com.simibubi.create.content.processing.recipe.ProcessingRecipe;
-import com.simibubi.create.content.processing.recipe.ProcessingRecipeBuilder;
-import com.simibubi.create.content.processing.recipe.ProcessingRecipeParams;
 
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemStack;
@@ -17,7 +16,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.items.wrapper.RecipeWrapper;
 
-public class ExtrusionRecipe extends ProcessingRecipe<RecipeWrapper> {
+public class ExtrusionRecipe extends AdvancedProcessingRecipe<RecipeWrapper> {
 
     private static int counter = 0;
 
@@ -31,13 +30,13 @@ public class ExtrusionRecipe extends ProcessingRecipe<RecipeWrapper> {
         };
     };
 
-    public ExtrusionRecipe(ProcessingRecipeParams params) {
+    public ExtrusionRecipe(AdvancedProcessingRecipeParams params) {
         super(DestroyRecipeTypes.EXTRUSION, params);
     };
 
     public static ExtrusionRecipe create(BlockExtrusion extrusion) {
         Block ingredient = BlockExtrusion.EXTRUSIONS.inverse().get(extrusion);
-        ExtrusionRecipe recipe = new ProcessingRecipeBuilder<>(ExtrusionRecipe::new, Destroy.asResource("extrusion" + counter++))
+        ExtrusionRecipe recipe = new AdvancedProcessingRecipe.Builder<>(ExtrusionRecipe::new, Destroy.asResource("extrusion" + counter++))
             .withItemIngredients(Ingredient.of(new ItemStack(ingredient.asItem(), 1)))
             .withItemOutputs(new ProcessingOutput(new ItemStack(extrusion.getExtruded(ingredient.defaultBlockState(), Direction.NORTH).getBlock().asItem(), 1), 1.0f))
             .build();

@@ -1,5 +1,7 @@
 package petrolpark.mc.destroy.content.processing.centrifuge.potion;
 
+import petrolpark.mc.destroy.util.DestroyFluidIngredientHelper;
+import com.simibubi.create.content.processing.recipe.StandardProcessingRecipe;
 import net.minecraft.world.level.material.Fluid;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,8 +14,7 @@ import com.simibubi.create.content.fluids.potion.PotionFluid.BottleType;
 import com.simibubi.create.content.fluids.potion.PotionFluidHandler;
 import com.simibubi.create.content.kinetics.mixer.MixingRecipe;
 import com.simibubi.create.content.processing.recipe.HeatCondition;
-import com.simibubi.create.content.processing.recipe.ProcessingRecipeBuilder;
-import com.simibubi.create.foundation.fluid.FluidIngredient;
+import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -118,9 +119,9 @@ public class PotionFluidMixingRecipes {
 	};
 
 	private static MixingRecipe createRecipe(String id, FluidStack itemSubstitute, FluidStack fromFluid, FluidStack toFluid) {
-		return new ProcessingRecipeBuilder<>(MixingRecipe::new, Destroy.asResource(id))
-                .require(FluidIngredient.fromFluidStack(itemSubstitute))
-				.require(FluidIngredient.fromFluidStack(fromFluid))
+		return new StandardProcessingRecipe.Builder<>(MixingRecipe::new, Destroy.asResource(id))
+                .require(DestroyFluidIngredientHelper.fromFluidStack(itemSubstitute))
+				.require(DestroyFluidIngredientHelper.fromFluidStack(fromFluid))
 				.output(toFluid)
 				.requiresHeat(HeatCondition.HEATED)
 				.build();

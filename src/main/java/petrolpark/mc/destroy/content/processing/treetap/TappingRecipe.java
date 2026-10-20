@@ -1,26 +1,25 @@
 package petrolpark.mc.destroy.content.processing.treetap;
 
+import petrolpark.mc.library.compat.create.core.data.recipe.AdvancedProcessingRecipeParams;
+import petrolpark.mc.library.compat.create.core.data.recipe.AdvancedProcessingRecipe;
 import petrolpark.mc.destroy.Destroy;
 import petrolpark.mc.destroy.DestroyRecipeTypes;
-import com.simibubi.create.content.processing.recipe.ProcessingRecipe;
-import com.simibubi.create.content.processing.recipe.ProcessingRecipeBuilder;
-import com.simibubi.create.content.processing.recipe.ProcessingRecipeParams;
 
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.items.wrapper.RecipeWrapper;
 
-public class TappingRecipe extends ProcessingRecipe<RecipeWrapper> {
+public class TappingRecipe extends AdvancedProcessingRecipe<RecipeWrapper> {
 
     public static int recipeId = 0;
 
-    public TappingRecipe(ProcessingRecipeParams params) {
+    public TappingRecipe(AdvancedProcessingRecipeParams params) {
         super(DestroyRecipeTypes.TAPPING, params);
     };
 
     public static TappingRecipe create(BlockTapping tapping) {
-        return new ProcessingRecipeBuilder<>(TappingRecipe::new, Destroy.asResource("tapping_"+recipeId++))
+        return new AdvancedProcessingRecipe.Builder<>(TappingRecipe::new, Destroy.asResource("tapping_"+recipeId++))
             .require(Ingredient.of(tapping.displayItems.toArray(new ItemStack[tapping.displayItems.size()])))
             .withFluidOutputs(tapping.result.copy())
             .build();

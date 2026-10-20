@@ -1,8 +1,8 @@
 package petrolpark.mc.destroy.core.explosion;
 
+import petrolpark.mc.library.compat.create.core.data.recipe.AdvancedProcessingRecipeParams;
+import petrolpark.mc.library.compat.create.core.data.recipe.AdvancedProcessingRecipe;
 import petrolpark.mc.destroy.DestroyRecipeTypes;
-import com.simibubi.create.content.processing.recipe.ProcessingRecipe;
-import com.simibubi.create.content.processing.recipe.ProcessingRecipeParams;
 
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.items.wrapper.RecipeWrapper;
@@ -11,9 +11,9 @@ import net.neoforged.neoforge.items.wrapper.RecipeWrapper;
  * These Recipes are display only. Creating an Obliteration Recipe will not add it to the game -
  * the loot table of the Block must also be changed.
  */
-public class ObliterationRecipe extends ProcessingRecipe<RecipeWrapper> {
+public class ObliterationRecipe extends AdvancedProcessingRecipe<RecipeWrapper> {
 
-    public ObliterationRecipe(ProcessingRecipeParams params) {
+    public ObliterationRecipe(AdvancedProcessingRecipeParams params) {
         super(DestroyRecipeTypes.OBLITERATION, params);
     };
 

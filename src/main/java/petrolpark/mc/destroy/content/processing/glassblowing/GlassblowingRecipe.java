@@ -1,25 +1,29 @@
 package petrolpark.mc.destroy.content.processing.glassblowing;
 
+import petrolpark.mc.library.compat.create.core.data.recipe.AdvancedProcessingRecipeParams;
+import petrolpark.mc.library.compat.create.core.data.recipe.AdvancedProcessingRecipe;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
-import com.google.gson.JsonSyntaxException;
-import petrolpark.mc.destroy.DestroyRecipeTypes;
-import com.simibubi.create.content.processing.recipe.ProcessingRecipe;
-import com.simibubi.create.content.processing.recipe.ProcessingRecipeParams;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import net.minecraft.network.FriendlyByteBuf;
+import petrolpark.mc.destroy.DestroyRecipeTypes;
+
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.items.wrapper.RecipeWrapper;
 
-public class GlassblowingRecipe extends ProcessingRecipe<RecipeWrapper> {
+public class GlassblowingRecipe extends AdvancedProcessingRecipe<RecipeWrapper> {
 
     public List<BlowingShape> blowingShapes;
 
-    public GlassblowingRecipe(ProcessingRecipeParams params) {
+    public GlassblowingRecipe(AdvancedProcessingRecipeParams params) {
         super(DestroyRecipeTypes.GLASSBLOWING, params);
         blowingShapes = new ArrayList<>();
     };
@@ -44,54 +48,58 @@ public class GlassblowingRecipe extends ProcessingRecipe<RecipeWrapper> {
         return 1;
     };
 
-    @Override
-    public void readAdditional(FriendlyByteBuf buffer) {
-        super.readAdditional(buffer);
-        int shapeCount = buffer.readVarInt();
-        blowingShapes = new ArrayList<>(shapeCount);
-        for (int i = 0; i < shapeCount; i++) {
-            blowingShapes.add(new BlowingShape(buffer.readFloat(), buffer.readFloat()));
+    public static record BlowingShape(float length, float radius) {
+
+        /**
+         * In JSON a shape component is {@code [length, radius]} in pixels (sixteenths of a block), as in 1.20.1.
+         */
+        public static final Codec<BlowingShape> CODEC = Codec.FLOAT.listOf().comapFlatMap(
+            list -> list.size() == 2 ? DataResult.success(new BlowingShape(list.get(0) / 16f, list.get(1) / 16f)) : DataResult.error(() -> "Each entry in the shape must specify two values: length and radius"),
+            shape -> List.of(shape.length() * 16f, shape.radius() * 16f)
+        );
+
+        public static final StreamCodec<RegistryFriendlyByteBuf, BlowingShape> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.FLOAT, BlowingShape::length,
+            ByteBufCodecs.FLOAT, BlowingShape::radius,
+            BlowingShape::new
+        );
+    };
+
+    /**
+     * The Petrolpark Library's processing recipe serializer plus the optional {@code "shape"} list (was {@code readAdditional}/{@code writeAdditional} in 1.20.1).
+     */
+    public static class Serializer implements RecipeSerializer<GlassblowingRecipe> {
+
+        private final MapCodec<GlassblowingRecipe> codec;
+        private final StreamCodec<RegistryFriendlyByteBuf, GlassblowingRecipe> streamCodec;
+
+        public Serializer() {
+            AdvancedProcessingRecipe.Serializer<GlassblowingRecipe> base = new AdvancedProcessingRecipe.Serializer<>(GlassblowingRecipe::new);
+            codec = RecordCodecBuilder.mapCodec(instance -> instance.group(
+                base.codec().forGetter(recipe -> recipe),
+                BlowingShape.CODEC.listOf().optionalFieldOf("shape", List.of()).forGetter(recipe -> recipe.blowingShapes)
+            ).apply(instance, GlassblowingRecipe::withShapes));
+            streamCodec = StreamCodec.composite(
+                base.streamCodec(), recipe -> recipe,
+                BlowingShape.STREAM_CODEC.apply(ByteBufCodecs.list()), recipe -> recipe.blowingShapes,
+                GlassblowingRecipe::withShapes
+            );
+        };
+
+        @Override
+        public MapCodec<GlassblowingRecipe> codec() {
+            return codec;
+        };
+
+        @Override
+        public StreamCodec<RegistryFriendlyByteBuf, GlassblowingRecipe> streamCodec() {
+            return streamCodec;
         };
     };
 
-    @Override
-    public void writeAdditional(FriendlyByteBuf buffer) {
-        super.writeAdditional(buffer);
-        buffer.writeVarInt(blowingShapes.size());
-        for (BlowingShape shape : blowingShapes) {
-            buffer.writeFloat(shape.length());
-            buffer.writeFloat(shape.radius());
-        };
+    private static GlassblowingRecipe withShapes(GlassblowingRecipe recipe, List<BlowingShape> shapes) {
+        recipe.blowingShapes = new ArrayList<>(shapes);
+        return recipe;
     };
 
-    @Override
-    public void readAdditional(JsonObject json) {
-        super.readAdditional(json);
-        if (json.has("shape") && json.get("shape").isJsonArray()) {
-            json.get("shape").getAsJsonArray().forEach(e -> {
-                if (!e.isJsonArray()) throw new JsonSyntaxException("Shape must specify a list of pairs of shapes");
-                JsonArray shape = e.getAsJsonArray();
-                if (shape.size() != 2) throw new JsonSyntaxException("Each entry in the shape must specify two values: length and radius");
-                try {
-                    blowingShapes.add(new BlowingShape(shape.get(0).getAsFloat() / 16f, shape.get(1).getAsFloat() / 16f));
-                } catch (Throwable error) {
-                    throw new JsonSyntaxException("Length and radius of shape components must be numbers");
-                };
-            });
-        };
-    };
-
-    @Override
-    public void writeAdditional(JsonObject json) {
-        super.writeAdditional(json);
-        json.add("shape", blowingShapes.stream().map(bs -> {
-            JsonArray shape = new JsonArray();
-            shape.set(0, new JsonPrimitive(bs.length()));
-            shape.set(1, new JsonPrimitive(bs.radius()));
-            return shape;
-        }).collect(JsonArray::new, JsonArray::add, JsonArray::addAll));
-    };
-
-    public static record BlowingShape(float length, float radius) {};
-    
 };

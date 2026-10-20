@@ -3,7 +3,7 @@ package petrolpark.mc.destroy.content.processing.glassblowing;
 import java.util.function.Supplier;
 
 import com.petrolpark.network.packet.C2SPacket;
-import com.simibubi.create.foundation.fluid.FluidIngredient;
+import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 import com.simibubi.create.foundation.recipe.RecipeFinder;
 
 import net.minecraft.nbt.CompoundTag;
@@ -53,8 +53,8 @@ public class SelectGlassblowingRecipeC2SPacket extends C2SPacket {
                 FluidTank tank = new FluidTank(BlowpipeBlockEntity.TANK_CAPACITY);
                 tank.readFromNBT(tag.getCompound("Tank"));
                 if (!tank.isEmpty()) { // If there is Fluid, it may need to be voided if it doesn't match the new Recipe
-                    FluidIngredient ingredient = recipe.getFluidIngredients().get(0);
-                    if (!ingredient.test(tank.getFluid()) || tank.getFluid().getAmount() < ingredient.getRequiredAmount()) {
+                    SizedFluidIngredient ingredient = recipe.getFluidIngredients().get(0);
+                    if (!ingredient.test(tank.getFluid()) || tank.getFluid().getAmount() < ingredient.amount()) {
                         tag.put("Tank", new FluidTank(BlowpipeBlockEntity.TANK_CAPACITY).writeToNBT(new CompoundTag())); // Drain the tank
                     };
                 };

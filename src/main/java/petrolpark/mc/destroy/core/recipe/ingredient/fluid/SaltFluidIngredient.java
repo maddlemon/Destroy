@@ -29,7 +29,7 @@ public class SaltFluidIngredient extends ConcentrationRangeFluidIngredient<SaltF
     protected LegacySpecies anion;
 
     @Override
-    public MixtureFluidIngredientSubType<SaltFluidIngredient> getType() {
+    public MixtureFluidIngredientSubType<SaltFluidIngredient> getSubType() {
         return TYPE;
     };
 

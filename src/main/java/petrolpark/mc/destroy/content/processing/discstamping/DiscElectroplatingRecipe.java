@@ -1,9 +1,9 @@
 package petrolpark.mc.destroy.content.processing.discstamping;
 
+import com.simibubi.create.content.processing.recipe.StandardProcessingRecipe;
 import petrolpark.mc.destroy.Destroy;
 import petrolpark.mc.destroy.DestroyRecipeTypes;
 import com.simibubi.create.content.processing.basin.BasinRecipe;
-import com.simibubi.create.content.processing.recipe.ProcessingRecipeBuilder;
 import com.simibubi.create.content.processing.recipe.ProcessingRecipeParams;
 
 import net.minecraft.world.item.Item;
@@ -25,7 +25,7 @@ public class DiscElectroplatingRecipe extends BasinRecipe {
 
     public BasinRecipe copyWithDisc(ItemStack discStack) {
 
-        ProcessingRecipeBuilder<DiscElectroplatingRecipe> builder = new ProcessingRecipeBuilder<DiscElectroplatingRecipe>(params -> new DiscElectroplatingRecipe(params, false), Destroy.asResource("disc_electroplating_"+Item.getId(discStack.getItem())))
+        StandardProcessingRecipe.Builder<DiscElectroplatingRecipe> builder = new StandardProcessingRecipe.Builder<DiscElectroplatingRecipe>(params -> new DiscElectroplatingRecipe(params, false), Destroy.asResource("disc_electroplating_"+Item.getId(discStack.getItem())))
             .requiresHeat(requiredHeat)
             .duration(processingDuration)
             .require(Ingredient.of(discStack))

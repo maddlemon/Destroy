@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.util;
 
+import petrolpark.mc.destroy.DestroyDataComponentTypes;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -176,6 +177,15 @@ public class DestroyLang {
     /**
      * The required contents of a Mixture to be used as an Ingredient in a Recipe.
      * @param fluidTag The NBT of the Fluid Stack
+     */
+    public static List<Component> mixtureIngredientTooltip(FluidStack ingredientExampleStack) {
+        CompoundTag displayTag = ingredientExampleStack.get(DestroyDataComponentTypes.MIXTURE_INGREDIENT_DISPLAY);
+        return displayTag == null ? List.of() : mixtureIngredientTooltip(displayTag);
+    };
+
+    /**
+     * The required contents of a Mixture to be used as an Ingredient in a Recipe.
+     * @param fluidTag The {@link DestroyDataComponentTypes#MIXTURE_INGREDIENT_DISPLAY} of the example Fluid Stack
      */
     public static List<Component> mixtureIngredientTooltip(CompoundTag fluidTag) {
         List<Component> tooltip = new ArrayList<>();

@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.content.processing.discstamping;
 
+import com.simibubi.create.content.kinetics.deployer.ItemApplicationRecipe;
 import java.util.Optional;
 
 import javax.annotation.Nullable;
@@ -8,7 +9,6 @@ import petrolpark.mc.destroy.Destroy;
 import petrolpark.mc.destroy.DestroyItems;
 import com.simibubi.create.content.kinetics.deployer.DeployerApplicationRecipe;
 import com.simibubi.create.content.kinetics.deployer.DeployerRecipeSearchEvent;
-import com.simibubi.create.content.processing.recipe.ProcessingRecipeBuilder;
 import com.simibubi.create.content.processing.recipe.ProcessingRecipeParams;
 
 import net.minecraft.world.item.Item;
@@ -31,7 +31,7 @@ public class DiscStampingRecipe extends DeployerApplicationRecipe {
         if (!(discStamper.getItem() instanceof DiscStamperItem)) return null;
         ItemStack disc = DiscStamperItem.getDisc(discStamper);
         if (disc.isEmpty()) return null;
-        return new ProcessingRecipeBuilder<>(DiscStampingRecipe::new, Destroy.asResource("disc_stamping_"+Item.getId(disc.getItem())))
+        return new ItemApplicationRecipe.Builder<>(DiscStampingRecipe::new, Destroy.asResource("disc_stamping_"+Item.getId(disc.getItem())))
             .require(Ingredient.of(DestroyItems.BLANK_MUSIC_DISC))
             .require(StrictNBTIngredient.of(discStamper))
             .output(disc)

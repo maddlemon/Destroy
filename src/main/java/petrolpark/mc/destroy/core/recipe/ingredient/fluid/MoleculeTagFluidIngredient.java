@@ -33,7 +33,7 @@ public class MoleculeTagFluidIngredient extends ConcentrationRangeFluidIngredien
     public MoleculeTagFluidIngredient() {};
 
     @Override
-    public MixtureFluidIngredientSubType<MoleculeTagFluidIngredient> getType() {
+    public MixtureFluidIngredientSubType<MoleculeTagFluidIngredient> getSubType() {
        return TYPE;
     };
 

@@ -8,7 +8,7 @@ import petrolpark.mc.destroy.DestroyMessages;
 import petrolpark.mc.destroy.client.DestroyFluidRenderer;
 import petrolpark.mc.destroy.client.DestroyGuiTextures;
 import petrolpark.mc.destroy.util.DestroyLang;
-import com.simibubi.create.foundation.fluid.FluidIngredient;
+import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 import com.simibubi.create.foundation.recipe.RecipeFinder;
 import com.simibubi.create.foundation.utility.CreateLang;
 
@@ -88,15 +88,15 @@ public class BlowpipeScreen extends AbstractSimiScreen {
             graphics.renderItem(stack, 56, y, i);
 
             // Fluid
-            FluidIngredient ingredient  = recipe.getFluidIngredients().get(0);
-            List<FluidStack> ingredients = ingredient.getMatchingFluidStacks();
+            SizedFluidIngredient ingredient  = recipe.getFluidIngredients().get(0);
+            List<FluidStack> ingredients = java.util.Arrays.asList(ingredient.getFluids());
             FluidStack fluidStack = ingredients.get((AnimationTickHolder.getTicks() / 20) % ingredients.size());
             DestroyFluidRenderer.renderFluidSquare(graphics, 9, y, fluidStack);
 
             // Tooltips
             if (mouseY >= y && mouseY <= y + 16) {
                 if (mouseX >= 9 && mouseX <= 27) {
-                    graphics.renderTooltip(font, List.of(fluidStack.getDisplayName(), DestroyLang.builder().add(Component.literal(""+ingredient.getRequiredAmount())).add(CreateLang.translate("generic.unit.millibuckets")).style(ChatFormatting.GRAY).component()), Optional.empty(), mouseX, mouseY);
+                    graphics.renderTooltip(font, List.of(fluidStack.getDisplayName(), DestroyLang.builder().add(Component.literal(""+ingredient.amount())).add(CreateLang.translate("generic.unit.millibuckets")).style(ChatFormatting.GRAY).component()), Optional.empty(), mouseX, mouseY);
                 };
                 if (mouseX >= 56 && mouseX <= 72) {
                     graphics.renderTooltip(font, stack, mouseX, mouseY);

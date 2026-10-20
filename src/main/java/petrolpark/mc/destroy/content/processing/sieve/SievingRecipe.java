@@ -1,18 +1,19 @@
 package petrolpark.mc.destroy.content.processing.sieve;
 
+import petrolpark.mc.library.compat.create.core.data.recipe.AdvancedProcessingRecipeParams;
+import petrolpark.mc.library.compat.create.core.data.recipe.AdvancedProcessingRecipe;
 import petrolpark.mc.destroy.DestroyRecipeTypes;
-import petrolpark.mc.library.compat.create.core.data.recipe.firstTimeLucky.IFTLProcessingRecipe;
-import com.simibubi.create.content.processing.recipe.ProcessingRecipe;
-import com.simibubi.create.content.processing.recipe.ProcessingRecipeParams;
 
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.items.wrapper.RecipeWrapper;
 
-public class SievingRecipe extends ProcessingRecipe<RecipeWrapper> implements IFirstTimeLuckyRecipe<SievingRecipe> {
-
-    protected boolean firstTimeLucky;
+/**
+ * First-time-lucky comes from {@code AdvancedProcessingRecipe} ({@code "first_time_lucky_key"} in JSON; 1.20.1's
+ * {@code "lucky_first_time": true} becomes the recipe's own id as the key). Roll with {@code rollLuckyResults}.
+ */
+public class SievingRecipe extends AdvancedProcessingRecipe<RecipeWrapper> {
     
-    public SievingRecipe(ProcessingRecipeParams params) {
+    public SievingRecipe(AdvancedProcessingRecipeParams params) {
         super(DestroyRecipeTypes.SIEVING, params);
     };
 
@@ -37,19 +38,5 @@ public class SievingRecipe extends ProcessingRecipe<RecipeWrapper> implements IF
         return true;
     };
 
-    @Override
-    public SievingRecipe getAsRecipe() {
-        return this;
-    };
-
-    @Override
-    public boolean shouldBeLuckyFirstTime() {
-        return firstTimeLucky;
-    };
-
-    @Override
-    public void setLuckyFirstTime(boolean lucky) {
-        firstTimeLucky = lucky;
-    };
     
 };

@@ -90,6 +90,7 @@ public class Destroy {
         // Registries from the author's 1.21.1-neo branch (dropped when the 1.20.1 Destroy.java was restored)
         DestroyAttachmentTypes.register(modEventBus);
         DestroyDataComponentTypes.register(modEventBus);
+        DestroyFluidIngredientTypes.register(modEventBus);
         DestroyNumberProviderTypes.register();
         DestroyPollutionTypes.register();
         DestroySeismologyProviders.register();

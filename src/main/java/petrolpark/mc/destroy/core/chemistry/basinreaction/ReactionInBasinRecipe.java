@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.core.chemistry.basinreaction;
 
+import com.simibubi.create.content.processing.recipe.StandardProcessingRecipe;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -23,9 +24,8 @@ import petrolpark.mc.destroy.core.pollution.Pollution;
 import petrolpark.mc.library.util.BigItemStack;
 import com.simibubi.create.content.processing.basin.BasinBlockEntity;
 import com.simibubi.create.content.processing.basin.BasinRecipe;
-import com.simibubi.create.content.processing.recipe.ProcessingRecipeBuilder;
 import com.simibubi.create.content.processing.recipe.ProcessingRecipeParams;
-import com.simibubi.create.foundation.fluid.FluidIngredient;
+import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 import com.simibubi.create.foundation.recipe.RecipeFinder;
 
 import net.minecraft.core.BlockPos;
@@ -48,7 +48,7 @@ public class ReactionInBasinRecipe extends BasinRecipe {
     //TODO replace with apply()
     @Nullable
     public static ReactionInBasinRecipe create(Collection<FluidStack> availableFluids, Collection<ItemStack> availableItems, BasinBlockEntity basin) {
-        ProcessingRecipeBuilder<ReactionInBasinRecipe> builder = new ProcessingRecipeBuilder<>(ReactionInBasinRecipe::new, Destroy.asResource("reaction_in_basin_"));
+        StandardProcessingRecipe.Builder<ReactionInBasinRecipe> builder = new StandardProcessingRecipe.Builder<>(ReactionInBasinRecipe::new, Destroy.asResource("reaction_in_basin_"));
 
         List<ItemStack> availableItemsCopy = availableItems.stream().map(ItemStack::copy).filter(stack -> !stack.isEmpty()).toList();
 
@@ -160,7 +160,7 @@ public class ReactionInBasinRecipe extends BasinRecipe {
         return builder.build();
     };
 
-    private static void gatherReactionResults(Map<ReactionResult, Integer> resultsOfReaction, Map<ReactionResult, Integer> resultsToEnact, ProcessingRecipeBuilder<ReactionInBasinRecipe> builder) {
+    private static void gatherReactionResults(Map<ReactionResult, Integer> resultsOfReaction, Map<ReactionResult, Integer> resultsToEnact, StandardProcessingRecipe.Builder<ReactionInBasinRecipe> builder) {
         for (ReactionResult reactionresult : resultsOfReaction.keySet()) {
             if (reactionresult instanceof CombinedReactionResult combinedResult) {
                 Map<ReactionResult, Integer> childMap = new HashMap<>();

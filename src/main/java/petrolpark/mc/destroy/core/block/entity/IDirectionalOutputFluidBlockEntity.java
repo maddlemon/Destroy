@@ -5,7 +5,7 @@ import com.simibubi.create.content.fluids.pipes.FluidPipeBlock;
 import com.simibubi.create.content.fluids.pipes.GlassFluidPipeBlock;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
-import com.simibubi.create.foundation.fluid.FluidIngredient;
+import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.RotatedPillarBlock;
@@ -25,9 +25,9 @@ public interface IDirectionalOutputFluidBlockEntity {
         return (stack.getFluid() == tank.getFluid().getFluid() || tank.isEmpty()) && stack.getAmount() <= tank.getSpace();
     };
 
-    public default boolean hasFluidInTank(FluidIngredient ingredient, FluidTank tank) {
-        if (tank.drain(ingredient.getRequiredAmount(), FluidAction.SIMULATE).getAmount() != ingredient.getRequiredAmount()) return false; //check there is enough Fluid
-        for (FluidStack stack : ingredient.getMatchingFluidStacks()) {
+    public default boolean hasFluidInTank(SizedFluidIngredient ingredient, FluidTank tank) {
+        if (tank.drain(ingredient.amount(), FluidAction.SIMULATE).getAmount() != ingredient.amount()) return false; //check there is enough Fluid
+        for (FluidStack stack : java.util.Arrays.asList(ingredient.getFluids())) {
             if (stack.getFluid() == tank.getFluid().getFluid()) return true; //check it is the right Fluid type
         };
         return false;

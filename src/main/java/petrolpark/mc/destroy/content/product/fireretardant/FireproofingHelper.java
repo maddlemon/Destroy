@@ -7,7 +7,7 @@ import com.petrolpark.contamination.ItemContamination;
 import petrolpark.mc.destroy.Destroy;
 import petrolpark.mc.destroy.DestroyRecipeTypes;
 import petrolpark.mc.destroy.core.recipe.SingleFluidRecipe;
-import com.simibubi.create.foundation.fluid.FluidIngredient;
+import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceLocation;
@@ -43,7 +43,7 @@ public class FireproofingHelper {
             .map(SingleFluidRecipe::getRequiredFluid)
             .filter(i -> i.test(availableFluid))
             .findFirst()
-            .map(FluidIngredient::getRequiredAmount)
+            .map(SizedFluidIngredient::amount)
             .orElse(-1);
     };
 

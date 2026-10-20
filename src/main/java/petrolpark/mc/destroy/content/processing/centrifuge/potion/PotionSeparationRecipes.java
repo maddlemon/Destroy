@@ -1,5 +1,7 @@
 package petrolpark.mc.destroy.content.processing.centrifuge.potion;
 
+import petrolpark.mc.destroy.util.DestroyFluidIngredientHelper;
+import petrolpark.mc.library.compat.create.core.data.recipe.AdvancedProcessingRecipe;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,8 +14,7 @@ import petrolpark.mc.destroy.content.processing.centrifuge.CentrifugationRecipe;
 import com.simibubi.create.content.fluids.potion.PotionFluid;
 import com.simibubi.create.content.fluids.potion.PotionFluid.BottleType;
 import com.simibubi.create.content.fluids.potion.PotionFluidHandler;
-import com.simibubi.create.content.processing.recipe.ProcessingRecipeBuilder;
-import com.simibubi.create.foundation.fluid.FluidIngredient;
+import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 
 import net.createmod.catnip.data.Pair;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -111,8 +112,8 @@ public class PotionSeparationRecipes {
     };
 
     private static CentrifugationRecipe createRecipe(String name, FluidStack from, FluidStack light, FluidStack dense) {
-        return new ProcessingRecipeBuilder<>(CentrifugationRecipe::new, Destroy.asResource(name))
-            .require(FluidIngredient.fromFluidStack(from))
+        return new AdvancedProcessingRecipe.Builder<>(CentrifugationRecipe::new, Destroy.asResource(name))
+            .require(DestroyFluidIngredientHelper.fromFluidStack(from))
             .duration(200)
             .output(light)
             .output(dense)

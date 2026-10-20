@@ -194,7 +194,7 @@ public class DistillationTower {
             if (!lastRecipe.getRequiredHeat().testBlazeBurner(BasinBlockEntity.getHeatLevelOf(controller.getLevel().getBlockState(controller.getBlockPos().below(1))))) return false;
 
             // Check if required Fluid is present
-            int requiredFluidAmount = lastRecipe.getRequiredFluid().getRequiredAmount();
+            int requiredFluidAmount = lastRecipe.getRequiredFluid().amount();
             fluidDrained = getControllerBubbleCap().getTank().drain(requiredFluidAmount, simulate ? FluidAction.SIMULATE : FluidAction.EXECUTE);
             if (fluidDrained.getAmount() < requiredFluidAmount) { // If there is not enough Fluid in the controller Bubble Cap
                 return false;

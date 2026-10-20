@@ -1,23 +1,24 @@
 package petrolpark.mc.destroy.core.recipe;
 
-import com.simibubi.create.content.processing.recipe.ProcessingRecipe;
-import com.simibubi.create.content.processing.recipe.ProcessingRecipeParams;
-import com.simibubi.create.foundation.fluid.FluidIngredient;
 import com.simibubi.create.foundation.recipe.IRecipeTypeInfo;
 
 import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 import net.neoforged.neoforge.items.wrapper.RecipeWrapper;
+import petrolpark.mc.library.compat.create.core.data.recipe.AdvancedProcessingRecipe;
+import petrolpark.mc.library.compat.create.core.data.recipe.AdvancedProcessingRecipeParams;
 
-public abstract class SingleFluidRecipe extends ProcessingRecipe<RecipeWrapper> {
+public abstract class SingleFluidRecipe extends AdvancedProcessingRecipe<RecipeWrapper> {
 
-    public SingleFluidRecipe(IRecipeTypeInfo typeInfo, ProcessingRecipeParams params) {
+    public SingleFluidRecipe(IRecipeTypeInfo typeInfo, AdvancedProcessingRecipeParams params) {
         super(typeInfo, params);
         if (processingDuration <= 0) processingDuration = 20;
     };
 
-    public FluidIngredient getRequiredFluid() {
+    public SizedFluidIngredient getRequiredFluid() {
         if (fluidIngredients.isEmpty()) {
-            throw new IllegalStateException(this.getRecipeTypeName() + " Recipe: " + id.toString() + " has no fluid ingredient!");
+            // 1.21 recipes don't know their own id; the recipe type still identifies the problem
+            throw new IllegalStateException(this.getRecipeTypeName() + " Recipe has no fluid ingredient!");
         };
         return fluidIngredients.get(0);
     };

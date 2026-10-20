@@ -1,30 +1,29 @@
 package petrolpark.mc.destroy.core.chemistry.recipe;
 
+import petrolpark.mc.library.compat.create.core.data.recipe.AdvancedProcessingRecipeParams;
+import petrolpark.mc.library.compat.create.core.data.recipe.AdvancedProcessingRecipe;
 import javax.annotation.Nullable;
 
 import petrolpark.mc.destroy.Destroy;
 import petrolpark.mc.destroy.DestroyRecipeTypes;
 import petrolpark.mc.destroy.chemistry.legacy.LegacyReaction;
 import petrolpark.mc.destroy.chemistry.legacy.genericreaction.GenericReaction;
-import com.simibubi.create.content.processing.recipe.ProcessingRecipe;
-import com.simibubi.create.content.processing.recipe.ProcessingRecipeBuilder;
-import com.simibubi.create.content.processing.recipe.ProcessingRecipeParams;
 
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.items.wrapper.RecipeWrapper;
 
-public class ReactionRecipe extends ProcessingRecipe<RecipeWrapper> {
+public class ReactionRecipe extends AdvancedProcessingRecipe<RecipeWrapper> {
 
     private static int counter;
 
     protected LegacyReaction reaction; // The Reaction associated with this Recipe
 
-    public ReactionRecipe(ProcessingRecipeParams params) {
+    public ReactionRecipe(AdvancedProcessingRecipeParams params) {
         super(DestroyRecipeTypes.REACTION, params);
     };
 
     public static ReactionRecipe create(LegacyReaction reaction) {
-        ReactionRecipe recipe = new ProcessingRecipeBuilder<>(ReactionRecipe::new, Destroy.asResource("reaction_"+counter++)).build();
+        ReactionRecipe recipe = new AdvancedProcessingRecipe.Builder<>(ReactionRecipe::new, Destroy.asResource("reaction_"+counter++)).build();
         recipe.reaction = reaction;
         return recipe;
     };
@@ -52,14 +51,14 @@ public class ReactionRecipe extends ProcessingRecipe<RecipeWrapper> {
 
         protected GenericReaction genericReaction;
 
-        public GenericReactionRecipe(ProcessingRecipeParams params) {
+        public GenericReactionRecipe(AdvancedProcessingRecipeParams params) {
             super(params);
         };
 
         @Nullable
         public static GenericReactionRecipe create(GenericReaction genericReaction) {
             try {
-                GenericReactionRecipe recipe = new ProcessingRecipeBuilder<>(GenericReactionRecipe::new, Destroy.asResource("generic_reaction_"+counter++)).build();
+                GenericReactionRecipe recipe = new AdvancedProcessingRecipe.Builder<>(GenericReactionRecipe::new, Destroy.asResource("generic_reaction_"+counter++)).build();
                 recipe.reaction = genericReaction.getExampleReaction();
                 recipe.genericReaction = genericReaction;
                 return recipe;

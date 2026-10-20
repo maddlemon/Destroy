@@ -1,15 +1,15 @@
 package petrolpark.mc.destroy.content.product.fireretardant;
 
+import petrolpark.mc.library.compat.create.core.data.recipe.AdvancedProcessingRecipeParams;
 import petrolpark.mc.destroy.DestroyRecipeTypes;
 import petrolpark.mc.destroy.core.recipe.SingleFluidRecipe;
-import com.simibubi.create.content.processing.recipe.ProcessingRecipeParams;
 
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.items.wrapper.RecipeWrapper;
 
 public class FlameRetardantApplicationRecipe extends SingleFluidRecipe {
 
-    public FlameRetardantApplicationRecipe(ProcessingRecipeParams params) {
+    public FlameRetardantApplicationRecipe(AdvancedProcessingRecipeParams params) {
         super(DestroyRecipeTypes.FLAME_RETARDANT_APPLICATION, params);
     };
 
