@@ -32,9 +32,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.capabilities.Capability;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.common.util.LazyOptional;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 
@@ -78,15 +76,13 @@ public class SiphonBlockEntity extends SmartBlockEntity implements IHaveLabGoggl
         tag.putInt("LeftToDrain", leftToDrain);
     };
 
-    @Override
-	public <T> LazyOptional<T> getCapability(Capability<T> cap, Direction side) {
-		if (cap == Capabilities.FluidHandler.BLOCK) return tank.getCapability().cast();
-		return super.getCapability(cap, side);
-	}
+    public IFluidHandler getFluidHandler(Direction side) {
+        return tank.getCapability();
+    };
 
     @Override
     public boolean addToGoggleTooltip(List<Component> tooltip, boolean isPlayerSneaking) {
-        containedFluidTooltip(tooltip, isPlayerSneaking, getCapability(Capabilities.FluidHandler.BLOCK));
+        containedFluidTooltip(tooltip, isPlayerSneaking, getFluidHandler(null));
         DestroyLang.builder().add(Component.translatable("block.destroy.siphon.drain_amount_remaining", leftToDrain)).style(ChatFormatting.WHITE).forGoggles(tooltip);
         return true;
     };

@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.content.processing.cooler;
 
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.minecraft.core.HolderLookup;
 import java.util.List;
 
@@ -44,9 +45,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.capabilities.Capability;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.common.util.LazyOptional;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
 
@@ -253,18 +252,8 @@ public class CoolerBlockEntity extends SmartBlockEntity implements IHaveGoggleIn
 		return AllBlocks.BASIN.has(blockState) || blockState.getBlock() instanceof FluidTankBlock;
     };
 
-    @Override
-    public <T> @NotNull LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if (cap == Capabilities.FluidHandler.BLOCK && side == Direction.DOWN) {
-            return tank.getCapability().cast();
-        };
-        return super.getCapability(cap, side);
-    };
-
-    @Override
-    public void invalidate() {
-        super.invalidate();
-        tank.getCapability().invalidate();
+    public IFluidHandler getFluidHandler(Direction side) {
+        return side == Direction.DOWN ? tank.getCapability() : null;
     };
 
     public ColdnessLevel getColdnessFromBlock() {

@@ -62,9 +62,7 @@ import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.capabilities.Capability;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.common.util.LazyOptional;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
@@ -75,7 +73,7 @@ public class CentrifugeBlockEntity extends KineticBlockEntity implements IDirect
     private static final Object centrifugationRecipeKey = new Object();
 
     private SmartFluidTankBehaviour inputTank, denseOutputTank, lightOutputTank;
-    protected LazyOptional<IFluidHandler> allFluidCapability;
+    protected IFluidHandler allFluidCapability;
 
     protected DestroyAdvancementBehaviour advancementBehaviour;
     protected PollutingBehaviour pollutingBehaviour;
@@ -105,9 +103,7 @@ public class CentrifugeBlockEntity extends KineticBlockEntity implements IDirect
             .forbidInsertion();
         behaviours.addAll(List.of(inputTank, denseOutputTank, lightOutputTank));
 
-        allFluidCapability = LazyOptional.of(() -> {
-            return new CombinedTankWrapper(inputTank.getCapability().orElse(null), denseOutputTank.getCapability().orElse(null), lightOutputTank.getCapability().orElse(null));
-        });
+        allFluidCapability = new CombinedTankWrapper(inputTank.getCapability(), denseOutputTank.getCapability(), lightOutputTank.getCapability());
 
         advancementBehaviour = new DestroyAdvancementBehaviour(this, DestroyAdvancementTrigger.USE_CENTRIFUGE);
         behaviours.add(advancementBehaviour);
@@ -477,28 +473,17 @@ public class CentrifugeBlockEntity extends KineticBlockEntity implements IDirect
         getLevel().addParticle(data, center.x, center.y, center.z, target.x, target.y, target.z); // It thinks getLevel() might be null
     };
 
-    @Nonnull
-    @Override
-    @SuppressWarnings("null")
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        if (cap == Capabilities.FluidHandler.BLOCK) {
-            if (side == Direction.UP) {
-                return inputTank.getCapability().cast();
-            } else if (side == Direction.DOWN) {
-                return lightOutputTank.getCapability().cast();
-            } else if (side == denseOutputTankFace || pondering) {
-                return denseOutputTank.getCapability().cast();
-            } else if (side == null) { // For the PollutingBehaviour, it needs all tanks
-                return allFluidCapability.cast();
-            };
+    public IFluidHandler getFluidHandler(Direction side) {
+        if (side == Direction.UP) {
+            return inputTank.getCapability();
+        } else if (side == Direction.DOWN) {
+            return lightOutputTank.getCapability();
+        } else if (side == denseOutputTankFace || pondering) {
+            return denseOutputTank.getCapability();
+        } else if (side == null) { // For the PollutingBehaviour, it needs all tanks
+            return allFluidCapability;
         };
-        return super.getCapability(cap, side);
-    };
-
-    @Override
-    public void invalidate() {
-        super.invalidate();
-        allFluidCapability.invalidate();
+        return null;
     };
 
     public int getEachTankCapacity() {

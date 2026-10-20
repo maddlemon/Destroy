@@ -52,8 +52,6 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.capabilities.Capability;
-import net.neoforged.neoforge.common.util.LazyOptional;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
@@ -70,9 +68,9 @@ public class VatSideBlockEntity extends CopycatBlockEntity implements IHaveLabGo
     };
 
     protected SmartFluidTankBehaviour inputBehaviour;
-    protected LazyOptional<IFluidHandler> fluidCapability;
+    protected IFluidHandler fluidCapability;
 
-    protected LazyOptional<IItemHandler> itemCapability;
+    protected IItemHandler itemCapability;
 
     public RedstoneQuantityMonitorBehaviour redstoneMonitor;
 
@@ -103,8 +101,8 @@ public class VatSideBlockEntity extends CopycatBlockEntity implements IHaveLabGo
         spoutingFluid = FluidStack.EMPTY;
         oldPower = 0f;
         oldUV = 0f;
-        fluidCapability = LazyOptional.empty();
-        itemCapability = LazyOptional.empty();
+        fluidCapability = null;
+        itemCapability = null;
         initializationTicks = 3;
         refreshItemCapability();
         refreshFluidCapability();
@@ -121,7 +119,6 @@ public class VatSideBlockEntity extends CopycatBlockEntity implements IHaveLabGo
         inputBehaviour = new SmartFluidTankBehaviour(SmartFluidTankBehaviour.TYPE, this, 1, BUFFER_TANK_CAPACITY, false)
             .forbidExtraction();
         behaviours.add(inputBehaviour);
-        //fluidCapability = LazyOptional.empty(); // Temporarily set this to an empty optional
         //refreshFluidCapability(); // getController() is null so this doesn't work here
 
         redstoneMonitor = new RedstoneQuantityMonitorBehaviour(this);
@@ -136,36 +133,21 @@ public class VatSideBlockEntity extends CopycatBlockEntity implements IHaveLabGo
     };
 
     protected void refreshFluidCapability() {
-        if (fluidCapability.isPresent() || getController() == null) return;
-        fluidCapability = LazyOptional.of(() -> {
-            // Allow inserting into this side tank (which is then mixed into the main tank)
-            LazyOptional<? extends IFluidHandler> inputCap = inputBehaviour.getCapability();
-            // Allow withdrawing from the main tank
-            LazyOptional<? extends IFluidHandler> liquidOutputCap = LazyOptional.empty();
-            LazyOptional<? extends IFluidHandler> gasOutputCap = LazyOptional.empty();
-            VatControllerBlockEntity vatController = getController();
-            if (vatController != null) {
-                liquidOutputCap = LazyOptional.of(() -> vatController.getLiquidTank());
-                gasOutputCap = LazyOptional.of(() -> vatController.getGasTank());
-            };
-			return new VatSideFluidCapability(this, liquidOutputCap.orElse(null), gasOutputCap.orElse(null), inputCap.orElse(null));
-        });
+        if (fluidCapability != null) return;
+        VatControllerBlockEntity vatController = getController();
+        if (vatController == null) return;
+        // Allow inserting into this side tank (which is then mixed into the main tank), and withdrawing from the main tank
+        fluidCapability = new VatSideFluidCapability(this, vatController.getLiquidTank(), vatController.getGasTank(), inputBehaviour == null ? null : inputBehaviour.getCapability());
+        invalidateCapabilities();
     };
 
     protected void refreshItemCapability() {
-        if (itemCapability.isPresent()) return;
+        if (itemCapability != null) return;
         VatControllerBlockEntity vatController = getController();
-        if (vatController != null) {
+        if (vatController != null && vatController.itemCapability != null) {
             itemCapability = vatController.itemCapability;
-        } else {
-            itemCapability = LazyOptional.empty();
+            invalidateCapabilities();
         };
-    };
-
-    @Override
-    public void invalidateCaps() {
-        fluidCapability.invalidate();
-        itemCapability.invalidate();
     };
 
     @Nullable
@@ -268,18 +250,16 @@ public class VatSideBlockEntity extends CopycatBlockEntity implements IHaveLabGo
         };
     };
 
-    @Override
-    public <T> @NotNull LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if (side != direction) return LazyOptional.empty();
-        if (isFluidHandlerCap(cap) && (displayType == DisplayType.NORMAL || displayType == DisplayType.PIPE)) {
-            refreshFluidCapability();
-            return fluidCapability.cast();
-        };
-        if (isItemHandlerCap(cap)) {
-            refreshItemCapability();
-            return itemCapability.cast();
-        };
-        return super.getCapability(cap, side);
+    public IFluidHandler getFluidHandler(Direction side) {
+        if (side != direction || !(displayType == DisplayType.NORMAL || displayType == DisplayType.PIPE)) return null;
+        refreshFluidCapability();
+        return fluidCapability;
+    };
+
+    public IItemHandler getItemHandler(Direction side) {
+        if (side != direction) return null;
+        refreshItemCapability();
+        return itemCapability;
     };
 
     /**
@@ -428,6 +408,7 @@ public class VatSideBlockEntity extends CopycatBlockEntity implements IHaveLabGo
         boolean updateVent = oldDisplayType == DisplayType.OPEN_VENT;
         this.displayType = displayType;
         if (!hasLevel()) return;
+        invalidateCapabilities(); // Whether the fluid handler is exposed depends on the display type
 
         if (getLevel().isClientSide()) ventOpenness.chase(displayType == DisplayType.OPEN_VENT ? 1f : 0f, 0.3f, LerpedFloat.Chaser.EXP);
 

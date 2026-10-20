@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.content.processing.dynamo;
 
+import petrolpark.mc.destroy.DestroyCapabilities;
 import net.minecraft.core.HolderLookup;
 import java.util.List;
 import java.util.Optional;
@@ -209,7 +210,7 @@ public class DynamoBlockEntity extends BasinOperatingBlockEntity implements Char
 		super.startProcessingBasin();
 
 		chargingBehaviour.start(ChargingBehaviour.Mode.BASIN, Vec3.atBottomCenterOf(getBlockPos().below(2)).add(0f, (2 / 16f) + getBasin().map(basin -> {
-            IFluidHandler fluidHandler = basin.getCapability(Capabilities.FluidHandler.BLOCK).orElse(null);
+            IFluidHandler fluidHandler = DestroyCapabilities.fluidHandler(basin, null);
             if (fluidHandler == null) return 0f;
             int totalFluid = 0;
             for (int i = 0; i < fluidHandler.getTanks(); i++) {
@@ -274,7 +275,7 @@ public class DynamoBlockEntity extends BasinOperatingBlockEntity implements Char
         List<Recipe<?>> recipes = super.getMatchingRecipes();
 
         getBasin().ifPresent(basin -> {
-            IItemHandler availableItems = basin.getCapability(Capabilities.ItemHandler.BLOCK).orElse(null);
+            IItemHandler availableItems = DestroyCapabilities.itemHandler(basin, null);
             if (availableItems != null) {
                 for (int slot = 0; slot < availableItems.getSlots(); slot++) {
                     ItemStack stack = availableItems.getStackInSlot(slot);

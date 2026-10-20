@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.mixin;
 
+import petrolpark.mc.destroy.DestroyCapabilities;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,8 +49,8 @@ public class MechanicalMixerBlockEntityMixin {
 
             if (!basin.hasLevel()) return;
 
-            IFluidHandler fluidHandler = basin.getCapability(Capabilities.FluidHandler.BLOCK).orElse(null);
-            IItemHandler itemHandler = basin.getCapability(Capabilities.ItemHandler.BLOCK).orElse(null);
+            IFluidHandler fluidHandler = DestroyCapabilities.fluidHandler(basin, null);
+            IItemHandler itemHandler = DestroyCapabilities.itemHandler(basin, null);
             if (fluidHandler == null || itemHandler == null) return;
 
             boolean containsOnlyMixtures = true;

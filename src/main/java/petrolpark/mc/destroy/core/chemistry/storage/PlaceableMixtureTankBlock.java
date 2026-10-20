@@ -1,5 +1,7 @@
 package petrolpark.mc.destroy.core.chemistry.storage;
 
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import petrolpark.mc.destroy.DestroyCapabilities;
 import java.util.Collections;
 import java.util.List;
 
@@ -33,9 +35,8 @@ public abstract class PlaceableMixtureTankBlock<T extends BlockEntity> extends B
     public void setPlacedBy(Level pLevel, BlockPos pPos, BlockState pState, LivingEntity pPlacer, ItemStack pStack) {
         if (pStack.getItem() instanceof IMixtureStorageItem mixtureItem && mixtureItem.getContents(pStack).isPresent()) {
             withBlockEntityDo(pLevel, pPos, be -> {
-                be.getCapability(Capabilities.FluidHandler.BLOCK).ifPresent(fluidHandler -> {
-                    fluidHandler.fill(mixtureItem.getContents(pStack).get(), FluidAction.EXECUTE);
-                });
+                IFluidHandler fluidHandler = DestroyCapabilities.fluidHandler(be, null);
+                if (fluidHandler != null) fluidHandler.fill(mixtureItem.getContents(pStack).get(), FluidAction.EXECUTE);
             });
         };
         super.setPlacedBy(pLevel, pPos, pState, pPlacer, pStack);
@@ -55,10 +56,10 @@ public abstract class PlaceableMixtureTankBlock<T extends BlockEntity> extends B
     public ItemStack getFilledItemStack(BlockEntity be) {
         if (be != null && asItem() instanceof IMixtureStorageItem mixtureItem) {
             ItemStack stack = new ItemStack(asItem());
-            return be.getCapability(Capabilities.FluidHandler.BLOCK).map(fluidHandler -> {
-                mixtureItem.setContents(stack, fluidHandler.drain(mixtureItem.getCapacity(stack), FluidAction.SIMULATE));
-                return stack;
-            }).orElse(ItemStack.EMPTY);
+            IFluidHandler fluidHandler = DestroyCapabilities.fluidHandler(be, null);
+            if (fluidHandler == null) return ItemStack.EMPTY;
+            mixtureItem.setContents(stack, fluidHandler.drain(mixtureItem.getCapacity(stack), FluidAction.SIMULATE));
+            return stack;
         };
         return ItemStack.EMPTY;
     };

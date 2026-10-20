@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.core.chemistry.storage;
 
+import petrolpark.mc.destroy.DestroyCapabilities;
 import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Optional;
@@ -33,7 +34,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.common.util.LazyOptional;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
@@ -134,9 +134,8 @@ public interface IMixtureStorageItem {
         else {
             BlockEntity be = level.getBlockEntity(pos);
             if (be == null) return null;
-            LazyOptional<IFluidHandler> fluidCap = be.getCapability(Capabilities.FluidHandler.BLOCK, face);
-            if (!fluidCap.isPresent()) return null;
-            fluidHandler = fluidCap.resolve().get(); 
+            fluidHandler = DestroyCapabilities.fluidHandler(be, face);
+            if (fluidHandler == null) return null;
         };
         return fluidHandler;
     };

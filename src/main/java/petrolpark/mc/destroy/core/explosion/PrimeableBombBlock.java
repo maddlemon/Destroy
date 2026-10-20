@@ -62,8 +62,8 @@ public class PrimeableBombBlock<T extends PrimedBombEntity> extends TntBlock {
 
         @Override
         protected ItemStack execute(BlockSource blockSource, ItemStack stack) {
-            Level level = blockSource.getLevel();
-            BlockPos pos = blockSource.getPos().relative(blockSource.getBlockState().getValue(DispenserBlock.FACING));
+            Level level = blockSource.level();
+            BlockPos pos = blockSource.pos().relative(blockSource.state().getValue(DispenserBlock.FACING));
             PrimedBombEntity bomb = factory.create(level, pos, null, null);
             level.addFreshEntity(bomb);
             level.playSound(null, bomb.getX(), bomb.getY(), bomb.getZ(), SoundEvents.TNT_PRIMED, SoundSource.BLOCKS, 1.0f, 1.0f);

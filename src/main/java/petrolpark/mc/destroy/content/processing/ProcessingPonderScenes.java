@@ -1,5 +1,7 @@
 package petrolpark.mc.destroy.content.processing;
 
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import petrolpark.mc.destroy.DestroyCapabilities;
 import java.util.List;
 
 import petrolpark.mc.library.core.client.ponder.PonderPlayer;
@@ -602,7 +604,7 @@ public class ProcessingPonderScenes {
         scene.world().moveDeployer(deployer, 1, 20);
         scene.idle(20);
         scene.world().modifyBlockEntityNBT(deployerS, DeployerBlockEntity.class, nbt -> nbt.put("HeldItem", filledPipe.serializeNBT()));
-        scene.world().modifyBlockEntity(basin, BasinBlockEntity.class, be -> be.getCapability(Capabilities.FluidHandler.BLOCK).ifPresent(fh -> fh.drain(250, FluidAction.EXECUTE)));
+        scene.world().modifyBlockEntity(basin, BasinBlockEntity.class, be -> { IFluidHandler fh = DestroyCapabilities.fluidHandler(be, null); if (fh != null) fh.drain(250, FluidAction.EXECUTE); });
         scene.idle(10);
         scene.world().moveDeployer(deployer, -1, 20);
         scene.idle(50);

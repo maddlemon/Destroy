@@ -18,15 +18,13 @@ import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.capabilities.Capability;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.common.util.LazyOptional;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
 
 public class TreeTapBlockEntity extends BlockBreakingKineticBlockEntity {
 
-    protected LazyOptional<IFluidHandler> fluidCapability;
+    protected IFluidHandler fluidCapability;
 	public GeniusFluidTankBehaviour tank;
 
     protected DestroyAdvancementBehaviour advancementBehaviour;
@@ -82,10 +80,9 @@ public class TreeTapBlockEntity extends BlockBreakingKineticBlockEntity {
     };
 
     private void refreshCapability() {
-		LazyOptional<IFluidHandler> oldCap = fluidCapability;
-		fluidCapability = LazyOptional.of(tank::getPrimaryHandler);
-		if (oldCap != null) oldCap.invalidate();
-	};
+        fluidCapability = tank.getPrimaryHandler();
+        invalidateCapabilities();
+    };
 
     @Override
     public boolean addToGoggleTooltip(List<Component> tooltip, boolean isPlayerSneaking) {
@@ -93,14 +90,11 @@ public class TreeTapBlockEntity extends BlockBreakingKineticBlockEntity {
         return containedFluidTooltip(tooltip, isPlayerSneaking, fluidCapability);
     };
 
-    @Nonnull
-	@Override
-	public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side) {
-        if (side != null && side != getBlockState().getValue(TreeTapBlock.HORIZONTAL_FACING).getOpposite()) return super.getCapability(cap, side);
-		if (!fluidCapability.isPresent()) refreshCapability();
-		if (cap == Capabilities.FluidHandler.BLOCK) return fluidCapability.cast();
-		return super.getCapability(cap, side);
-	};
+    public IFluidHandler getFluidHandler(Direction side) {
+        if (side != null && side != getBlockState().getValue(TreeTapBlock.HORIZONTAL_FACING).getOpposite()) return null;
+        if (fluidCapability == null) refreshCapability();
+        return fluidCapability;
+    };
 
     public int getCapacity() {
         return DestroyAllConfigs.SERVER.blocks.treeTapCapacity.get();

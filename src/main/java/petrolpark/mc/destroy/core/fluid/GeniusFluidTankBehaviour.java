@@ -13,7 +13,6 @@ import com.simibubi.create.foundation.fluid.SmartFluidTank;
 
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.level.material.Fluids;
-import net.neoforged.neoforge.common.util.LazyOptional;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 
@@ -37,7 +36,7 @@ public class GeniusFluidTankBehaviour extends SmartFluidTankBehaviour {
 			this.tanks[i] = tankSegment;
 			handlers[i] = tankSegment.getTank();
 		};
-        capability = LazyOptional.of(() -> new InternalFluidHandler(handlers, enforceVariety));
+        capability = new InternalFluidHandler(handlers, enforceVariety);
     };
 
     public void setCapacity(int capacity) {

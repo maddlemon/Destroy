@@ -57,7 +57,7 @@ public class GenericItemFillingMixin {
         toFill.setAmount(requiredAmount);
         ItemStack single = stack.copy();
         single.setCount(1);
-        if (!(stack.getItem() == Items.GLASS_BOTTLE && canFillGlassBottleInternally(toFill)) && !single.getCapability(Capabilities.FluidHandler.BLOCK).isPresent()) {
+        if (!(stack.getItem() == Items.GLASS_BOTTLE && canFillGlassBottleInternally(toFill)) && single.getCapability(Capabilities.FluidHandler.ITEM) == null) {
             ItemStack result = FireproofingHelper.fillItem(world, requiredAmount, stack, availableFluid);
             if (!result.isEmpty()) cir.setReturnValue(result);
         };

@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.core.pollution.catalyticconverter;
 
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.minecraft.core.HolderLookup;
 import java.util.List;
 
@@ -20,9 +21,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.capabilities.Capability;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.common.util.LazyOptional;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
 
 public class CatalyticConverterBlockEntity extends SmartBlockEntity {
@@ -72,10 +71,9 @@ public class CatalyticConverterBlockEntity extends SmartBlockEntity {
         behaviours.add(advancementBehaviour);
     };
 
-    @Override
-    public <T> @NotNull LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if (cap == Capabilities.FluidHandler.BLOCK && side == null || side == getBlockState().getValue(CatalyticConverterBlock.FACING).getOpposite()) return tankBehaviour.getCapability().cast();
-        return super.getCapability(cap, side);
+    public IFluidHandler getFluidHandler(Direction side) {
+        if (side == null || side == getBlockState().getValue(CatalyticConverterBlock.FACING).getOpposite()) return tankBehaviour.getCapability();
+        return null;
     };
     
 };

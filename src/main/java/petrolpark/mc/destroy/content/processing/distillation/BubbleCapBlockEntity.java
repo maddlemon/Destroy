@@ -44,9 +44,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.capabilities.Capability;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.common.util.LazyOptional;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
@@ -70,7 +68,7 @@ public class BubbleCapBlockEntity extends SmartBlockEntity implements IHaveLabGo
     private DistillationTower tower;
 
     protected SmartFluidTankBehaviour internalTank, tank;
-    protected LazyOptional<IFluidHandler> allFluidCapability;
+    protected IFluidHandler allFluidCapability;
 
     public DestroyAdvancementBehaviour advancementBehaviour;
     protected PollutingBehaviour pollutingBehaviour;
@@ -97,9 +95,7 @@ public class BubbleCapBlockEntity extends SmartBlockEntity implements IHaveLabGo
             .whenFluidUpdates(this::notifyUpdate);
         behaviours.add(tank);
         behaviours.add(internalTank);
-        allFluidCapability = LazyOptional.of(() -> { // For Polluting Behaviour, we need access to all tanks
-			return new CombinedTankWrapper(tank.getCapability().orElse(null), internalTank.getCapability().orElse(null));
-		});
+        allFluidCapability = new CombinedTankWrapper(tank.getCapability(), internalTank.getCapability()); // For Polluting Behaviour, we need access to all tanks
 
         advancementBehaviour = new DestroyAdvancementBehaviour(this, DestroyAdvancementTrigger.DISTILL);
         behaviours.add(advancementBehaviour);
@@ -312,25 +308,13 @@ public class BubbleCapBlockEntity extends SmartBlockEntity implements IHaveLabGo
         return tower;
     };
 
-    @Nonnull
-    @Override
-    @SuppressWarnings("null")
-    public <T> @NotNull LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if (cap == Capabilities.FluidHandler.BLOCK) {
-            if (side == null) { // For Polluting Behaviour, we need access to all Fluid Tanks
-                return allFluidCapability.cast();
-            } else if (side.getAxis() != Axis.Y) {
-                return tank.getCapability().cast();
-            };
-
+    public IFluidHandler getFluidHandler(Direction side) {
+        if (side == null) { // For Polluting Behaviour, we need access to all Fluid Tanks
+            return allFluidCapability;
+        } else if (side.getAxis() != Axis.Y) {
+            return tank.getCapability();
         };
-        return super.getCapability(cap, side);
-    };
-
-    @Override
-    public void invalidate() {
-        super.invalidate();
-        allFluidCapability.invalidate();
+        return null;
     };
 
     @Override

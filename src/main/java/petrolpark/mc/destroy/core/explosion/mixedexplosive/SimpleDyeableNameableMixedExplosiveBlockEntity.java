@@ -29,14 +29,11 @@ import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.gameevent.GameEventListener;
 import net.minecraft.world.level.gameevent.PositionSource;
 import net.minecraft.world.level.gameevent.vibrations.VibrationSystem;
-import net.neoforged.neoforge.capabilities.Capability;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.common.util.LazyOptional;
 import net.neoforged.neoforge.items.IItemHandler;
 
 public abstract class SimpleDyeableNameableMixedExplosiveBlockEntity extends SmartBlockEntity implements IDyeableMixedExplosiveBlockEntity, GameEventListener.Holder<VibrationSystem.Listener>, VibrationSystem {
 
-    public LazyOptional<IItemHandler> itemCapability;
 
     protected MixedExplosiveInventory inv;
     protected int color;
@@ -61,16 +58,14 @@ public abstract class SimpleDyeableNameableMixedExplosiveBlockEntity extends Sma
     public abstract void explode(@Nullable Player cause);
 
     public void refreshCapability() {
-        itemCapability = LazyOptional.of(() -> inv);
+        invalidateCapabilities();
     };
 
     @Override
     public void addBehaviours(List<BlockEntityBehaviour> behaviours) {};
 
-    @Override
-    public <T> @NotNull LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if (cap == Capabilities.ItemHandler.BLOCK) return itemCapability.cast();
-        return LazyOptional.empty();
+    public IItemHandler getItemHandler(Direction side) {
+        return inv;
     };
 
     @Override
@@ -174,11 +169,6 @@ public abstract class SimpleDyeableNameableMixedExplosiveBlockEntity extends Sma
     @Override
     public VibrationSystem.Data getVibrationData() {
         return vibrationData;
-    };
-
-    @Override
-    public void invalidate() {
-        itemCapability.invalidate();
     };
 
     public class SoundActivatedExplosiveVibrationSystemUser implements VibrationSystem.User {

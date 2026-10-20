@@ -81,8 +81,8 @@ public class HyperaccumulatingFertilizerItem extends BoneMealItem {
         @Override
         @SuppressWarnings("deprecation") // BoneMealItem.growCrop() is deprecated but it's used in the Bone Meal Dispenser Behaviour so I don't care
         protected ItemStack execute(BlockSource blockSource, ItemStack stack) {
-            Level level = blockSource.getLevel();
-            BlockPos blockPos = blockSource.getPos().relative(blockSource.getBlockState().getValue(DispenserBlock.FACING));
+            Level level = blockSource.level();
+            BlockPos blockPos = blockSource.pos().relative(blockSource.state().getValue(DispenserBlock.FACING));
             if (grow(level, blockPos)) { // Try to grow it as Hyperaccumulating Fertilizer
                 stack.shrink(1);
                 setSuccess(true);

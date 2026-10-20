@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.content.processing.glassblowing;
 
+import petrolpark.mc.destroy.DestroyCapabilities;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -45,7 +46,6 @@ import net.neoforged.neoforge.capabilities.Capability;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.ICapabilityProvider;
 import net.neoforged.neoforge.common.util.FakePlayer;
-import net.neoforged.neoforge.common.util.LazyOptional;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
@@ -118,9 +118,8 @@ public class BlowpipeItem extends BlockItem implements CustomArmPoseItem {
                 FluidTank blowpipeTank = new FluidTank(BlowpipeBlockEntity.TANK_CAPACITY);
                 blowpipeTank.readFromNBT(tag.getCompound("Tank"));
                 if (blowpipeTank.isEmpty()) {
-                    LazyOptional<IFluidHandler> cap = be.getCapability(Capabilities.FluidHandler.BLOCK, face);
-                    if (cap.isPresent()) {
-                        IFluidHandler fh = cap.resolve().get();
+                    IFluidHandler fh = DestroyCapabilities.fluidHandler(be, face);
+                    if (fh != null) {
                         for (boolean simulate : Iterate.trueAndFalse) {
                             FluidStack drained = fh.drain(ingredient.getRequiredAmount(), simulate ? FluidAction.SIMULATE : FluidAction.EXECUTE);
                             if (!ingredient.test(drained) || drained.getAmount() < ingredient.getRequiredAmount()) return InteractionResult.FAIL;

@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.core.pollution;
 
+import petrolpark.mc.destroy.DestroyCapabilities;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,7 +34,7 @@ public class PollutingBehaviour extends BlockEntityBehaviour {
     @Override
     public void destroy() {
         List<FluidStack> fluidsToRelease = new ArrayList<>();
-        IFluidHandler availableFluids = blockEntity.getCapability(Capabilities.FluidHandler.BLOCK).orElse(null);
+        IFluidHandler availableFluids = DestroyCapabilities.fluidHandler(blockEntity, null);
         if (availableFluids == null) return;
         for (int tankNo = 0; tankNo < availableFluids.getTanks(); tankNo++) {
             FluidStack fluidStack = availableFluids.getFluidInTank(tankNo);

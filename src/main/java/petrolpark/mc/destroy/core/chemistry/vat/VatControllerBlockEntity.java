@@ -74,7 +74,6 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.common.util.LazyOptional;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
@@ -111,11 +110,11 @@ public class VatControllerBlockEntity extends SmartBlockEntity implements IHaveL
     protected boolean cachedMixtureReacting = false;
 
     protected VatFluidTankBehaviour tankBehaviour;
-    protected LazyOptional<IFluidHandler> fluidCapability;
+    protected IFluidHandler fluidCapability;
     protected BlockPos openVentPos;
 
     public SmartInventory inventory;
-    protected LazyOptional<IItemHandler> itemCapability;
+    protected IItemHandler itemCapability;
 
     protected VatAdvancementBehaviour advancementBehaviour;
 
@@ -132,8 +131,8 @@ public class VatControllerBlockEntity extends SmartBlockEntity implements IHaveL
         initializationTicks = 3;
         underDeconstruction = false;
 
-        fluidCapability = LazyOptional.empty();
-        itemCapability = LazyOptional.empty();
+        fluidCapability = null;
+        itemCapability = null;
         openVentPos = null;
 
         updateItemCapability();
@@ -146,7 +145,7 @@ public class VatControllerBlockEntity extends SmartBlockEntity implements IHaveL
         tankBehaviour.whenFluidUpdates(this::onFluidStackChanged)
             .forbidExtraction() // Forbid extraction until the Vat is initialized
             .forbidInsertion(); // Forbid insertion no matter what
-        fluidCapability = LazyOptional.empty();
+        fluidCapability = null;
         behaviours.add(tankBehaviour);
 
         // Advancement behaviour
@@ -155,20 +154,20 @@ public class VatControllerBlockEntity extends SmartBlockEntity implements IHaveL
     };
 
     protected void updateItemCapability() {
-        if (itemCapability.isPresent()) return;
+        if (itemCapability != null) return;
         inventory = new SmartInventory(9, this)
             .whenContentsChanged(i -> {
                 if (cachedMixture != null) cachedMixture.disturbEquilibrium();
         });
-        itemCapability = LazyOptional.of(() -> inventory);
+        itemCapability = inventory;
+        invalidateCapabilities();
     };
 
     protected void updateFluidCapability() {
-        if (fluidCapability.isPresent()) return;
+        if (fluidCapability != null) return;
         if (vat != null && vat.isPresent()) {
-            fluidCapability = LazyOptional.of(() -> tankBehaviour.getCapability().orElse(null));
-        } else {
-            fluidCapability = LazyOptional.empty();
+            fluidCapability = tankBehaviour.getCapability();
+            invalidateCapabilities();
         };
     };
 
@@ -364,7 +363,7 @@ public class VatControllerBlockEntity extends SmartBlockEntity implements IHaveL
      * @return The amount (in mB) of Fluid which could be or was added
      */
     public int addFluid(FluidStack stack, FluidAction action) {
-        int amountAdded = fluidCapability.map(fh -> fh.fill(stack, action)).orElse(0);
+        int amountAdded = fluidCapability == null ? 0 : fluidCapability.fill(stack, action);
         if (amountAdded != 0 && action == FluidAction.EXECUTE) {
             updateCachedMixture();
             updateGasVolume();
@@ -482,7 +481,8 @@ public class VatControllerBlockEntity extends SmartBlockEntity implements IHaveL
         };
 
         ItemHelper.dropContents(getLevel(), posDestroyed, inventory);
-        itemCapability.invalidate();
+        itemCapability = null;
+        invalidateCapabilities();
         removeVent();
         PollutionHelper.pollute(getLevel(), pollutionPos, getLiquidTank().getFluid(), getGasTank().getFluid());
 
@@ -556,13 +556,6 @@ public class VatControllerBlockEntity extends SmartBlockEntity implements IHaveL
     public FluidStack flush() {
         if (cachedMixture == null) return FluidStack.EMPTY;
         return tankBehaviour.flush(cachedMixture.getTemperature());
-    };
-
-    @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        fluidCapability.invalidate();
-        itemCapability.invalidate();
     };
 
     /**

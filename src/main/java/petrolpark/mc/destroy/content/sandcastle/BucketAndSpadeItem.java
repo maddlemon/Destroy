@@ -86,9 +86,9 @@ public class BucketAndSpadeItem extends Item {
 
         @Override
         protected ItemStack execute(BlockSource source, ItemStack stack) {
-            BlockPos posAbove = source.getPos().relative(source.getBlockState().getValue(DispenserBlock.FACING));
-            if (buildSandcastle(source.getLevel(), posAbove, source.getLevel().getBlockState(posAbove.relative(Direction.DOWN)), stack)) {
-                if (stack.hurt(1, source.getLevel().getRandom(), null)) stack.shrink(1);
+            BlockPos posAbove = source.pos().relative(source.state().getValue(DispenserBlock.FACING));
+            if (buildSandcastle(source.level(), posAbove, source.level().getBlockState(posAbove.relative(Direction.DOWN)), stack)) {
+                if (stack.hurt(1, source.level().getRandom(), null)) stack.shrink(1);
                 setSuccess(true);
             } else {
                 setSuccess(false);

@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.content.tool;
 
+import petrolpark.mc.destroy.DestroyCapabilities;
 import javax.annotation.Nullable;
 
 import petrolpark.mc.destroy.DestroyItems;
@@ -20,7 +21,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.common.util.LazyOptional;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
 
@@ -67,15 +67,15 @@ public class SprayBottleItem extends Item {
 
         @Override
         protected ItemStack execute(BlockSource blockSource, ItemStack stack) {
-            Direction direction = blockSource.getBlockState().getValue(DispenserBlock.FACING);
-            Vec3 effectCloudPosition = Vec3.atBottomCenterOf(blockSource.getPos().relative(direction));
+            Direction direction = blockSource.state().getValue(DispenserBlock.FACING);
+            Vec3 effectCloudPosition = Vec3.atBottomCenterOf(blockSource.pos().relative(direction));
 
-            spawnEffectCloud(blockSource.getLevel(), effectCloudPosition, null);
-            DestroySoundEvents.SPRAY_BOTTLE_SPRAYS.play(blockSource.getLevel(), null, blockSource.getPos());
+            spawnEffectCloud(blockSource.level(), effectCloudPosition, null);
+            DestroySoundEvents.SPRAY_BOTTLE_SPRAYS.play(blockSource.level(), null, blockSource.pos());
 
-            LazyOptional<IItemHandler> invCap = blockSource.getEntity().getCapability(Capabilities.ItemHandler.BLOCK);
-            boolean couldInsertEmptyBottle = invCap.map(inv -> ItemHandlerHelper.insertItem(inv, DestroyItems.SPRAY_BOTTLE.asStack(), false).isEmpty()).orElse(false);
-            if (!couldInsertEmptyBottle) spawnItem(blockSource.getLevel(), DestroyItems.SPRAY_BOTTLE.asStack(), 6, direction, DispenserBlock.getDispensePosition(blockSource));
+            IItemHandler inv = DestroyCapabilities.itemHandler(blockSource.blockEntity(), null);
+            boolean couldInsertEmptyBottle = inv != null && ItemHandlerHelper.insertItem(inv, DestroyItems.SPRAY_BOTTLE.asStack(), false).isEmpty();
+            if (!couldInsertEmptyBottle) spawnItem(blockSource.level(), DestroyItems.SPRAY_BOTTLE.asStack(), 6, direction, DispenserBlock.getDispensePosition(blockSource));
 
             setSuccess(true);
             stack.shrink(1);

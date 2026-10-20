@@ -18,7 +18,6 @@ import com.simibubi.create.foundation.blockEntity.behaviour.fluid.SmartFluidTank
 import com.simibubi.create.foundation.fluid.SmartFluidTank;
 
 import net.minecraft.nbt.CompoundTag;
-import net.neoforged.neoforge.common.util.LazyOptional;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
@@ -37,7 +36,7 @@ public class VatFluidTankBehaviour extends GeniusFluidTankBehaviour {
 			this.tanks[i] = tankSegment;
 			handlers[i] = tankSegment.getTank();
 		};
-        capability = LazyOptional.of(() -> new VatFluidHandler(handlers));
+        capability = new VatFluidHandler(handlers);
 
         liquidFull = false;
 
@@ -125,11 +124,9 @@ public class VatFluidTankBehaviour extends GeniusFluidTankBehaviour {
     };
 
     public void setMixture(LegacyMixture mixture, int amount) {
-        capability.ifPresent(fluidHandler -> {
-            fluidHandler.drain(vatCapacity, FluidAction.EXECUTE);
-            liquidFull = false;
-            fluidHandler.fill(MixtureFluid.of(amount, mixture), FluidAction.EXECUTE);
-        });
+        capability.drain(vatCapacity, FluidAction.EXECUTE);
+        liquidFull = false;
+        capability.fill(MixtureFluid.of(amount, mixture), FluidAction.EXECUTE);
     };
 
     /**

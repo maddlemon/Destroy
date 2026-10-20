@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.core.chemistry.storage;
 
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
@@ -23,9 +24,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.neoforged.neoforge.capabilities.Capability;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.common.util.LazyOptional;
 import net.neoforged.neoforge.fluids.FluidStack;
 
 public class ElementTankBlockEntity extends SmartBlockEntity implements IHaveLabGoggleInformation {
@@ -61,10 +60,8 @@ public class ElementTankBlockEntity extends SmartBlockEntity implements IHaveLab
         });
     };
 
-    @Override
-    public <T> @NotNull LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if (cap == Capabilities.FluidHandler.BLOCK) return tank.getCapability().cast();
-        return super.getCapability(cap, side);
+    public IFluidHandler getFluidHandler(Direction side) {
+        return tank.getCapability();
     };
 
     public FluidStack getRenderedFluid() {

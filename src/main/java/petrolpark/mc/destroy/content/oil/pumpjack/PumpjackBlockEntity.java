@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.content.oil.pumpjack;
 
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import java.lang.ref.WeakReference;
 import java.util.List;
 
@@ -37,9 +38,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.capabilities.Capability;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.common.util.LazyOptional;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
 import petrolpark.mc.destroy.Destroy;
@@ -122,12 +121,9 @@ public class PumpjackBlockEntity extends SmartBlockEntity implements IHaveGoggle
         crudeOilOptional.ifPresent(crudeOilCap -> crudeOilCap.decreaseAmount(amountPumped));
     };
 
-    @Override
-    public <T> @NotNull LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if (cap == Capabilities.FluidHandler.BLOCK && (side == null || (PumpjackBlock.getFacing(getBlockState()).getAxis() != side.getAxis() && side.getAxis() != Axis.Y))) {
-            return tank.getCapability().cast();
-        };
-        return super.getCapability(cap, side);
+    public IFluidHandler getFluidHandler(Direction side) {
+        if (side == null || (PumpjackBlock.getFacing(getBlockState()).getAxis() != side.getAxis() && side.getAxis() != Axis.Y)) return tank.getCapability();
+        return null;
     };
 
     public Float getTargetAngle() {
@@ -204,7 +200,7 @@ public class PumpjackBlockEntity extends SmartBlockEntity implements IHaveGoggle
 
     @Override
     public boolean addToGoggleTooltip(List<Component> tooltip, boolean isPlayerSneaking) {
-        return containedFluidTooltip(tooltip, isPlayerSneaking, getCapability(Capabilities.FluidHandler.BLOCK));
+        return containedFluidTooltip(tooltip, isPlayerSneaking, getFluidHandler(null));
     };
 
     public class RememberPlacerForOilDiscoveryBehaviour extends AbstractRememberPlacerBehaviour {

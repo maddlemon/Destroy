@@ -1,5 +1,7 @@
 package petrolpark.mc.destroy.content.processing.ageing;
 
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.minecraft.core.HolderLookup;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,9 +37,7 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.capabilities.Capability;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.common.util.LazyOptional;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
 import net.neoforged.neoforge.items.IItemHandlerModifiable;
@@ -50,7 +50,7 @@ public class AgeingBarrelBlockEntity extends SmartBlockEntity implements IHaveGo
     public SmartInventory inventory;
     protected SmartFluidTankBehaviour tank;
 
-    public LazyOptional<IItemHandlerModifiable> itemCapability;
+    public IItemHandlerModifiable itemCapability;
 
     protected DirectBeltInputBehaviour beltBehaviour;
     protected PollutingBehaviour pollutingBehaviour;
@@ -63,7 +63,7 @@ public class AgeingBarrelBlockEntity extends SmartBlockEntity implements IHaveGo
         inventory = new SmartInventory(2, this, 1, false)
             .whenContentsChanged($ -> checkRecipe())
             .forbidExtraction();
-        itemCapability = LazyOptional.of(() -> inventory);
+        itemCapability = inventory;
 
         timer = -1;
     };
@@ -162,16 +162,12 @@ public class AgeingBarrelBlockEntity extends SmartBlockEntity implements IHaveGo
         // Retrieval of what's in the Tank is automatically covered in SmartBlockEntity
     };
 
-    @Nonnull
-    @Override
-    @SuppressWarnings("null")
-    public <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if (cap == Capabilities.FluidHandler.BLOCK) {
-            return tank.getCapability().cast();
-        } else if (cap == Capabilities.ItemHandler.BLOCK) {
-            return itemCapability.cast();
-        };
-        return super.getCapability(cap, side);
+    public IFluidHandler getFluidHandler(Direction side) {
+        return tank.getCapability();
+    };
+
+    public IItemHandler getItemHandler(Direction side) {
+        return itemCapability;
     };
 
     @Override
@@ -230,7 +226,7 @@ public class AgeingBarrelBlockEntity extends SmartBlockEntity implements IHaveGo
 
     @Override
     public boolean addToGoggleTooltip(List<Component> tooltip, boolean isPlayerSneaking) {
-        containedFluidTooltip(tooltip, isPlayerSneaking, tank.getCapability().cast());
+        containedFluidTooltip(tooltip, isPlayerSneaking, tank.getCapability());
         if (timer >= 0) {
             DestroyLang.translate("tooltip.aging_barrel.progress", (timer == 0 ? 100 : (int)((0.995 - (timer/(float)totalTime)) * 100)) + "%")
                 .style(ChatFormatting.WHITE)

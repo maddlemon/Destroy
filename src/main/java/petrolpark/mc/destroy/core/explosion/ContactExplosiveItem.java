@@ -30,8 +30,8 @@ public class ContactExplosiveItem extends Item {
         
         @Override
         protected ItemStack execute(BlockSource source, ItemStack stack) {
-            Vec3 position = Vec3.atCenterOf(source.getPos().relative(source.getBlockState().getValue(DispenserBlock.FACING)));
-            source.getLevel().explode(null, position.x, position.y, position.z, 0.5f, Level.ExplosionInteraction.NONE);
+            Vec3 position = Vec3.atCenterOf(source.pos().relative(source.state().getValue(DispenserBlock.FACING)));
+            source.level().explode(null, position.x, position.y, position.z, 0.5f, Level.ExplosionInteraction.NONE);
             setSuccess(true);
             stack.shrink(1);
             return stack;

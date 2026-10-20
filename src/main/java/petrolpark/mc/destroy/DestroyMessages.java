@@ -122,7 +122,7 @@ public class DestroyMessages {
     };
 
     public static void sendToAllClientsNear(S2CPacket message, BlockSource location) {
-        INSTANCE.send(PacketDistributor.NEAR.with(TargetPoint.p(location.x(), location.y(), location.z(), 32d, location.getLevel().dimension())), message);
+        INSTANCE.send(PacketDistributor.NEAR.with(TargetPoint.p(location.x(), location.y(), location.z(), 32d, location.level().dimension())), message);
     };
 
     public static void sendToClientsTrackingEntity(S2CPacket message, Entity trackedEntity) {

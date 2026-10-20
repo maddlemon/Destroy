@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.core.chemistry.storage.testtube;
 
+import net.neoforged.neoforge.items.IItemHandler;
 import net.minecraft.core.HolderLookup;
 import static petrolpark.mc.library.compat.create.PetrolparkCreateClient.OUTLINER;
 
@@ -25,37 +26,24 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.neoforge.capabilities.Capability;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.common.util.LazyOptional;
 import net.neoforged.neoforge.items.ItemStackHandler;
 
 public class TestTubeRackBlockEntity extends SmartBlockEntity implements ISpecialWhenHoveredBlockEntity {
 
     public TestTubeRackInventory inv;
-    private LazyOptional<TestTubeRackInventory> lazyItemHandler;
 
     public TestTubeRackBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
         inv = new TestTubeRackInventory();
-        lazyItemHandler = LazyOptional.empty();
     };
 
     @Override
     public void addBehaviours(List<BlockEntityBehaviour> behaviours) {
-        lazyItemHandler = LazyOptional.of(() -> inv);
     };
 
-    @Override
-    public <T> @NotNull LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if (cap == Capabilities.ItemHandler.BLOCK) return lazyItemHandler.cast();
-        return super.getCapability(cap, side);
-    };
-
-    @Override
-    public void invalidate() {
-        super.invalidate();
-        lazyItemHandler.invalidate();
+    public IItemHandler getItemHandler(Direction side) {
+        return inv;
     };
 
     @Override

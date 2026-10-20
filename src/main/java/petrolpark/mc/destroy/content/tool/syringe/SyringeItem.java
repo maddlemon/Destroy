@@ -128,9 +128,9 @@ public class SyringeItem extends Item implements CustomUseEffectsItem {
 
         @Override
         public ItemStack execute(BlockSource blockSource, ItemStack stack) {
-            List<LivingEntity> list = blockSource.getLevel().getEntitiesOfClass(LivingEntity.class, new AABB(blockSource.getPos().relative(blockSource.getBlockState().getValue(DispenserBlock.FACING))));
+            List<LivingEntity> list = blockSource.level().getEntitiesOfClass(LivingEntity.class, new AABB(blockSource.pos().relative(blockSource.state().getValue(DispenserBlock.FACING))));
             if (!list.isEmpty()) {
-                onInject(stack, blockSource.getLevel(), list.get(0));
+                onInject(stack, blockSource.level(), list.get(0));
                 setSuccess(true);
                 return DestroyItems.SYRINGE.asStack();
             } else {

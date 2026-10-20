@@ -40,8 +40,8 @@ public class ConfettiItem extends Item implements ISpecialEffectExplosiveItem {
         @Override
         @SuppressWarnings("resource")
         protected ItemStack execute(BlockSource blockSource, ItemStack stack) {
-            Direction facing = blockSource.getBlockState().getValue(DispenserBlock.FACING);
-            DestroyMessages.sendToAllClientsNear(new ConfettiBurstS2CPacket(stack, Vec3.atCenterOf(blockSource.getPos()).add(Vec3.atLowerCornerOf(facing.getNormal()).scale(0.5f)), Vec3.atLowerCornerOf(facing.getNormal()).scale(0.25f)), blockSource);
+            Direction facing = blockSource.state().getValue(DispenserBlock.FACING);
+            DestroyMessages.sendToAllClientsNear(new ConfettiBurstS2CPacket(stack, Vec3.atCenterOf(blockSource.pos()).add(Vec3.atLowerCornerOf(facing.getNormal()).scale(0.5f)), Vec3.atLowerCornerOf(facing.getNormal()).scale(0.25f)), blockSource);
             stack.shrink(1);
             return stack;
         };

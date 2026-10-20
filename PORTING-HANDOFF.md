@@ -74,7 +74,17 @@ roll, previous-position sampling and global pollution decay run at half their ol
 
 | (mob effects commit) | Mob effects -> `Holder<MobEffect>`: `DeferredRegister.create(Registries.MOB_EFFECT, …)` (NeoForgeRegistries has no MOB_EFFECTS), `DestroyMobEffects.X.get()` -> `DestroyMobEffects.X` everywhere (DeferredHolder is a Holder), `increaseEffectLevel` takes `Holder<MobEffect>`. Note: compare effects with `holder.is(DestroyMobEffects.X)`, never `==` (DeferredHolder != the registry's Holder.Reference). |
 
-Latest compile: **1,892 errors**.
+| (caps commit) | Batch 3a — **block-entity capabilities**: new `DestroyCapabilities` (mod bus) registers `Capabilities.FluidHandler.BLOCK` / `ItemHandler.BLOCK` for 13 BE types; each BE's `getCapability(Capability, Direction)` override became typed `getFluidHandler(side)` / `getItemHandler(side)` (null = none on that side); `LazyOptional` fields -> nullable handlers + `invalidateCapabilities()` wherever the old code invalidated or the exposed handler changes (vat display type, vat cap refresh, mixed-explosive refresh, tree tap); `invalidate()`/`invalidateCaps()` overrides removed (NeoForge invalidates on removal). Consumers use `DestroyCapabilities.fluidHandler(be, side)` / `itemHandler(be, side)` (null-safe `level.getCapability` lookups). Also `BlockSource` getters -> record accessors (`level()/pos()/state()/blockEntity()`). |
+
+Latest compile: **1,718 errors**.
+
+Capability work still TODO (batch 3b/3c): the 5 player/entity capabilities -> attachments
+(see below), old `Pollution.CAPABILITY` / `ChunkCrudeOil.Provider.CHUNK_CRUDE_OIL` consumers ->
+the author's `LevelPollution`/`ChunkPollution`/`ChunkCrudeOil` attachments, and item capabilities
+(`ItemMixtureTank`, `BlowpipeItem`, measuring cylinder, test tubes) -> `Capabilities.FluidHandler.ITEM`
+registered via `event.registerItem(...)`, backed by data components (do together with `getOrCreateTag`).
+`DestroyCommonEvents.onAttachCapabilities*` were mangled into `RegisterCapabilitiesEvent<Level>` by
+Phase A's rename — they must be deleted, not fixed.
 
 Still TODO for pollution consumers (old enum API, needs redesign against the author's registry +
 data-map `PollutionType.Properties`): `pollutionType.local` / `.max`, `PollutionType.values()`,
