@@ -6,6 +6,7 @@ import static petrolpark.mc.library.compat.create.PetrolparkCreateClient.OUTLINE
 import java.util.Arrays;
 import java.util.List;
 
+import petrolpark.mc.destroy.util.BlockPosNBT;
 import petrolpark.mc.destroy.util.DestroyLang;
 import petrolpark.mc.destroy.config.DestroyAllConfigs;
 import petrolpark.mc.destroy.core.bettervaluesettings.SidedScrollValueBehaviour;
@@ -69,8 +70,8 @@ public class DynamiteBlockEntity extends SmartBlockEntity implements ISpecialWhe
     @Override
     protected void read(CompoundTag tag, HolderLookup.Provider registries, boolean clientPacket) {
         super.read(tag, registries, clientPacket);
-        excavationAreaUpperCorner = NbtUtils.readBlockPos(tag.getCompound("UpperCorner"));
-        excavationAreaLowerCorner = NbtUtils.readBlockPos(tag.getCompound("LowerCorner"));
+        excavationAreaUpperCorner = BlockPosNBT.readOrOrigin(tag, "UpperCorner");
+        excavationAreaLowerCorner = BlockPosNBT.readOrOrigin(tag, "LowerCorner");
     };
 
     @Override
@@ -83,7 +84,7 @@ public class DynamiteBlockEntity extends SmartBlockEntity implements ISpecialWhe
     @OnlyIn(Dist.CLIENT)
     @Override
     public void whenLookedAt(LocalPlayer player, BlockHitResult blockHitResult) {
-        OUTLINER.chaseAABB(Pair.of("excavationArea", getBlockPos()), new AABB(excavationAreaLowerCorner, excavationAreaUpperCorner))
+        OUTLINER.chaseAABB(Pair.of("excavationArea", getBlockPos()), new AABB(Vec3.atLowerCornerOf(excavationAreaLowerCorner), Vec3.atLowerCornerOf(excavationAreaUpperCorner)))
             .colored(0xFF_d80051);
     };
 

@@ -16,6 +16,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 
 public class DynamiteBlock extends Block implements IBE<DynamiteBlockEntity> {
 
@@ -27,7 +28,7 @@ public class DynamiteBlock extends Block implements IBE<DynamiteBlockEntity> {
         if (!(level instanceof ServerLevel serverLevel)) return;
         //level.removeBlock(pos, false);
         withBlockEntityDo(serverLevel, pos, be -> {
-            ExcavationExplosion excavationExplosion = new ExcavationExplosion(level, source, pos, new AABB(be.excavationAreaLowerCorner, be.excavationAreaUpperCorner));
+            ExcavationExplosion excavationExplosion = new ExcavationExplosion(level, source, pos, new AABB(Vec3.atLowerCornerOf(be.excavationAreaLowerCorner), Vec3.atLowerCornerOf(be.excavationAreaUpperCorner)));
             SmartExplosion.explode(serverLevel, excavationExplosion);
         });
     };

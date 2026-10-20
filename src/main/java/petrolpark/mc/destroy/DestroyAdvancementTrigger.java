@@ -5,13 +5,14 @@ import petrolpark.mc.destroy.chemistry.legacy.ReactionResult;
 import petrolpark.mc.destroy.chemistry.legacy.reactionresult.DestroyAdvancementReactionResult;
 import net.createmod.catnip.lang.Lang;
 
-import net.minecraft.advancements.Advancement;
-import net.minecraft.advancements.CriteriaTriggers;
+import net.minecraft.advancements.AdvancementHolder;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.advancements.critereon.PlayerTrigger;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.registries.RegisterEvent;
 
 /*
  * Class for easily triggering Advancements.
@@ -95,7 +96,7 @@ public enum DestroyAdvancementTrigger {
     public boolean isAlreadyAwardedTo(LivingEntity player) {
 		if (!(player instanceof ServerPlayer sp)) return true;
         for (String advancementId : advancementIds) {
-            Advancement advancement = sp.getServer().getAdvancements().getAdvancement(Destroy.asResource(advancementId));
+            AdvancementHolder advancement = sp.getServer().getAdvancements().get(Destroy.asResource(advancementId));
             if (advancement == null || sp.getAdvancements().getOrStartProgress(advancement).isDone()) return true;
         };
         return false;
@@ -105,9 +106,12 @@ public enum DestroyAdvancementTrigger {
         return new DestroyAdvancementReactionResult(moles, reaction, this);
     };
 
-    public static void register() {
-        for (DestroyAdvancementTrigger e : values()) {
-            CriteriaTriggers.register(Destroy.asResource(e.triggerId), e.trigger);
-        };
+    /**
+     * Criterion Triggers are a registry in 1.21 (frozen before common setup, where 1.20.1 registered them).
+     */
+    public static void register(RegisterEvent event) {
+        event.register(Registries.TRIGGER_TYPE, helper -> {
+            for (DestroyAdvancementTrigger e : values()) helper.register(Destroy.asResource(e.triggerId), e.trigger);
+        });
     };
 }

@@ -8,6 +8,7 @@ import java.util.UUID;
 import java.util.function.Consumer;
 
 import petrolpark.mc.library.compat.create.core.world.item.transported.DirectionalTransportedItemStack;
+import petrolpark.mc.library.registry.PetrolparkDataComponentTypes;
 import petrolpark.mc.destroy.Destroy;
 import petrolpark.mc.destroy.DestroyItems;
 import petrolpark.mc.destroy.client.DestroyGuiTextures;
@@ -66,7 +67,7 @@ public class CircuitMaskItem extends CircuitPatternItem {
     };
     
     @Override
-    public void launch(DirectionalTransportedItemStack stack, Direction launchDirection) {
+    public void onLaunchedByWeightedEjector(DirectionalTransportedItemStack stack, Direction launchDirection) {
         // If it is 'flipped', the Item has been rotated around 180 the north-south axis before being rotated around the up-down axis
         boolean alreadyFlipped = ItemStackNBT.read(stack.stack).contains("Flipped");
         ItemStackNBT.update(stack.stack, tag -> tag.remove("Flipped"));
@@ -80,14 +81,14 @@ public class CircuitMaskItem extends CircuitPatternItem {
         };
 
         if (!alreadyFlipped) ItemStackNBT.update(stack.stack, tag -> tag.putBoolean("Flipped", true));
-        super.launch(stack, launchDirection);
+        super.onLaunchedByWeightedEjector(stack, launchDirection);
     };
 
     @Override
     public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
         super.inventoryTick(stack, level, entity, slotId, isSelected);
         ItemStackNBT.update(stack, customTag -> customTag.remove("Flipped"));
-        ItemStackNBT.update(stack, customTag -> customTag.remove("RotationWhileFlying"));
+        stack.remove(PetrolparkDataComponentTypes.ROTATION_WHILE_FLYING); // 1.20.1: the "RotationWhileFlying" tag
 
         if (level.isClientSide() && isSelected && entity instanceof Player player && player.isCrouching()) {
             Direction direction = player.getDirection();

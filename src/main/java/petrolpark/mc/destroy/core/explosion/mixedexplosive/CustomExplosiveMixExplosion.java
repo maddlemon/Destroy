@@ -15,6 +15,7 @@ import petrolpark.mc.destroy.core.explosion.mixedexplosive.ExplosiveProperties.E
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.damagesource.DamageSource;
@@ -42,11 +43,14 @@ public class CustomExplosiveMixExplosion extends SmartExplosion {
 
     public static final Serializer SERIALIZER = new Serializer(Destroy.asResource("custom_mix"));
 
-    protected static final Lazy<ItemStack> SILK_TOUCH_TOOL = Lazy.of(() -> {
+    /**
+     * 1.20.1 cached this in a static; Enchantments need the Level's registries in 1.21.
+     */
+    protected ItemStack silkTouchTool() {
         ItemStack stack = new ItemStack(Items.NETHERITE_PICKAXE);
-        stack.enchant(Enchantments.SILK_TOUCH, 1);
+        stack.enchant(level.registryAccess().holderOrThrow(Enchantments.SILK_TOUCH), 1);
         return stack;
-    });
+    };
 
     protected final ExplosiveProperties properties;
     protected final List<ItemStack> specialItems;
@@ -85,7 +89,7 @@ public class CustomExplosiveMixExplosion extends SmartExplosion {
 
     @Override
     public void modifyLoot(BlockPos pos, Builder builder) {
-        if (properties.fulfils(ExplosiveProperties.SILK_TOUCH)) builder.withParameter(LootContextParams.TOOL, SILK_TOUCH_TOOL.get());
+        if (properties.fulfils(ExplosiveProperties.SILK_TOUCH)) builder.withParameter(LootContextParams.TOOL, silkTouchTool());
     };
 
     @Override
@@ -160,7 +164,7 @@ public class CustomExplosiveMixExplosion extends SmartExplosion {
     @Override
     public void write(FriendlyByteBuf buffer) {
         properties.write(buffer);
-        buffer.writeCollection(specialItems, FriendlyByteBuf::writeItem);
+        ItemStack.OPTIONAL_LIST_STREAM_CODEC.encode((RegistryFriendlyByteBuf) buffer, specialItems);
         buffer.writeDouble(center().x());
         buffer.writeDouble(center().y());
         buffer.writeDouble(center().z());
@@ -176,7 +180,7 @@ public class CustomExplosiveMixExplosion extends SmartExplosion {
         @OnlyIn(Dist.CLIENT)
         public SmartExplosion read(FriendlyByteBuf buffer) {
             Minecraft mc = Minecraft.getInstance();
-            return CustomExplosiveMixExplosion.create(mc.level, ExplosiveProperties.read(buffer), buffer.readCollection(ArrayList<ItemStack>::new, FriendlyByteBuf::readItem), null, new Vec3(buffer.readDouble(), buffer.readDouble(), buffer.readDouble()));
+            return CustomExplosiveMixExplosion.create(mc.level, ExplosiveProperties.read(buffer), ItemStack.OPTIONAL_LIST_STREAM_CODEC.decode((RegistryFriendlyByteBuf) buffer), null, new Vec3(buffer.readDouble(), buffer.readDouble(), buffer.readDouble()));
         };
 
     };

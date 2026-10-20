@@ -32,7 +32,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition.Builder;
-import net.neoforged.neoforge.common.crafting.CraftingHelper;
 import net.neoforged.neoforge.common.conditions.ICondition.IContext;
 import net.neoforged.neoforge.event.level.BlockEvent.EntityPlaceEvent;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -114,7 +113,7 @@ public class PeriodicTableBlock extends HorizontalDirectionalBlock {
         @SuppressWarnings("deprecation")
         public void forEachNameSpaceJsonFile(JsonObject jsonObject) {
             jsonObject.entrySet().forEach(entry -> {
-                if (!CraftingHelper.processConditions(entry.getValue().getAsJsonObject(), "conditions", this.context)) return;
+                if (!DestroyReloadListener.conditionsMet(entry.getValue().getAsJsonObject(), "conditions", this.context)) return;
 
                 Optional<? extends Holder<Block>> blockOptional = BuiltInRegistries.BLOCK.asLookup().get(ResourceKey.create(Registries.BLOCK, ResourceLocation.parse(entry.getKey())));
                 if (blockOptional.isEmpty()) throw new IllegalStateException("Invalid block ID: "+entry.getKey());

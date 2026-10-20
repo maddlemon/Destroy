@@ -10,6 +10,9 @@ import petrolpark.mc.destroy.core.explosion.mixedexplosive.IDyeableMixedExplosiv
 import petrolpark.mc.destroy.core.explosion.mixedexplosive.MixedExplosiveBlockEntity;
 import com.simibubi.create.AllBlocks;
 
+import it.unimi.dsi.fastutil.ints.IntList;
+import net.minecraft.world.item.component.FireworkExplosion;
+import net.minecraft.core.component.DataComponents;
 import net.createmod.catnip.math.Pointing;
 import net.createmod.ponder.api.PonderPalette;
 import net.createmod.ponder.api.element.ElementLink;
@@ -100,9 +103,7 @@ public class ExplosivesPonderScenes {
     private static ItemStack getFireworkStar() {
         if (fireworkStar.isEmpty()) {
             fireworkStar = new ItemStack(Items.FIREWORK_STAR);
-            CompoundTag explosionTag = new CompoundTag();
-            explosionTag.putIntArray("Colors", new int[]{4312372});
-            fireworkStar.addTagElement("Explosion", explosionTag);
+            fireworkStar.set(DataComponents.FIREWORK_EXPLOSION, new FireworkExplosion(FireworkExplosion.Shape.SMALL_BALL, IntList.of(4312372), IntList.of(), false, false)); // 1.20.1: {Explosion: {Colors: [4312372]}}
         };
         return fireworkStar;
     };
@@ -226,7 +227,7 @@ public class ExplosivesPonderScenes {
         scene.idle(70);
         ItemStack namedStack = DestroyBlocks.CUSTOM_EXPLOSIVE_MIX.asStack();
         Component name = Component.literal("TNX");
-        namedStack.setHoverName(name);
+        namedStack.set(DataComponents.CUSTOM_NAME, name);
         scene.overlay().showControls(util.vector().topOf(anvil), Pointing.DOWN, 40).withItem(namedStack);
         scene.idle(60);
 

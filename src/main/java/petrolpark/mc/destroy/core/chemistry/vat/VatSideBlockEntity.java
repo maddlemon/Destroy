@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.core.chemistry.vat;
 
+import petrolpark.mc.destroy.util.BlockPosNBT;
 import petrolpark.mc.destroy.DestroyPollutionTypes;
 import net.minecraft.core.HolderLookup;
 import java.text.DecimalFormat;
@@ -215,7 +216,7 @@ public class VatSideBlockEntity extends CopycatBlockEntity implements IHaveLabGo
         } else {
             direction = null;
         };
-        controllerPosition = NbtUtils.readBlockPos(tag.getCompound("ControllerPosition")).offset(getBlockPos());
+        controllerPosition = BlockPosNBT.readOrOrigin(tag, "ControllerPosition").offset(getBlockPos());
         displayType = DisplayType.values()[tag.getInt("DisplayType")];
         oldPower = tag.getFloat("OldHeatingPower");
         oldUV = tag.getFloat("OldUVPower");

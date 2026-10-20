@@ -89,7 +89,11 @@ public class DestroyTags {
         BEETROOTS,
         ACID_RAIN_DESTRUCTIBLE,
         GANGUE,
-        ACID_RAIN_DIRT_REPLACEABLE;
+        ACID_RAIN_DIRT_REPLACEABLE,
+        // The author's acid rain (destroy:acid_rain_replacement data map); filled by DestroyBlockTagsProvider
+        ACID_RAIN_DESTROYS,
+        ACID_RAIN_SETS_DIRT,
+        ACID_RAIN_SETS_DEAD_BUSH;
 
         public final TagKey<Block> tag;
 

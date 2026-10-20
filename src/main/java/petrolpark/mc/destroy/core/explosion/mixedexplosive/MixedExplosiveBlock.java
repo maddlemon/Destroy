@@ -131,7 +131,7 @@ public class MixedExplosiveBlock extends PrimeableBombBlock<MixedExplosiveEntity
     };
 
     @Override
-    public ItemStack getCloneItemStack(BlockGetter level, BlockPos pos, BlockState state) {
+    public ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state) {
         return getCloneItemStack(level, pos);
     };
 

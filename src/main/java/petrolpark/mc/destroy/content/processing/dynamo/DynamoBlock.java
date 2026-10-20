@@ -135,7 +135,7 @@ public class DynamoBlock extends KineticBlock implements IBE<DynamoBlockEntity> 
             };
         } else {
             if (belowIsArcFurnaceLidBlock) {
-                level.getBlockEntity(pos, DestroyBlockEntityTypes.DYNAMO.get()).ifPresent(dynamo -> dynamo.arcFurnaceBlock = () -> stateBelow);
+                level.getBlockEntity(pos, DestroyBlockEntityTypes.DYNAMO.get()).ifPresent(dynamo -> dynamo.arcFurnaceBlock = Lazy.of(() -> stateBelow));
                 level.setBlock(pos.below(), DestroyBlocks.ARC_FURNACE_LID.getDefaultState().setValue(ArcFurnaceLidBlock.AXIS, state.getValue(AXIS)), 3);
                 level.setBlock(pos, state.setValue(ARC_FURNACE, true), 3);
             };

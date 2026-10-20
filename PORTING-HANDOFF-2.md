@@ -13,10 +13,9 @@ Maddie (Windows, git identity `Meowfoe`). **Pull before starting.**
 - Compile: **166 deduped javac errors** (334 error lines, compile11 — the state of the pushed
   tree). Error history: 567 (start of step 5) → 327 (compile6) → 213 (compile8) → 178 (compile9)
   → 166 (compile11).
-- **Windows (Maddie): 63 unique errors / 128 error lines** after the Ponder/client-misc batch
-  (`python port-tools/errsummary.py <log>`; the same tree as compile11 counted 164 / 332 there;
-  149 / 302 after block `codec()`, 128 / 258 after decay items, 110 / 222 after contamination,
-  94 / 190 after plant blocks, 80 / 162 after client models).
+- **Windows (Maddie): CLEAN COMPILE (0 errors)** after the step-5 finish batch (history on Windows,
+  `python port-tools/errsummary.py <log>`: 164 → 149 (block codec) → 128 (decay) → 110 (flags) → 94 (plants) →
+  80 (client models) → 63 (Ponder/client misc) → 0).
 - Latest logs on Azzie's box: `/var/home/azziee/Documents/Azziecraft/build/compileN.log`;
   parse with `python3 /var/home/azziee/Documents/Azziecraft/build/parse_errors.py <log>`.
 - Everything below is committed and pushed in the hand-off commit (see History). The working
@@ -235,45 +234,35 @@ Maddie (Windows, git identity `Meowfoe`). **Pull before starting.**
    - **Check at runtime (step 8):** both enum extensions apply (incl. a **dedicated server** — the HeartType entry
      names a client-only enum, which should simply never load there), Chemical Poison hearts show, `GuiMixin`
      applies, extra hotbar slots push the offhand slot aside.
-7. **`NbtUtils.readBlockPos`** (1-arg GONE; new is `readBlockPos(CompoundTag, String)` →
-   `Optional<BlockPos>`): VatSideBlockEntity:218, VatControllerBlockEntity:309, Vat:75 (×2),
-   DynamiteBlockEntity:72,73, PumpjackCamBlockEntity:43, ExtrudableMovementBehaviour:77,110.
-8. **BlockPos → Vec3** (4): VatControllerBlockEntity:663, Vat:352, DynamiteBlockEntity:86,
-   DynamiteBlock:30.
-9. **Cauldron — DONE** (with item 1, the codec needs it): `DestroyCauldronInteractions.URINE` is
-   `CauldronInteraction.newInteractionMap("destroy:urine")` (registers it in `INTERACTIONS`, default
-   `PASS_TO_DEFAULT_BLOCK_INTERACTION` = 1.20.1's `PASS`); the glass-bottle interaction returns
-   `ItemInteractionResult.sidedSuccess`.
-10. **Loot / advancement / conditions / misc**: DestroyLootConditions (`net.minecraft.world.level
-    .storage.loot.Serializer` GONE → `LootItemConditionType` + MapCodec), ObliterationCondition (6),
-    DestroyAdvancementTrigger:99,110 (`getAdvancement(ResourceKey.create(Registries.ADVANCEMENT,
-    id))` → `AdvancementHolder`), ExplosiveProperties:224, PeriodicTableBlock:109,
-    VatMaterialResourceListener:54 (`CraftingHelper.processConditions(JsonObject, String,
-    IContext)` GONE → NeoForge `ICondition`/`ConditionalOps`), DestroyReactions:894 (method-ref
-    return type), ForgeChemistryEvent (`isCanceled()` — check `ICancellableEvent`),
-    DestroyBlockTagsProvider (6: `Blocks.ACID_RAIN_*` — likely `DestroyBlocks` refs),
-    ExplosivesPonderScenes (`ItemStack.addTagElement` GONE → `DataComponents.FIREWORKS`;
-    `setHoverName` → `set(DataComponents.CUSTOM_NAME, …)`), UniversalArmorTrimItemOverrides +
-    UniversalArmorTrimModel (`ArmorTrim.getTrim(RegistryAccess, ItemStack)` GONE;
-    `Holder<ArmorMaterial>` → `.value()`; `ModelResourceLocation`), PeriodicTableBlockItem:33
-    (`ItemInteractionResult` → `InteractionResult`), DynamoBlock:138 (`Lazy` not a functional
-    interface — inspect), MixedExplosiveBlock:133 (no-override), CircuitMaskItem:68,83
-    (`DirectionalTransportedItemStack.launch(...)` GONE), KeypunchBlockEntity:94 (`IDirectionalOnBelt`
-    → library `compat.create.core.world.item.transported.IDirectionalBeltItem`), CircuitPatternItem
-    :19,23 (`NBTHelper.readBinaryMatrix4x4/writeBinaryMatrix4x4` GONE — `petrolpark.mc.library.util
-    .BinaryMatrix4x4` exists; reimplement or use its codec), CircuitPatternItemRenderer:61
-    (`PetrolparkItemDisplayContexts` GONE), ExtendedInventory:8,162 (`PetrolparkTags.MenuTypes` GONE —
-    old tags were `petrolpark:always_shows_extended_inventory` / `never_shows_extended_inventory` /
-    `allows_manual_only_crafting` under `tags/menu_type`; decide: Destroy's own tags or check library
-    `PetrolparkRegistrateTags`), ExtendedInventoryClientHandler (import
-    `client.gui.overlay.ForgeGui` → `net.minecraft.client.gui.Gui`; `VanillaGuiLayers` at
-    `client.gui`; `HOTBAR.id()` on ResourceLocation — inspect), CircuitPatternHandler (1.21.1
-    `SavedData.save(CompoundTag, HolderLookup.Provider)` sig + `DimensionDataStorage.computeIfAbsent`
-    takes a `SavedData.Factory`), DelicateExplosion:22, ExcavationExplosion:71,
-    CustomExplosiveMixExplosion:47,163,179 (`ResourceKey<Enchantment>` → `Holder<Enchantment>` via
-    `<registryAccess>.lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(key)` — **`BuiltInRegistries`
-    has NO `ENCHANTMENT` registry in 1.21.1**, use the codebase pattern from `DestroyBlocks`;
-    `Reference<SoundEvent>` → `SoundEvent` — `.value()`), DestroyItems (8: decay-item cascade, see below).
+7.–10. **DONE (clean compile).** Notes on the less mechanical ones:
+   - **BlockPos NBT:** 1.21 `NbtUtils.writeBlockPos` writes an int array; 1.20.1 wrote `{X,Y,Z}`. New
+     `util/BlockPosNBT` reads both (`read` → Optional, `readOrOrigin` = 1.20.1's missing-means-origin), so old
+     worlds' Vats, Vat sides, Pumpjack cams, Dynamite and Extrusion contraptions load. `contains` checks either type.
+   - `new AABB(BlockPos, BlockPos)` is gone; 1.20.1's used the corners exactly → `new AABB(Vec3.atLowerCornerOf(a),
+     Vec3.atLowerCornerOf(b))` (not `encapsulatingFullBlocks`, which adds 1).
+   - **Advancement triggers** are registered into `Registries.TRIGGER_TYPE` from `Destroy.onRegister` (RegisterEvent);
+     1.20.1 did it at common setup, which is after the registry freezes in 1.21. `isAlreadyAwardedTo` uses
+     `ServerAdvancementManager.get` → `AdvancementHolder`.
+   - `ObliterationCondition`: `MapCodec.unit` (loot condition types take MapCodecs).
+   - `ForgeChemistryEvent` implements `ICancellableEvent`; `setCanceled(true)` on a non-cancellable wrapped event throws
+     (as Forge did).
+   - Conditions in Destroy's own reload listeners (periodic table, vat materials, explosive properties):
+     `DestroyReloadListener.conditionsMet(json, "conditions", context)` = 1.20.1 `CraftingHelper.processConditions`
+     on NeoForge's `ICondition.LIST_CODEC`. (Condition type ids are now `neoforge:*`; no Destroy data used `forge:*`.)
+   - `CircuitPatternItem` implements the library's `IDirectionalBeltItem<DirectionalTransportedItemStack>`
+     (`makeTransportedItemStack` = old default `copyFully`); pattern stays a short under custom-data `"Pattern"`
+     (exactly 1.20.1 `NBTHelper.writeBinaryMatrix4x4`); `CircuitMaskItem.launch` → `onLaunchedByWeightedEjector`,
+     its cleanup removes the library's `ROTATION_WHILE_FLYING` component (was the `RotationWhileFlying` tag).
+   - `CircuitPatternHandler`: `SavedData.Factory(() -> this, (tag, registries) -> read(tag), null)`, same data name.
+   - Silk-touch tools (delicate / custom-mix explosions) enchant via `level.registryAccess().holderOrThrow(...)` (the
+     custom mix's was a static `Lazy`, now built per use); custom-mix special items go over the network with
+     `ItemStack.OPTIONAL_LIST_STREAM_CODEC`.
+   - Extended inventory: `PetrolparkTags.MenuTypes.*.matches(menu)` (library); hotbar GUI layers are
+     `(GuiGraphics, DeltaTracker)` registered as `destroy:extra_hotbar[_background]` around `VanillaGuiLayers.HOTBAR`.
+   - Universal armor trims: `DataComponents.TRIM`, `Holder<ArmorMaterial>.value()`, baking-result keys are
+     `ModelResourceLocation`.
+   - `DestroyTags.Blocks` gained the author's `ACID_RAIN_DESTROYS / _SETS_DIRT / _SETS_DEAD_BUSH` (the acid rain data
+     map already referenced them).
 
 Then steps 6–9 per `PORTING-HANDOFF.md` (JEI compat, data migration, clean compile → datagen →
 build → runtime test, release + pack integration).

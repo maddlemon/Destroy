@@ -91,7 +91,7 @@ public class KeypunchBlockEntity extends KineticBlockEntity implements ICircuitP
 
         if (!simulate) {
             ItemStack resultStack = CircuitMaskItem.contaminate(input.stack, uuid);
-            if (!(resultStack.getItem() instanceof IDirectionalOnBelt)) {
+            if (!(resultStack.getItem() instanceof IDirectionalBeltItem)) {
                 output.set(new TransportedItemStack(resultStack));
                 return true;
             };

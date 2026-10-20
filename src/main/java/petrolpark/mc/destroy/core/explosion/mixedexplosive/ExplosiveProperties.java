@@ -28,7 +28,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
-import net.neoforged.neoforge.common.crafting.CraftingHelper;
 import net.neoforged.neoforge.common.conditions.ICondition.IContext;
 
 public class ExplosiveProperties extends EnumMap<ExplosiveProperties.ExplosiveProperty, ExplosiveProperties.ExplosivePropertiesEntry> {
@@ -221,7 +220,7 @@ public class ExplosiveProperties extends EnumMap<ExplosiveProperties.ExplosivePr
         public void forEachNameSpaceJsonFile(JsonObject jsonObject) {
             for (Entry<String, JsonElement> entry : jsonObject.entrySet()) {
                 JsonObject object = entry.getValue().getAsJsonObject();
-                if (!CraftingHelper.processConditions(object, "conditions", this.context)) return;
+                if (!DestroyReloadListener.conditionsMet(object, "conditions", this.context)) return;
 
                 Optional<? extends Holder<Item>> itemOptional = BuiltInRegistries.ITEM.asLookup().get(ResourceKey.create(Registries.ITEM, ResourceLocation.parse(entry.getKey())));
                 if (itemOptional.isEmpty()) throw new IllegalStateException("Invalid item ID: "+entry.getKey());

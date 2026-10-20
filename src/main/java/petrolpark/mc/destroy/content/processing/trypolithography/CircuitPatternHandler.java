@@ -18,6 +18,7 @@ import com.google.gson.JsonSyntaxException;
 import petrolpark.mc.destroy.Destroy;
 import petrolpark.mc.library.util.BinaryMatrix4x4;
 
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
@@ -75,7 +76,7 @@ public class CircuitPatternHandler extends SavedData {
         MinecraftServer server = level.getServer();
 		if (server == null || server.overworld() != level) return;
         random = new Random();
-		server.overworld().getDataStorage().computeIfAbsent(this::read, () -> this, "destroy_circuit_pattern");
+		server.overworld().getDataStorage().computeIfAbsent(new SavedData.Factory<>(() -> this, (tag, registries) -> read(tag), null), "destroy_circuit_pattern");
     };
 
     public void onLevelUnloaded(LevelAccessor level) {
@@ -85,7 +86,7 @@ public class CircuitPatternHandler extends SavedData {
     };
 
     @Override
-    public CompoundTag save(CompoundTag compoundTag) {
+    public CompoundTag save(CompoundTag compoundTag, HolderLookup.Provider registries) {
         GENERATED_PATTERNS.forEach((rl, pattern) -> {compoundTag.putShort(rl.toString(), (short)(pattern - Short.MAX_VALUE));});
         return compoundTag;
     };

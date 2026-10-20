@@ -13,6 +13,7 @@ import java.util.function.Supplier;
 
 import javax.annotation.Nullable;
 
+import petrolpark.mc.destroy.util.BlockPosNBT;
 import petrolpark.mc.destroy.DestroyAdvancementTrigger;
 import petrolpark.mc.destroy.DestroyBlockEntityTypes;
 import petrolpark.mc.destroy.DestroyBlocks;
@@ -306,7 +307,7 @@ public class VatControllerBlockEntity extends SmartBlockEntity implements IHaveL
             cachedMixtureBoiling = tag.getBoolean("AnythingBoiling");
             cachedMixtureReacting = tag.getBoolean("AnythingReacting");
         } else {
-            if (tag.contains("VentPos", Tag.TAG_COMPOUND)) openVentPos = NbtUtils.readBlockPos(tag.getCompound("VentPos"));
+            BlockPosNBT.read(tag, "VentPos").ifPresent(pos -> openVentPos = pos);
             updateCachedMixture();
         };
     };
@@ -660,7 +661,7 @@ public class VatControllerBlockEntity extends SmartBlockEntity implements IHaveL
     };
 
     public AABB wholeVatAABB() {
-        return new AABB(vat.get().getInternalLowerCorner(), vat.get().getUpperCorner()).inflate(1);
+        return new AABB(Vec3.atLowerCornerOf(vat.get().getInternalLowerCorner()), Vec3.atLowerCornerOf(vat.get().getUpperCorner())).inflate(1);
     };
 
     @Override

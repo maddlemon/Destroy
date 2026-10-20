@@ -24,6 +24,7 @@ import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.Material;
 import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ArmorItem;
@@ -49,12 +50,12 @@ public class UniversalArmorTrimItemOverrides extends ItemOverrides {
     public BakedModel resolve(BakedModel model, ItemStack stack, ClientLevel level, LivingEntity entity, int seed) {
         BakedModel defaultModel = wrapped.resolve(model, stack, level, entity, seed);
         if (level == null) return defaultModel;
-        Optional<TrimMaterial> materialOptional = ArmorTrim.getTrim(level.registryAccess(), stack).map(ArmorTrim::material).map(Holder::value);
+        Optional<TrimMaterial> materialOptional = Optional.ofNullable(stack.get(DataComponents.TRIM)).map(ArmorTrim::material).map(Holder::value);
         if (materialOptional.isEmpty()) return defaultModel;
         if (!(stack.getItem() instanceof ArmorItem armorItem)) return defaultModel;
         return getModel(
             Minecraft.getInstance().getItemRenderer().getItemModelShaper().getItemModel(stack), // Calling ItemRenderer#getModel will recurse; we know this isn't a Trident or Spyglass so this method is fine
-            armorItem.getMaterial(), armorItem.getType(),
+            armorItem.getMaterial().value(), armorItem.getType(),
             materialOptional.get()
         ).orElse(defaultModel);
     };

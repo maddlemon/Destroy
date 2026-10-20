@@ -35,11 +35,11 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.level.GameType;
+import net.minecraft.client.DeltaTracker;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.event.ScreenEvent;
-import net.neoforged.neoforge.client.gui.overlay.ForgeGui;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -463,8 +463,10 @@ public class ExtendedInventoryClientHandler {
     /**
      * Render the borders for the Extended Inventory Slots on the hotbar.
      */
-    public static void renderExtraHotbarBackground(ForgeGui gui, GuiGraphics graphics, float partialTicks, int screenWidth, int screenHeight) {
+    public static void renderExtraHotbarBackground(GuiGraphics graphics, DeltaTracker deltaTracker) {
         Minecraft mc = Minecraft.getInstance();
+        int screenWidth = graphics.guiWidth();
+        int screenHeight = graphics.guiHeight();
 		if (mc.options.hideGui || mc.gameMode.getPlayerMode() == GameType.SPECTATOR) return;
 
         PoseStack ms = graphics.pose();
@@ -497,8 +499,10 @@ public class ExtendedInventoryClientHandler {
      * Render the Slot icons and actual Items in the Extended Inventory hotbar Slots.
      * Also render the selected Slot (again).
      */
-    public static void renderExtraHotbar(ForgeGui gui, GuiGraphics graphics, float partialTicks, int screenWidth, int screenHeight) {
+    public static void renderExtraHotbar(GuiGraphics graphics, DeltaTracker deltaTracker) {
         Minecraft mc = Minecraft.getInstance();
+        int screenWidth = graphics.guiWidth();
+        int screenHeight = graphics.guiHeight();
 		if (mc.options.hideGui || mc.gameMode.getPlayerMode() == GameType.SPECTATOR) return;
 
         PoseStack ms = graphics.pose();
@@ -525,7 +529,7 @@ public class ExtendedInventoryClientHandler {
             ms.pushPose();
             for (int i = 0; i < slotCount; i++) {
                 DestroyGuiTextures.HOTBAR_SLOT.render(graphics, x + i * 20, y);
-                gui.renderSlot(graphics, 2 + x + i * 20, y + 2, partialTicks, mc.player, inv.extraItems.get(item), 0);
+                mc.gui.renderSlot(graphics, 2 + x + i * 20, y + 2, deltaTracker, mc.player, inv.extraItems.get(item), 0);
                 item++;
             };
             ms.popPose();
@@ -556,8 +560,8 @@ public class ExtendedInventoryClientHandler {
 
         @SubscribeEvent
         public static void registerGuiOverlays(RegisterGuiLayersEvent event) {
-            event.registerBelow(VanillaGuiLayers.HOTBAR.id(), "extra_hotbar_background", ExtendedInventoryClientHandler::renderExtraHotbarBackground);
-            event.registerAbove(VanillaGuiLayers.HOTBAR.id(), "extra_hotbar", ExtendedInventoryClientHandler::renderExtraHotbar);
+            event.registerBelow(VanillaGuiLayers.HOTBAR, Destroy.asResource("extra_hotbar_background"), ExtendedInventoryClientHandler::renderExtraHotbarBackground);
+            event.registerAbove(VanillaGuiLayers.HOTBAR, Destroy.asResource("extra_hotbar"), ExtendedInventoryClientHandler::renderExtraHotbar);
         };
     };
 

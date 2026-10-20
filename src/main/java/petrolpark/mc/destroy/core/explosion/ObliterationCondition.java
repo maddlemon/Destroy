@@ -1,8 +1,6 @@
 package petrolpark.mc.destroy.core.explosion;
 
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializationContext;
+import com.mojang.serialization.MapCodec;
 import petrolpark.mc.destroy.DestroyLootConditions;
 import petrolpark.mc.destroy.DestroyLootContextParams;
 
@@ -13,6 +11,8 @@ import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
 public class ObliterationCondition implements LootItemCondition {
 
     private static final ObliterationCondition INSTANCE = new ObliterationCondition();
+
+    public static final MapCodec<ObliterationCondition> CODEC = MapCodec.unit(INSTANCE);
 
     @Override
     public boolean test(LootContext context) {
@@ -29,16 +29,4 @@ public class ObliterationCondition implements LootItemCondition {
         return DestroyLootConditions.OBLITERATION.get();
     };
 
-    public static class Serializer implements net.minecraft.world.level.storage.loot.Serializer<ObliterationCondition> {
-
-        @Override
-        public void serialize(JsonObject json, ObliterationCondition value, JsonSerializationContext serializationContext) {};
-
-        @Override
-        public ObliterationCondition deserialize(JsonObject json, JsonDeserializationContext serializationContext) {
-            return INSTANCE;
-        };
-
-    };
-    
 };

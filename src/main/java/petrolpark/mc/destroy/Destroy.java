@@ -129,7 +129,6 @@ public class Destroy {
         DestroyStats.register();
         VatMaterial.registerDestroyVatMaterials();
         DestroyOpenEndedPipeEffectHandlers.register();
-        DestroyAdvancementTrigger.register();
         DestroyBlockExtrusions.register();
 
         // Chemistry
@@ -145,6 +144,7 @@ public class Destroy {
 
 
     public static void onRegister(final RegisterEvent event) {
+        DestroyAdvancementTrigger.register(event);
         DestroyItemAttributeTypes.init();
         DestroyPotatoProjectileEntityHitActions.init();
         DestroyPotatoProjectileBlockHitActions.init();
@@ -159,7 +159,7 @@ public class Destroy {
             return clientSupplier.get().get();
         } else {
             return serverSupplier.get().get();
-        };
+        }
     };
 
     public static final <T> T unsafeCallClient(Supplier<Supplier<T>> supplier) {

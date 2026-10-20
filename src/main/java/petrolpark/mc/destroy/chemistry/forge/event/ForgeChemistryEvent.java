@@ -4,13 +4,14 @@ import petrolpark.mc.destroy.chemistry.api.event.IChemistryEvent;
 import petrolpark.mc.destroy.chemistry.api.event.IFiredChemistryEvent;
 
 import net.neoforged.bus.api.Event;
+import net.neoforged.bus.api.ICancellableEvent;
 
 /**
  * The Minecraft Forge implementation of {@link IFiredChemistryEvent}.
  * @since Destroy 0.1.0
  * @author petrolpark
  */
-public class ForgeChemistryEvent<E extends IChemistryEvent> extends Event implements IFiredChemistryEvent<E> {
+public class ForgeChemistryEvent<E extends IChemistryEvent> extends Event implements IFiredChemistryEvent<E>, ICancellableEvent {
 
     protected final E wrapped;
 
@@ -30,9 +31,17 @@ public class ForgeChemistryEvent<E extends IChemistryEvent> extends Event implem
      * <li>Possibly have an effect on whichever routine called the {@link IChemistryEvent}
      * </ul>
      */
-    @Override
     public boolean isCancelable() {
         return wrapped.isCancellable();
+    };
+
+    /**
+     * NeoForge decides cancellability by type ({@link ICancellableEvent}); like Forge did for non-cancellable events, refuse to cancel one whose wrapped event can't be.
+     */
+    @Override
+    public void setCanceled(boolean canceled) {
+        if (canceled && !isCancelable()) throw new UnsupportedOperationException("Attempted to cancel a non-cancellable Chemistry event: " + wrapped);
+        ICancellableEvent.super.setCanceled(canceled);
     };
 
     @Override

@@ -1,5 +1,8 @@
 package petrolpark.mc.destroy.util;
 
+import net.neoforged.neoforge.common.conditions.ICondition;
+import com.mojang.serialization.JsonOps;
+import com.google.gson.JsonSyntaxException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -18,6 +21,15 @@ import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 
 @MoveToPetrolparkLibrary
 public abstract class DestroyReloadListener implements ResourceManagerReloadListener {
+
+    /**
+     * 1.20.1's {@code CraftingHelper.processConditions(json, key, context)}: true if {@code json} has no conditions under {@code key}, or all of them pass.
+     */
+    public static boolean conditionsMet(JsonObject json, String key, ICondition.IContext context) {
+        if (!json.has(key)) return true;
+        return ICondition.LIST_CODEC.parse(JsonOps.INSTANCE, json.get(key)).getOrThrow(JsonSyntaxException::new).stream().allMatch(condition -> condition.test(context));
+    };
+
 
     private static final Gson GSON = new Gson();
 

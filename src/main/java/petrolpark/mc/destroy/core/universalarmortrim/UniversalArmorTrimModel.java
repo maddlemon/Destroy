@@ -8,6 +8,7 @@ import petrolpark.mc.destroy.Destroy;
 
 import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.client.resources.model.SimpleBakedModel;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
@@ -37,14 +38,14 @@ public class UniversalArmorTrimModel extends BakedModelWrapper<BakedModel> {
     public static void onModelBake(ModelEvent.ModifyBakingResult event) {
 
         // Armor Trim stuff
-        List<Entry<ResourceLocation, BakedModel>> modelsToReplace = event.getModels().entrySet()
+        List<Entry<ModelResourceLocation, BakedModel>> modelsToReplace = event.getModels().entrySet()
             .stream()
             .filter(entry ->
                 entry.getKey().toString().endsWith("#inventory")
                 && entry.getValue() instanceof SimpleBakedModel // Don't override anything complicated
                 && Stream.of(entry.getValue().getOverrides().properties).anyMatch(TRIM_TYPE_PREDICATE_LOCATION::equals) // Check if this item is likely to support trims
             ).toList();
-        for (Entry<ResourceLocation, BakedModel> entry : modelsToReplace) 
+        for (Entry<ModelResourceLocation, BakedModel> entry : modelsToReplace) 
             event.getModels().put(entry.getKey(), new UniversalArmorTrimModel(entry.getValue())); // Replace the model with one which wraps the old one but also provides the additional Armor Trims
     };
     

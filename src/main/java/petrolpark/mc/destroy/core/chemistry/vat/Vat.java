@@ -11,6 +11,7 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 
 import com.google.common.collect.ImmutableList;
+import petrolpark.mc.destroy.util.BlockPosNBT;
 import petrolpark.mc.destroy.core.chemistry.vat.material.VatMaterial;
 import com.simibubi.create.content.contraptions.StructureTransform;
 
@@ -71,8 +72,8 @@ public class Vat {
 
     @SuppressWarnings("deprecation")
     public static Optional<Vat> read(CompoundTag tag, BlockPos controllerPos) {
-        if (!tag.contains("LowerCorner", Tag.TAG_COMPOUND) || !tag.contains("UpperCorner", Tag.TAG_COMPOUND)) return Optional.empty();
-        Vat vat = new Vat(NbtUtils.readBlockPos(tag.getCompound("LowerCorner")).offset(controllerPos), NbtUtils.readBlockPos(tag.getCompound("UpperCorner")).offset(controllerPos));
+        if (!BlockPosNBT.contains(tag, "LowerCorner") || !BlockPosNBT.contains(tag, "UpperCorner")) return Optional.empty();
+        Vat vat = new Vat(BlockPosNBT.readOrOrigin(tag, "LowerCorner").offset(controllerPos), BlockPosNBT.readOrOrigin(tag, "UpperCorner").offset(controllerPos));
         vat.conductance = tag.getFloat("Conductance");
         vat.weakestBlockState = NbtUtils.readBlockState(BuiltInRegistries.BLOCK.asLookup(), tag.getCompound("WeakestBlock"));
         vat.maximumPressure = VatMaterial.getMaterial(vat.weakestBlockState).map(VatMaterial::maxPressure).orElseGet(() -> 0f);
@@ -349,7 +350,7 @@ public class Vat {
 
     @OnlyIn(Dist.CLIENT)
     public void showBoundingBox() {
-        OUTLINER.showAABB(Pair.of("outliner", lowerCorner), new AABB(lowerCorner, upperCorner), 100)
+        OUTLINER.showAABB(Pair.of("outliner", lowerCorner), new AABB(Vec3.atLowerCornerOf(lowerCorner), Vec3.atLowerCornerOf(upperCorner)), 100)
             .colored(0xFF_ebd31e);
     };
 };

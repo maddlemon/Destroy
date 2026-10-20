@@ -68,7 +68,7 @@ public class ExcavationExplosion extends SmartExplosion {
     public void effects(boolean spawnParticles) {
         // Sounds
         if (level.isClientSide()) {
-            level.playLocalSound(position.x, position.y, position.z, SoundEvents.GENERIC_EXPLODE, SoundSource.BLOCKS, 4.0f, (1.0f + (random.nextFloat() * 0.4f)) * 0.7f, false);
+            level.playLocalSound(position.x, position.y, position.z, SoundEvents.GENERIC_EXPLODE.value(), SoundSource.BLOCKS, 4.0f, (1.0f + (random.nextFloat() * 0.4f)) * 0.7f, false);
         };
         // Particles
         if (spawnParticles && level instanceof ServerLevel serverLevel) {

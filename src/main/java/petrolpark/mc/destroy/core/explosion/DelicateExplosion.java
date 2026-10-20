@@ -19,7 +19,7 @@ public class DelicateExplosion extends SmartExplosion {
     public DelicateExplosion(Level level, Entity source, DamageSource damageSource, ExplosionDamageCalculator damageCalculator, Vec3 position, float radius, float smoothness) {
         super(level, source, damageSource, damageCalculator, position, radius, smoothness);
         silkTouch = new ItemStack(Items.NETHERITE_PICKAXE);
-        silkTouch.enchant(Enchantments.SILK_TOUCH, 1);
+        silkTouch.enchant(level.registryAccess().holderOrThrow(Enchantments.SILK_TOUCH), 1);
     };
 
     @Override

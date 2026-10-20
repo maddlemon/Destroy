@@ -6,7 +6,7 @@ import java.util.Map;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Either;
-import com.petrolpark.PetrolparkItemDisplayContexts;
+import petrolpark.mc.library.registry.PetrolparkItemDisplayContexts;
 import petrolpark.mc.destroy.Destroy;
 import petrolpark.mc.destroy.client.DummyBaker;
 import petrolpark.mc.library.util.BinaryMatrix4x4;

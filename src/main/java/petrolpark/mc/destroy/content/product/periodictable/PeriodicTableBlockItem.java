@@ -30,7 +30,7 @@ public class PeriodicTableBlockItem extends BlockItem {
     @Override
     public InteractionResult onItemUseFirst(ItemStack stack, UseOnContext context) {
         BlockHitResult ray = new BlockHitResult(context.getClickLocation(), context.getClickedFace(), context.getClickedPos(), true);
-        return PlacementHelpers.get(placementHelperId).getOffset(context.getPlayer(), context.getLevel(), context.getLevel().getBlockState(context.getClickedPos()), context.getClickedPos(), ray).placeInWorld(context.getLevel(), this, context.getPlayer(), context.getHand(), ray);
+        return PlacementHelpers.get(placementHelperId).getOffset(context.getPlayer(), context.getLevel(), context.getLevel().getBlockState(context.getClickedPos()), context.getClickedPos(), ray).placeInWorld(context.getLevel(), this, context.getPlayer(), context.getHand(), ray).result();
     };
 
     private class PeriodicTableBlockPlacementHelper implements IPlacementHelper {

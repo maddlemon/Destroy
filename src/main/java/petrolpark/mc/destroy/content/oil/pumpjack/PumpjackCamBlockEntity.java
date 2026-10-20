@@ -1,6 +1,7 @@
 package petrolpark.mc.destroy.content.oil.pumpjack;
 
 import net.minecraft.core.HolderLookup;
+import petrolpark.mc.destroy.util.BlockPosNBT;
 import petrolpark.mc.destroy.DestroyBlocks;
 import com.simibubi.create.content.kinetics.base.KineticBlockEntity;
 
@@ -39,9 +40,7 @@ public class PumpjackCamBlockEntity extends KineticBlockEntity {
     protected void read(CompoundTag compound, HolderLookup.Provider registries, boolean clientPacket) {
         super.read(compound, registries, clientPacket);
         initialTicks = compound.getInt("Warmup");
-        if (compound.contains("PumpjackPos", Tag.TAG_COMPOUND)) {
-            pumpjackPos = NbtUtils.readBlockPos(compound.getCompound("PumpjackPos"));
-        };
+        BlockPosNBT.read(compound, "PumpjackPos").ifPresent(pos -> pumpjackPos = pos);
     };
 
     @Override

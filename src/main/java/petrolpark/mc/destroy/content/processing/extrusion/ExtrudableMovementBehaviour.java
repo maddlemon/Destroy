@@ -2,6 +2,7 @@ package petrolpark.mc.destroy.content.processing.extrusion;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import petrolpark.mc.destroy.util.BlockPosNBT;
 import petrolpark.mc.destroy.DestroyAdvancementTrigger;
 import petrolpark.mc.destroy.DestroyBlocks;
 import petrolpark.mc.destroy.core.data.advancement.DestroyAdvancementBehaviour;
@@ -74,7 +75,7 @@ public class ExtrudableMovementBehaviour implements MovementBehaviour {
 
         } else if (data.getBoolean("Extruding")) {
 
-            BlockPos diePos = NbtUtils.readBlockPos(data.getCompound("ExtrusionDiePos"));
+            BlockPos diePos = BlockPosNBT.readOrOrigin(data, "ExtrusionDiePos");
             Direction direction = getDirection(context);
 
             if (context.contraption.entity instanceof OrientedContraptionEntity oce && oce.getInitialYaw() != oce.yaw) direction = direction.getOpposite();
@@ -107,7 +108,7 @@ public class ExtrudableMovementBehaviour implements MovementBehaviour {
         if (data.getBoolean("Extruded")) {
             progress = 0f;
         } else {
-            BlockPos diePos = NbtUtils.readBlockPos(data.getCompound("ExtrusionDiePos"));
+            BlockPos diePos = BlockPosNBT.readOrOrigin(data, "ExtrusionDiePos");
             Vec3 displacement = context.position.subtract(Vec3.atLowerCornerOf(diePos)); // Vector between center of Die and of Block being extruded
             progress = (float)direction.getAxis().choose(displacement.x(), displacement.y(), displacement.z());
             boolean invertProgess = direction.getAxisDirection() == AxisDirection.POSITIVE;

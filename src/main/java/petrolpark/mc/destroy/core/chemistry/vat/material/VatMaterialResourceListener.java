@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.core.chemistry.vat.material;
 
+import petrolpark.mc.destroy.util.DestroyReloadListener;
 import net.createmod.catnip.platform.CatnipServices;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -22,7 +23,6 @@ import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.level.block.Block;
-import net.neoforged.neoforge.common.crafting.CraftingHelper;
 import net.neoforged.neoforge.common.conditions.ICondition.IContext;
 
 public class VatMaterialResourceListener extends SimpleJsonResourceReloadListener {
@@ -51,7 +51,7 @@ public class VatMaterialResourceListener extends SimpleJsonResourceReloadListene
             JsonObject jobj = json.getAsJsonObject();
 
             // Check if this should be loaded
-            if (!CraftingHelper.processConditions(jobj, "conditions", loadingContext)) return;
+            if (!DestroyReloadListener.conditionsMet(jobj, "conditions", loadingContext)) return;
 
             // Default values
             float maxPressureDifference = 100000f;
