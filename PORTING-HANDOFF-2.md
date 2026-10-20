@@ -13,9 +13,9 @@ Maddie (Windows, git identity `Meowfoe`). **Pull before starting.**
 - Compile: **166 deduped javac errors** (334 error lines, compile11 — the state of the pushed
   tree). Error history: 567 (start of step 5) → 327 (compile6) → 213 (compile8) → 178 (compile9)
   → 166 (compile11).
-- **Windows (Maddie): 110 unique errors / 222 error lines** after the contamination batch
+- **Windows (Maddie): 94 unique errors / 190 error lines** after the plant-block batch
   (`python port-tools/errsummary.py <log>`; the same tree as compile11 counted 164 / 332 there;
-  149 / 302 after block `codec()`, 128 / 258 after decay items).
+  149 / 302 after block `codec()`, 128 / 258 after decay items, 110 / 222 after contamination).
 - Latest logs on Azzie's box: `/var/home/azziee/Documents/Azziecraft/build/compileN.log`;
   parse with `python3 /var/home/azziee/Documents/Azziecraft/build/parse_errors.py <log>`.
 - Everything below is committed and pushed in the hand-off commit (see History). The working
@@ -183,15 +183,16 @@ Maddie (Windows, git identity `Meowfoe`). **Pull before starting.**
    - `CircuitPatternItemAttribute`: Create 6 record + `MapCodec` (`position`, `punched`) + `StreamCodec`;
      save/load/`LegacyDeserializer` gone (Create 6 has no legacy attribute loading).
      `Type.createAttribute()` returned a `HasContaminantItemAttribute` in 1.20.1 (copy-paste bug) — fixed.
-4. **Plant blocks** (MagicBeetrootShootsBlock 22, FullyGrownCropBlock 12): `PlantType` GONE,
-   `EventHooks.getMobGriefingEvent` GONE, `ForgeHooks` usage (2 sites) — inspect.
-   MagicBeetrootShootsBlock also needs 1.21.1 `BonemealableBlock.isValidBonemealTarget(LevelReader,
-   BlockPos, BlockState)` (was hidden behind the codec error). `PlantType.CROP` can simply go: NeoForge's
-   `BushBlock.canSurvive` asks `canSustainPlant` (default `TriState.DEFAULT`) then `mayPlaceOn`, which
-   already checks farmland. **Parity catch:** in 1.20.1 any `IPlantable` crop on farmland stopped it
-   drying to dirt; 1.21.1 `FarmBlock.shouldMaintainFarmland` only checks the `minecraft:maintains_farmland`
-   block tag (vanilla crops only, not `#crops`), so tag Golden Carrots, the Hefty/infused Beetroots and
-   Magic Beetroot Shoots with `BlockTags.MAINTAINS_FARMLAND` in `DestroyBlocks`.
+4. **Plant blocks — DONE.** `MagicBeetrootShootsBlock` / `FullyGrownCropBlock` (+ `HeftyBeetrootBlock`):
+   `PlantType.CROP` override deleted (NeoForge's `BushBlock.canSurvive` asks the soil's `canSustainPlant`,
+   default `TriState.DEFAULT`, then `mayPlaceOn`, which already requires farmland); `ForgeHooks.onCropsGrowPre/
+   Post` → `CommonHooks.canCropGrow` / `fireCropGrowPost`; `EventHooks.getMobGriefingEvent` →
+   `EventHooks.canEntityGrief` (as vanilla `CropBlock`); `getCloneItemStack(LevelReader, …)`;
+   `isValidBonemealTarget` lost its `isClient` argument. **Farmland parity:** 1.20.1 Forge's
+   `FarmBlock.shouldMaintainFarmland` kept farmland under any `IPlantable` its soil sustained (crops on farmland
+   included); 1.21.1 only checks `#minecraft:maintains_farmland` (vanilla crops only), so all 16 Destroy crop blocks
+   (Magic Beetroot Shoots, Golden Carrots, Hefty + 13 infused Beetroots) get `BlockTags.MAINTAINS_FARMLAND` via
+   Registrate `.tag(...)` in `DestroyBlocks` — it reaches `src/generated` when datagen runs (step 8).
 5. **Client models**: DestroySpriteSource (12: `SpriteSource.codec()` now returns `MapCodec`,
    `SpriteSources.register(String, MapCodec)`, `PalettedPermutations` `PalettedSpriteSupplier
    .apply(SpriteResourceLoader)`, `AnimationMetadataSection` → `ResourceMetadata`,
@@ -317,3 +318,4 @@ String translationKey`). `OxidizingItem` / `CarboxylatingItem` extend it with th
 | `ce2f5524` | (Maddie, Windows) Block `codec()` for 13 blocks + 3 subclasses; urine cauldron `InteractionMap`. Errors (Windows, `port-tools/errsummary.py`): 164 unique / 332 lines → 149 / 302. |
 | `e00baa3c` | (Maddie, Windows) Decay items: `DecayingItem` on the library's decay components (defaults via `ModifyDefaultComponentsEvent`, live config per stack), stacking merge, Oxidizing / Carboxylating items. Errors 149 / 302 → 128 / 258. |
 | `7aee6c1a` | (Maddie, Windows) Contamination → library flags: `destroy:fireproof` Flag, `FireproofingHelper`, `FlaggableItemsMixin` (every non-Block Item flaggable, as 1.20.1), seeds tag, `CircuitPatternItemAttribute` on Create 6. Errors 128 / 258 → 110 / 222. |
+| `COMMIT_PLANTS` | (Maddie, Windows) Plant blocks: NeoForge 21.1 crop hooks, `PlantType` removed, 1.21.1 signatures; `maintains_farmland` tag on all 16 Destroy crop blocks (1.20.1 parity). Errors 110 / 222 → 94 / 190. |

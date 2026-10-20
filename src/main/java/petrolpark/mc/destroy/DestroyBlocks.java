@@ -766,6 +766,7 @@ public class DestroyBlocks {
     MAGIC_BEETROOT_SHOOTS = REGISTRATE.block("magic_beetroot_shoots", MagicBeetrootShootsBlock::new)
         .addLayer(() -> RenderType::cutout)
         .initialProperties(() -> Blocks.BEETROOTS)
+        .tag(BlockTags.MAINTAINS_FARMLAND)
         .register();
 
     public static final BlockEntry<FullyGrownCropBlock>
@@ -774,79 +775,79 @@ public class DestroyBlocks {
         .loot((lt, b) ->
             lt.add(b, lt.createCropDrops(b, Items.GOLDEN_CARROT, Items.GOLDEN_CARROT, LootItemBlockStatePropertyCondition.hasBlockStateProperties(b)))
         ).initialProperties(() -> Blocks.CARROTS)
-        .tag(BlockTags.CROPS)
+        .tag(BlockTags.CROPS, BlockTags.MAINTAINS_FARMLAND)
         .register();
 
     public static final BlockEntry<HeftyBeetrootBlock> 
 
     HEFTY_BEETROOT = REGISTRATE.block("hefty_beetroot", p -> new HeftyBeetrootBlock(p, DestroyItems.HEFTY_BEETROOT))
         .initialProperties(() -> Blocks.BEETROOTS)
-        .tag(DestroyTags.Blocks.BEETROOTS.tag)
+        .tag(DestroyTags.Blocks.BEETROOTS.tag, BlockTags.MAINTAINS_FARMLAND)
         .register(),
 
     COAL_INFUSED_BEETROOT = REGISTRATE.block("coal_infused_beetroot", p -> new HeftyBeetrootBlock(p, DestroyItems.COAL_INFUSED_BEETROOT))
         .initialProperties(HEFTY_BEETROOT)
-        .tag(DestroyTags.Blocks.BEETROOTS.tag)
+        .tag(DestroyTags.Blocks.BEETROOTS.tag, BlockTags.MAINTAINS_FARMLAND)
         .register(),
 
     COPPER_INFUSED_BEETROOT = REGISTRATE.block("copper_infused_beetroot", p -> new HeftyBeetrootBlock(p, DestroyItems.COPPER_INFUSED_BEETROOT))
         .initialProperties(HEFTY_BEETROOT)
-        .tag(DestroyTags.Blocks.BEETROOTS.tag)
+        .tag(DestroyTags.Blocks.BEETROOTS.tag, BlockTags.MAINTAINS_FARMLAND)
         .register(),
 
     DIAMOND_INFUSED_BEETROOT = REGISTRATE.block("diamond_infused_beetroot", p -> new HeftyBeetrootBlock(p, DestroyItems.DIAMOND_INFUSED_BEETROOT))
         .initialProperties(HEFTY_BEETROOT)
-        .tag(DestroyTags.Blocks.BEETROOTS.tag)
+        .tag(DestroyTags.Blocks.BEETROOTS.tag, BlockTags.MAINTAINS_FARMLAND)
         .register(),
 
     EMERALD_INFUSED_BEETROOT = REGISTRATE.block("emerald_infused_beetroot", p -> new HeftyBeetrootBlock(p, DestroyItems.EMERALD_INFUSED_BEETROOT))
         .initialProperties(HEFTY_BEETROOT)
-        .tag(DestroyTags.Blocks.BEETROOTS.tag)
+        .tag(DestroyTags.Blocks.BEETROOTS.tag, BlockTags.MAINTAINS_FARMLAND)
         .register(),
 
     FLUORITE_INFUSED_BEETROOT = REGISTRATE.block("fluorite_infused_beetroot", p -> new HeftyBeetrootBlock(p, DestroyItems.FLUORITE_INFUSED_BEETROOT))
         .initialProperties(HEFTY_BEETROOT)
-        .tag(DestroyTags.Blocks.BEETROOTS.tag)
+        .tag(DestroyTags.Blocks.BEETROOTS.tag, BlockTags.MAINTAINS_FARMLAND)
         .register(),
 
     GOLD_INFUSED_BEETROOT = REGISTRATE.block("gold_infused_beetroot", p -> new HeftyBeetrootBlock(p, DestroyItems.GOLD_INFUSED_BEETROOT))
         .initialProperties(HEFTY_BEETROOT)
-        .tag(DestroyTags.Blocks.BEETROOTS.tag)
+        .tag(DestroyTags.Blocks.BEETROOTS.tag, BlockTags.MAINTAINS_FARMLAND)
         .register(),
 
     IRON_INFUSED_BEETROOT = REGISTRATE.block("iron_infused_beetroot", p -> new HeftyBeetrootBlock(p, DestroyItems.IRON_INFUSED_BEETROOT))
         .initialProperties(HEFTY_BEETROOT)
-        .tag(DestroyTags.Blocks.BEETROOTS.tag)
+        .tag(DestroyTags.Blocks.BEETROOTS.tag, BlockTags.MAINTAINS_FARMLAND)
         .register(),
 
     LAPIS_INFUSED_BEETROOT = REGISTRATE.block("lapis_infused_beetroot", p -> new HeftyBeetrootBlock(p, DestroyItems.LAPIS_INFUSED_BEETROOT))
         .initialProperties(HEFTY_BEETROOT)
-        .tag(DestroyTags.Blocks.BEETROOTS.tag)
+        .tag(DestroyTags.Blocks.BEETROOTS.tag, BlockTags.MAINTAINS_FARMLAND)
         .register(),
 
     NICKEL_INFUSED_BEETROOT = REGISTRATE.block("nickel_infused_beetroot", p -> new HeftyBeetrootBlock(p, DestroyItems.NICKEL_INFUSED_BEETROOT))
         .initialProperties(HEFTY_BEETROOT)
-        .tag(DestroyTags.Blocks.BEETROOTS.tag)
+        .tag(DestroyTags.Blocks.BEETROOTS.tag, BlockTags.MAINTAINS_FARMLAND)
         .register(),
 
     NETHER_CROCOITE_INFUSED_BEETROOT = REGISTRATE.block("nether_crocoite_infused_beetroot", p -> new HeftyBeetrootBlock(p, DestroyItems.NETHER_CROCOITE_INFUSED_BEETROOT))
         .initialProperties(HEFTY_BEETROOT)
-        .tag(DestroyTags.Blocks.BEETROOTS.tag)
+        .tag(DestroyTags.Blocks.BEETROOTS.tag, BlockTags.MAINTAINS_FARMLAND)
         .register(),
 
     QUARTZ_INFUSED_BEETROOT = REGISTRATE.block("quartz_infused_beetroot", p -> new HeftyBeetrootBlock(p, DestroyItems.QUARTZ_INFUSED_BEETROOT))
         .initialProperties(HEFTY_BEETROOT)
-        .tag(DestroyTags.Blocks.BEETROOTS.tag)
+        .tag(DestroyTags.Blocks.BEETROOTS.tag, BlockTags.MAINTAINS_FARMLAND)
         .register(),
 
     REDSTONE_INFUSED_BEETROOT = REGISTRATE.block("redstone_infused_beetroot", p -> new HeftyBeetrootBlock(p, DestroyItems.REDSTONE_INFUSED_BEETROOT))
         .initialProperties(HEFTY_BEETROOT)
-        .tag(DestroyTags.Blocks.BEETROOTS.tag)
+        .tag(DestroyTags.Blocks.BEETROOTS.tag, BlockTags.MAINTAINS_FARMLAND)
         .register(),
 
     ZINC_INFUSED_BEETROOT = REGISTRATE.block("zinc_infused_beetroot", p -> new HeftyBeetrootBlock(p, DestroyItems.ZINC_INFUSED_BEETROOT))
         .initialProperties(HEFTY_BEETROOT)
-        .tag(DestroyTags.Blocks.BEETROOTS.tag)
+        .tag(DestroyTags.Blocks.BEETROOTS.tag, BlockTags.MAINTAINS_FARMLAND)
         .register();
 
     // Periodic Table blocks
