@@ -22,7 +22,7 @@ public class BabyBlueSyringeItem extends SyringeItem {
 
     @Override
     public void onInject(ItemStack itemStack, Level level, LivingEntity target) {
-        if (DestroySubstancesConfigs.babyBlueEnabled()) target.addEffect(new MobEffectInstance(DestroyMobEffects.BABY_BLUE_HIGH.get(), duration, amplifier));
+        if (DestroySubstancesConfigs.babyBlueEnabled()) target.addEffect(new MobEffectInstance(DestroyMobEffects.BABY_BLUE_HIGH, duration, amplifier));
     };
     
 }

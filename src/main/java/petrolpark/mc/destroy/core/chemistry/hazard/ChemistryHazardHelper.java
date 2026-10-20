@@ -75,7 +75,7 @@ public class ChemistryHazardHelper {
 
         // Wah wah cry like a little baby
         if (lacrimator && !eyesProtected) {
-            entity.addEffect(new MobEffectInstance(DestroyMobEffects.CRYING.get(), 600, 0, false, false, true));
+            entity.addEffect(new MobEffectInstance(DestroyMobEffects.CRYING, 600, 0, false, false, true));
         };
         
         // Smelly chemicals
@@ -86,7 +86,7 @@ public class ChemistryHazardHelper {
         // Acutely toxic Molecules
         if (toxicMolecule != null && !sensitivePartsProtected && !level.isClientSide()) {
             EntityChemicalPoisonCapability.setMolecule(entity, toxicMolecule);
-            if (!entity.hasEffect(DestroyMobEffects.CHEMICAL_POISON.get())) entity.addEffect(new MobEffectInstance(DestroyMobEffects.CHEMICAL_POISON.get(), 219, 0, false, false));
+            if (!entity.hasEffect(DestroyMobEffects.CHEMICAL_POISON)) entity.addEffect(new MobEffectInstance(DestroyMobEffects.CHEMICAL_POISON, 219, 0, false, false));
         };
         
         // Carcinogens
@@ -96,7 +96,7 @@ public class ChemistryHazardHelper {
 
         // Lead poisoning
         if (lead && (!noseProtected || !mouthProtected)) {
-            if (entity.getRandom().nextInt(2400) == 0) DestroyMobEffects.increaseEffectLevel(entity, DestroyMobEffects.LEAD_POISONING.get(), 1, -1);
+            if (entity.getRandom().nextInt(2400) == 0) DestroyMobEffects.increaseEffectLevel(entity, DestroyMobEffects.LEAD_POISONING, 1, -1);
         };
 
         // Acid/base burns
@@ -157,7 +157,7 @@ public class ChemistryHazardHelper {
         };
 
         static {
-            NOSE.registerTest(le -> le.hasEffect(DestroyMobEffects.FRAGRANCE.get()));
+            NOSE.registerTest(le -> le.hasEffect(DestroyMobEffects.FRAGRANCE));
         };
     };
 
@@ -165,7 +165,7 @@ public class ChemistryHazardHelper {
     @SubscribeEvent
     public static void onPlayerTick(PlayerTickEvent.Post event) {
         Player player = event.getEntity();
-        if (player.level().canSeeSky(player.blockPosition()) && !player.hasEffect(DestroyMobEffects.SUN_PROTECTION.get()) && player.getRandom().nextInt(DestroyPollutionTypes.OZONE_DEPLETION.get().max * 600) < PollutionHelper.getPollution(player.level(), player.blockPosition(), DestroyPollutionTypes.OZONE_DEPLETION.get())) player.addEffect(DestroyMobEffects.cancerInstance());
+        if (player.level().canSeeSky(player.blockPosition()) && !player.hasEffect(DestroyMobEffects.SUN_PROTECTION) && player.getRandom().nextInt(DestroyPollutionTypes.OZONE_DEPLETION.get().max * 600) < PollutionHelper.getPollution(player.level(), player.blockPosition(), DestroyPollutionTypes.OZONE_DEPLETION.get())) player.addEffect(DestroyMobEffects.cancerInstance());
     };
 
     /**
@@ -177,7 +177,7 @@ public class ChemistryHazardHelper {
         Player player = event.getEntity();
 
         if (stack.isEdible()) {
-            if (DestroySubstancesConfigs.babyBlueEnabled() && stack.getItem() != DestroyItems.BABY_BLUE_POWDER.get() && player.hasEffect(DestroyMobEffects.BABY_BLUE_WITHDRAWAL.get()) && !stack.getFoodProperties(player).canAlwaysEat()) {
+            if (DestroySubstancesConfigs.babyBlueEnabled() && stack.getItem() != DestroyItems.BABY_BLUE_POWDER.get() && player.hasEffect(DestroyMobEffects.BABY_BLUE_WITHDRAWAL) && !stack.getFoodProperties(player).canAlwaysEat()) {
                 player.displayClientMessage(DestroyLang.translate("tooltip.eating_prevented.baby_blue").component(), true);
                 event.setCanceled(true);
             };

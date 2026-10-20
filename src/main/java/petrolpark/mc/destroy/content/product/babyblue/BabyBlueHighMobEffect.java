@@ -32,16 +32,16 @@ public class BabyBlueHighMobEffect extends UncurableMobEffect {
     @SuppressWarnings("null") // We know the effect isn't null if its ticking
     public void applyEffectTick(LivingEntity livingEntity, int amplifier) {
         if (!livingEntity.level().isClientSide()) {
-            int duration = livingEntity.getEffect(DestroyMobEffects.BABY_BLUE_HIGH.get()).getDuration(); // This is the bit it says is null
+            int duration = livingEntity.getEffect(DestroyMobEffects.BABY_BLUE_HIGH).getDuration(); // This is the bit it says is null
             if (duration == 1) {
                 // Apply the Baby Blue Withdrawal Effect as the BabyBlue High Effect runs out.
                 if (livingEntity instanceof Player player) {
                     player.getCapability(PlayerBabyBlueAddictionCapability.CAPABILITY).ifPresent(babyBlueAddiction -> {
-                        player.addEffect(new MobEffectInstance(DestroyMobEffects.BABY_BLUE_WITHDRAWAL.get(), (10 + babyBlueAddiction.getBabyBlueAddiction()) * 20)); // Change the length of the effect depending on the Addiction level
+                        player.addEffect(new MobEffectInstance(DestroyMobEffects.BABY_BLUE_WITHDRAWAL, (10 + babyBlueAddiction.getBabyBlueAddiction()) * 20)); // Change the length of the effect depending on the Addiction level
                     });
                 };
             } else {
-                livingEntity.removeEffect(DestroyMobEffects.BABY_BLUE_WITHDRAWAL.get());
+                livingEntity.removeEffect(DestroyMobEffects.BABY_BLUE_WITHDRAWAL);
             };
 
             if (livingEntity instanceof Player player) {
@@ -70,10 +70,10 @@ public class BabyBlueHighMobEffect extends UncurableMobEffect {
     public static void onPlayerBreakSpeed(PlayerEvent.BreakSpeed event) {
         if (!DestroySubstancesConfigs.babyBlueEnabled()) return;
         Player player = event.getEntity();
-        if (player.hasEffect(DestroyMobEffects.BABY_BLUE_HIGH.get())) {
-            event.setNewSpeed(event.getOriginalSpeed() + (DestroyAllConfigs.SERVER.substances.babyBlueMiningSpeedBonus.getF() * (player.getEffect(DestroyMobEffects.BABY_BLUE_HIGH.get()).getAmplifier() + 1))); // Increase Haste with Baby Blue High
-        } else if (player.hasEffect(DestroyMobEffects.BABY_BLUE_WITHDRAWAL.get())) {
-            event.setNewSpeed(event.getOriginalSpeed() + (DestroyAllConfigs.SERVER.substances.babyBlueWidthdrawalSpeedBonus.getF() * (player.getEffect(DestroyMobEffects.BABY_BLUE_WITHDRAWAL.get()).getAmplifier() + 1))); // Decrease Haste with Baby Blue Withdrawal
+        if (player.hasEffect(DestroyMobEffects.BABY_BLUE_HIGH)) {
+            event.setNewSpeed(event.getOriginalSpeed() + (DestroyAllConfigs.SERVER.substances.babyBlueMiningSpeedBonus.getF() * (player.getEffect(DestroyMobEffects.BABY_BLUE_HIGH).getAmplifier() + 1))); // Increase Haste with Baby Blue High
+        } else if (player.hasEffect(DestroyMobEffects.BABY_BLUE_WITHDRAWAL)) {
+            event.setNewSpeed(event.getOriginalSpeed() + (DestroyAllConfigs.SERVER.substances.babyBlueWidthdrawalSpeedBonus.getF() * (player.getEffect(DestroyMobEffects.BABY_BLUE_WITHDRAWAL).getAmplifier() + 1))); // Decrease Haste with Baby Blue Withdrawal
             if (event.getNewSpeed() <= 0f) event.setNewSpeed(0f);
         };
     };

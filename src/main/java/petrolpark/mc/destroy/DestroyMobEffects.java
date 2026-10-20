@@ -1,5 +1,7 @@
 package petrolpark.mc.destroy;
 
+import net.minecraft.core.registries.Registries;
+import net.minecraft.core.Holder;
 import petrolpark.mc.destroy.content.product.alcohol.HangoverMobEffect;
 import petrolpark.mc.destroy.content.product.alcohol.InebriationMobEffect;
 import petrolpark.mc.destroy.content.product.babyblue.BabyBlueHighMobEffect;
@@ -16,12 +18,11 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.neoforged.neoforge.registries.DeferredHolder;
 
 public class DestroyMobEffects {
 
-    public static final DeferredRegister<MobEffect> MOB_EFFECTS = DeferredRegister.create(NeoForgeRegistries.MOB_EFFECTS, Destroy.MOD_ID);
+    public static final DeferredRegister<MobEffect> MOB_EFFECTS = DeferredRegister.create(Registries.MOB_EFFECT, Destroy.MOD_ID);
 
     public static final DeferredHolder<MobEffect, MobEffect> 
 
@@ -50,11 +51,11 @@ public class DestroyMobEffects {
     };
 
     public static MobEffectInstance cancerInstance() {
-        return new MobEffectInstance(CANCER.get(), MobEffectInstance.INFINITE_DURATION, 0, false, false, true);
+        return new MobEffectInstance(CANCER, MobEffectInstance.INFINITE_DURATION, 0, false, false, true);
     };
 
     @SuppressWarnings("null")
-    public static void increaseEffectLevel(LivingEntity entity, final MobEffect effect, int level, int addedDurationPerLevel) {
+    public static void increaseEffectLevel(LivingEntity entity, final Holder<MobEffect> effect, int level, int addedDurationPerLevel) {
         boolean infinite = addedDurationPerLevel == -1;
         if (entity.hasEffect(effect)) {
             int currentAmplifier = entity.getEffect(effect).getAmplifier(); // This is warned as being null

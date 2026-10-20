@@ -46,7 +46,7 @@ public class HangoverMobEffect extends DestroyMobEffect {
         List<Entity> nearbyEntities = event.getLevel().getEntities(null, new AABB(pos.add(new Vec3(-radius,-radius,-radius)), pos.add(new Vec3(radius, radius, radius))));
         for (Entity entity : nearbyEntities) {
             if (entity instanceof LivingEntity livingEntity) {
-                if (livingEntity.hasEffect(DestroyMobEffects.HANGOVER.get())) {
+                if (livingEntity.hasEffect(DestroyMobEffects.HANGOVER)) {
                     livingEntity.hurt(DestroyDamageSources.headache(livingEntity.level()), DestroyAllConfigs.SERVER.substances.soundSourceDamage.get(event.getSource()).getF());
                 };
             };

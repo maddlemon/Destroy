@@ -31,7 +31,7 @@ public class BabyBlueWithdrawalMobEffect extends UncurableMobEffect {
     @SuppressWarnings("null") // We know the effect isn't null if its ticking
     public void applyEffectTick(LivingEntity livingEntity, int amplifier) {
         if (!livingEntity.level().isClientSide()) {
-            int duration = livingEntity.getEffect(DestroyMobEffects.BABY_BLUE_WITHDRAWAL.get()).getDuration(); // This is the bit it says is null
+            int duration = livingEntity.getEffect(DestroyMobEffects.BABY_BLUE_WITHDRAWAL).getDuration(); // This is the bit it says is null
 
             if (livingEntity instanceof Player) {
                 livingEntity.getCapability(PlayerBabyBlueAddictionCapability.CAPABILITY).ifPresent(babyBlueAddiction -> {
@@ -56,7 +56,7 @@ public class BabyBlueWithdrawalMobEffect extends UncurableMobEffect {
         ItemStack stack = event.getItemStack();
         Player player = event.getEntity();
 
-        if (stack.isEdible() && DestroySubstancesConfigs.babyBlueEnabled() && stack.getItem() != DestroyItems.BABY_BLUE_POWDER.get() && player.hasEffect(DestroyMobEffects.BABY_BLUE_WITHDRAWAL.get()) && !stack.getFoodProperties(player).canAlwaysEat()) {
+        if (stack.isEdible() && DestroySubstancesConfigs.babyBlueEnabled() && stack.getItem() != DestroyItems.BABY_BLUE_POWDER.get() && player.hasEffect(DestroyMobEffects.BABY_BLUE_WITHDRAWAL) && !stack.getFoodProperties(player).canAlwaysEat()) {
             player.displayClientMessage(DestroyLang.translate("tooltip.eating_prevented.baby_blue").component(), true);
             event.setCanceled(true);
         };

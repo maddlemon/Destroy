@@ -61,9 +61,9 @@ JAVA_HOME=$JDK ./gradlew compileJava --console=plain    # log to a file, run det
 | `29815ce4` | `DestroyTagDatagen` syntax fix; `-Xmaxerrs 10000` on JavaCompile |
 | `f7a0c130` | Phase B batch 1 (mechanical): `DestroyLang` import fixes (`client.`→`util.`, incl. `TemperatureUnit`), `ForgeCatnipServices`→`CatnipServices`, static `AllTags` import fixes, `DistExecutor.unsafeRunWhenOn(Dist.CLIENT, …)`→`Destroy.unsafeRunClient(…)`, `RegistryObject`→`DeferredHolder` fields (`DestroyParticleTypes`, `DestroyRecipeTypes`), nested `Pollution.PollutionType` / `SeismographItem.Seismograph(.Mark)` import fixes, `saturationMod(`→`saturationModifier(` |
 
-| `5513449d` | AT fix (above); Create 6 `ProcessingRecipeParams` import; `HolderLookup.Provider registries` added to all `SmartBlockEntity`/`BlockEntityBehaviour` `read`/`write`/`writeSafe` overrides + super/behaviour/`FluidTank` NBT calls inside them (28 files); `FluidStack.loadFluidStackFromNBT`/`writeToNBT` -> `parseOptional`/`saveOptional` in block entities; Blowpipe `readBlowing`/`writeBlowing` take a provider. Done from Maddie's Windows machine. |
+| `9e90380a` | AT fix (above); Create 6 `ProcessingRecipeParams` import; `HolderLookup.Provider registries` added to all `SmartBlockEntity`/`BlockEntityBehaviour` `read`/`write`/`writeSafe` overrides + super/behaviour/`FluidTank` NBT calls inside them (28 files); `FluidStack.loadFluidStackFromNBT`/`writeToNBT` -> `parseOptional`/`saveOptional` in block entities; Blowpipe `readBlowing`/`writeBlowing` take a provider. Done from Maddie's Windows machine. |
 
-| `c3e7c6f4` | Tick events -> `ClientTickEvent.Pre/Post`, `PlayerTickEvent.Post`, `LevelTickEvent.Post` (all 9 files; `ExtendedInventoryClientHandler.tick()` no-arg; dropped duplicate `SeismometerItemRenderer.tick()` call, it self-subscribes now); old `PollutionType.SMOG/GREENHOUSE/ACID_RAIN/OZONE_DEPLETION` -> `DestroyPollutionTypes.X.get()`, `pollutionEnabled()` -> `isPollutionEnabled()`; pollution ponder storyboards disabled with `TODO(port)` (author's `PollutionPonderScenes` is fully commented out upstream); `ItemProviderEntry<?>` -> `<?, ?>`. |
+| `955c7499` | Tick events -> `ClientTickEvent.Pre/Post`, `PlayerTickEvent.Post`, `LevelTickEvent.Post` (all 9 files; `ExtendedInventoryClientHandler.tick()` no-arg; dropped duplicate `SeismometerItemRenderer.tick()` call, it self-subscribes now); old `PollutionType.SMOG/GREENHOUSE/ACID_RAIN/OZONE_DEPLETION` -> `DestroyPollutionTypes.X.get()`, `pollutionEnabled()` -> `isPollutionEnabled()`; pollution ponder storyboards disabled with `TODO(port)` (author's `PollutionPonderScenes` is fully commented out upstream); `ItemProviderEntry<?>` -> `<?, ?>`. |
 
 **Behaviour note (tick events):** Forge fired Player/Level tick events twice per tick (START+END).
 `ChemistryHazardHelper.onPlayerTick`, `PlayerCrouchingCapability`, `PlayerPreviousPositionsCapability`,
@@ -72,7 +72,9 @@ phase, so they ran 2x/tick. They're now on `Post` only = 1x/tick: crouch/urinate
 roll, previous-position sampling and global pollution decay run at half their old rate. Subscribe to
 `Pre` too if the old rates matter.
 
-Latest compile: **1,940 errors**.
+| (mob effects commit) | Mob effects -> `Holder<MobEffect>`: `DeferredRegister.create(Registries.MOB_EFFECT, …)` (NeoForgeRegistries has no MOB_EFFECTS), `DestroyMobEffects.X.get()` -> `DestroyMobEffects.X` everywhere (DeferredHolder is a Holder), `increaseEffectLevel` takes `Holder<MobEffect>`. Note: compare effects with `holder.is(DestroyMobEffects.X)`, never `==` (DeferredHolder != the registry's Holder.Reference). |
+
+Latest compile: **1,892 errors**.
 
 Still TODO for pollution consumers (old enum API, needs redesign against the author's registry +
 data-map `PollutionType.Properties`): `pollutionType.local` / `.max`, `PollutionType.values()`,
@@ -131,7 +133,7 @@ Batch 2 — API fixes (verified against the jars):
   exists but compile still reports private: investigate AT application.
 - `FluidTank.writeToNBT(HolderLookup.Provider, CompoundTag)` — DONE inside block-entity
   read/write; remaining sites are outside those methods (item tanks, capabilities).
-- `MobEffectInstance.getEffect()` → `Holder<MobEffect>`.
+- `MobEffectInstance.getEffect()` → `Holder<MobEffect>` — DONE for `DestroyMobEffects` refs.
 
 Batch 3 — structural:
 

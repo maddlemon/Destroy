@@ -27,7 +27,7 @@ public class InebriationMobEffect extends UncurableMobEffect {
 
     @SuppressWarnings("null")
     public void applyEffectTick(LivingEntity livingEntity, int amplifier) {
-        int pDuration = livingEntity.getEffect(DestroyMobEffects.INEBRIATION.get()).getDuration(); // This is the bit it says is null
+        int pDuration = livingEntity.getEffect(DestroyMobEffects.INEBRIATION).getDuration(); // This is the bit it says is null
         if (!livingEntity.level().isClientSide()) {
             if (amplifier >= 3) {
                 livingEntity.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 25, (amplifier - 2), true, false, false));
@@ -57,10 +57,10 @@ public class InebriationMobEffect extends UncurableMobEffect {
     public static void onSleepFinished(SleepFinishedTimeEvent event) {
         for (Player player : event.getLevel().players()) {
             if (!player.isSleeping()) continue;
-            MobEffectInstance effect = player.getEffect(DestroyMobEffects.INEBRIATION.get());
+            MobEffectInstance effect = player.getEffect(DestroyMobEffects.INEBRIATION);
             if (effect != null) {
-                player.addEffect(new MobEffectInstance(DestroyMobEffects.HANGOVER.get(), DestroyAllConfigs.SERVER.substances.hangoverDuration.get() * (effect.getAmplifier() + 1)));
-                player.removeEffect(DestroyMobEffects.INEBRIATION.get());
+                player.addEffect(new MobEffectInstance(DestroyMobEffects.HANGOVER, DestroyAllConfigs.SERVER.substances.hangoverDuration.get() * (effect.getAmplifier() + 1)));
+                player.removeEffect(DestroyMobEffects.INEBRIATION);
                 DestroyAdvancementTrigger.HANGOVER.award(player.level(), player);
             };
         };

@@ -340,7 +340,7 @@ public class DestroyCommonEvents {
         Player player = event.getEntity();
         ItemStack itemStack = player.getItemInHand(event.getHand());
 
-        if (itemStack.is(Items.GLASS_BOTTLE) && player.hasEffect(DestroyMobEffects.CRYING.get())) {
+        if (itemStack.is(Items.GLASS_BOTTLE) && player.hasEffect(DestroyMobEffects.CRYING)) {
             collectTears(event, player, event.getHand(), itemStack, player);
         };
     };
@@ -378,13 +378,13 @@ public class DestroyCommonEvents {
         };
 
         // Collecting Tears
-        if (itemStack.is(Items.GLASS_BOTTLE) && event.getTarget() instanceof LivingEntity livingEntity && livingEntity.hasEffect(DestroyMobEffects.CRYING.get())) {
+        if (itemStack.is(Items.GLASS_BOTTLE) && event.getTarget() instanceof LivingEntity livingEntity && livingEntity.hasEffect(DestroyMobEffects.CRYING)) {
             collectTears(event, player, event.getHand(), itemStack, livingEntity);
         };
     };
 
     public static void collectTears(Event event, Player player, InteractionHand hand, ItemStack bottleStack, LivingEntity cryingEntity) {
-        cryingEntity.removeEffect(DestroyMobEffects.CRYING.get()); // Stop the crying
+        cryingEntity.removeEffect(DestroyMobEffects.CRYING); // Stop the crying
 
         // Give the Tear Bottle to the Player
         ItemStack filled = DestroyItems.TEAR_BOTTLE.asStack();

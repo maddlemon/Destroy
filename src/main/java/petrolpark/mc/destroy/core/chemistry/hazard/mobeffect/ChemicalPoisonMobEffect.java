@@ -40,7 +40,7 @@ public class ChemicalPoisonMobEffect extends UncurableMobEffect {
     @SuppressWarnings("null") // We know the effect isn't null if its ticking
     public void applyEffectTick(LivingEntity livingEntity, int amplifier) {
         if (!livingEntity.level().isClientSide()) {
-            int duration = livingEntity.getEffect(DestroyMobEffects.CHEMICAL_POISON.get()).getDuration(); // This is the bit it says is null
+            int duration = livingEntity.getEffect(DestroyMobEffects.CHEMICAL_POISON).getDuration(); // This is the bit it says is null
             if (duration % 50 == 0) {
                 LegacySpecies molecule = null;
                 LazyOptional<EntityChemicalPoisonCapability> cap = getCap(livingEntity);

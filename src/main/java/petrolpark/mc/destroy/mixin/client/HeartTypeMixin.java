@@ -46,6 +46,6 @@ public class HeartTypeMixin {
 
     @Inject(method = "forPlayer", at = @At("HEAD"), cancellable = true)
     private static void inForPlayer(Player player, CallbackInfoReturnable<HeartType> cir) {
-        if (player.hasEffect(DestroyMobEffects.CHEMICAL_POISON.get())) cir.setReturnValue(CHEMICAL_POISON);
+        if (player.hasEffect(DestroyMobEffects.CHEMICAL_POISON)) cir.setReturnValue(CHEMICAL_POISON);
     };
 };

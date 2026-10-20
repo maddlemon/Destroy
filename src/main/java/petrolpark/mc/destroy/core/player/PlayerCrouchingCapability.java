@@ -80,7 +80,7 @@ public class PlayerCrouchingCapability {
 
         BlockPos posOn = player.getOnPos();
         BlockState stateOn = player.level().getBlockState(posOn);
-        boolean urinating = (stateOn.getBlock() == Blocks.WATER_CAULDRON || stateOn.getBlock() == Blocks.CAULDRON) && player.hasEffect(DestroyMobEffects.FULL_BLADDER.get());
+        boolean urinating = (stateOn.getBlock() == Blocks.WATER_CAULDRON || stateOn.getBlock() == Blocks.CAULDRON) && player.hasEffect(DestroyMobEffects.FULL_BLADDER);
         if (player.isCrouching()) {
             player.getCapability(PlayerCrouchingCapability.CAPABILITY).ifPresent(crouchingCap -> {
                 crouchingCap.ticksCrouching++;
@@ -99,7 +99,7 @@ public class PlayerCrouchingCapability {
             if (player.level().isClientSide()) player.level().addParticle(FluidFX.getFluidParticle(new FluidStack(DestroyFluids.URINE.get(), 1000)), pos.x, pos.y + 0.5f, pos.z, 0d, -0.07d, 0d);
             if (ticksUrinating % 40 == 0) DestroySoundEvents.URINATE.playOnServer(player.level(), posOn);
             if (ticksUrinating == 119) {
-                DestroyMobEffects.increaseEffectLevel(player, DestroyMobEffects.FULL_BLADDER.get(), -1, 0);
+                DestroyMobEffects.increaseEffectLevel(player, DestroyMobEffects.FULL_BLADDER, -1, 0);
                 DestroyAdvancementTrigger.URINATE.award(player.level(), player);
                 player.level().setBlockAndUpdate(posOn, DestroyBlocks.URINE_CAULDRON.getDefaultState());
             };

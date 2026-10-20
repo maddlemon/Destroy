@@ -448,10 +448,10 @@ public class DestroyItems {
 
     public static final ItemEntry<SprayBottleItem>
     
-    PERFUME_BOTTLE = REGISTRATE.item("perfume_bottle", p -> new SprayBottleItem(p, new MobEffectInstance(DestroyMobEffects.FRAGRANCE.get(), 12000, 0)))
+    PERFUME_BOTTLE = REGISTRATE.item("perfume_bottle", p -> new SprayBottleItem(p, new MobEffectInstance(DestroyMobEffects.FRAGRANCE, 12000, 0)))
         .tag(DestroyTags.Items.SPRAY_BOTTLES.tag)
         .register(),
-    SUNSCREEN_BOTTLE = REGISTRATE.item("sunscreen_bottle", p -> new SprayBottleItem(p, new MobEffectInstance(DestroyMobEffects.SUN_PROTECTION.get(), 12000, 0, false, false, true)))
+    SUNSCREEN_BOTTLE = REGISTRATE.item("sunscreen_bottle", p -> new SprayBottleItem(p, new MobEffectInstance(DestroyMobEffects.SUN_PROTECTION, 12000, 0, false, false, true)))
         .tag(DestroyTags.Items.SPRAY_BOTTLES.tag)
         .register();
 

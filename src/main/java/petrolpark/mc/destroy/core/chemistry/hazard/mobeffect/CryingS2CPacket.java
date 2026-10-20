@@ -43,10 +43,10 @@ public class CryingS2CPacket extends S2CPacket {
             if (level == null) return;
             Entity entity = level.getEntity(entityId);
             if (entity == null || !(entity instanceof LivingEntity livingEntity)) return;
-            if (isCrying && !livingEntity.hasEffect(DestroyMobEffects.CRYING.get())) {
-                livingEntity.addEffect(new MobEffectInstance(DestroyMobEffects.CRYING.get(), Integer.MAX_VALUE, 0, true, false, false));
+            if (isCrying && !livingEntity.hasEffect(DestroyMobEffects.CRYING)) {
+                livingEntity.addEffect(new MobEffectInstance(DestroyMobEffects.CRYING, Integer.MAX_VALUE, 0, true, false, false));
             } else {
-                livingEntity.removeEffect(DestroyMobEffects.CRYING.get());
+                livingEntity.removeEffect(DestroyMobEffects.CRYING);
             };
         });
         return true;

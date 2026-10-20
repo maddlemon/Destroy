@@ -40,7 +40,7 @@ public interface DestroyFrictionModifier extends IBlockStateExtension {
         //
 
         if (entity != null && entity instanceof LivingEntity livingEntity) {
-            MobEffectInstance alcoholEffect = livingEntity.getEffect(DestroyMobEffects.INEBRIATION.get());
+            MobEffectInstance alcoholEffect = livingEntity.getEffect(DestroyMobEffects.INEBRIATION);
             if (alcoholEffect != null) {
                 return (float)(originalFriction + ((1 - originalFriction)
                     * Math.min(5, alcoholEffect.getAmplifier() + 1) / 5 // Scale the extent of slipping with the amplifier of Inebriation (effects stop compounding after 4)

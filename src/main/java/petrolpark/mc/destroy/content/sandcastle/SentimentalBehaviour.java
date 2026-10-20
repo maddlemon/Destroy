@@ -48,7 +48,7 @@ public class SentimentalBehaviour extends BlockEntityBehaviour {
      */
     public void onRemove(BlockState state, @Nullable Player player) {
         if (hasOwner() && getPos().distToCenterSqr(owner.getX(), owner.getY(), owner.getZ()) < 16) {
-            owner.addEffect(new MobEffectInstance(DestroyMobEffects.CRYING.get(), 600, 0, false, false));
+            owner.addEffect(new MobEffectInstance(DestroyMobEffects.CRYING, 600, 0, false, false));
 
             // For Villagers
             if (owner instanceof Villager villager && player != null) {

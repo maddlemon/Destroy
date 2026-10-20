@@ -19,7 +19,7 @@ public class AspirinSyringeItem extends SyringeItem {
     @Override
     public void onInject(ItemStack itemStack, Level level, LivingEntity target) {
         target.heal(DestroyAllConfigs.SERVER.substances.aspirinHeal.getF());
-        if (!target.removeEffect(DestroyMobEffects.HANGOVER.get())) return;
+        if (!target.removeEffect(DestroyMobEffects.HANGOVER)) return;
         if (target instanceof Player player) {
             DestroyAdvancementTrigger.CURE_HANGOVER.award(level, player);
         };

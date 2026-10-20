@@ -37,8 +37,8 @@ public class AlcoholicDrinkItem extends DrinkItem {
         };
    
         if (!level.isClientSide) {
-            if (DestroySubstancesConfigs.alcoholEnabled()) DestroyMobEffects.increaseEffectLevel(entityLiving, DestroyMobEffects.INEBRIATION.get(), strength, DestroyAllConfigs.SERVER.substances.inebriationDuration.get());
-            DestroyMobEffects.increaseEffectLevel(entityLiving, DestroyMobEffects.FULL_BLADDER.get(), strength, DestroyAllConfigs.SERVER.substances.inebriationDuration.get());
+            if (DestroySubstancesConfigs.alcoholEnabled()) DestroyMobEffects.increaseEffectLevel(entityLiving, DestroyMobEffects.INEBRIATION, strength, DestroyAllConfigs.SERVER.substances.inebriationDuration.get());
+            DestroyMobEffects.increaseEffectLevel(entityLiving, DestroyMobEffects.FULL_BLADDER, strength, DestroyAllConfigs.SERVER.substances.inebriationDuration.get());
         };
    
         if (stack.isEmpty()) {

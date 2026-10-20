@@ -10,12 +10,12 @@ public class DestroyFoods {
 
     // Effect Suppliers
     public static Supplier<MobEffectInstance> babyBlueHigh = () -> {
-        return new MobEffectInstance(DestroyMobEffects.BABY_BLUE_HIGH.get(), 2400, 0);
+        return new MobEffectInstance(DestroyMobEffects.BABY_BLUE_HIGH, 2400, 0);
     };
 
     // Foods
     public static final FoodProperties
-    APPLE_JUICE = new FoodProperties.Builder().nutrition(5).saturationModifier(0.4f).alwaysEat().effect(() -> new MobEffectInstance(DestroyMobEffects.FULL_BLADDER.get(), 600, 0, false, false, true), 1f).build(),
+    APPLE_JUICE = new FoodProperties.Builder().nutrition(5).saturationModifier(0.4f).alwaysEat().effect(() -> new MobEffectInstance(DestroyMobEffects.FULL_BLADDER, 600, 0, false, false, true), 1f).build(),
     BUTTER = new FoodProperties.Builder().nutrition(6).saturationModifier(0.1f).build(),
     CREATINE = new FoodProperties.Builder().nutrition(0).saturationModifier(0f).effect(() -> new MobEffectInstance(MobEffects.DAMAGE_BOOST, 6000, 1), 1f).build(),
     RAW_FRIES = new FoodProperties.Builder().nutrition(2).saturationModifier(0.6f).build(),

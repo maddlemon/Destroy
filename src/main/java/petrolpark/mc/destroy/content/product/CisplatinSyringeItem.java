@@ -15,7 +15,7 @@ public class CisplatinSyringeItem extends SyringeItem {
 
     @Override
     public void onInject(ItemStack itemStack, Level level, LivingEntity target) {
-        target.removeEffect(DestroyMobEffects.CANCER.get());
+        target.removeEffect(DestroyMobEffects.CANCER);
     };
     
 };
