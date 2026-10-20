@@ -4,7 +4,6 @@ import petrolpark.mc.destroy.DestroyPollutionTypes;
 import petrolpark.mc.destroy.Destroy;
 import petrolpark.mc.destroy.DestroyClient;
 import petrolpark.mc.destroy.config.DestroyAllConfigs;
-import petrolpark.mc.destroy.core.pollution.PollutionType;
 import petrolpark.mc.destroy.core.pollution.PollutionHelper;
 
 import net.createmod.catnip.animation.AnimationTickHolder;
@@ -84,8 +83,8 @@ public class FogHandler {
         if (getFluidInCamera(event.getCamera()) == FogType.NONE) {
             Minecraft mc = Minecraft.getInstance();
             float smog = (float)PollutionHelper.getPollution(mc.level, mc.player.blockPosition(), DestroyPollutionTypes.SMOG.get());
-            event.scaleNearPlaneDistance(1f - (0.8f * smog / (float)DestroyPollutionTypes.SMOG.get().max));
-            event.scaleFarPlaneDistance(1f - (0.5f * smog / (float)DestroyPollutionTypes.SMOG.get().max));
+            event.scaleNearPlaneDistance(1f - (0.8f * smog / (float)PollutionHelper.getChunkPollutionTypeProperties(DestroyPollutionTypes.SMOG.get()).max()));
+            event.scaleFarPlaneDistance(1f - (0.5f * smog / (float)PollutionHelper.getChunkPollutionTypeProperties(DestroyPollutionTypes.SMOG.get()).max()));
             event.setCanceled(true);
         };
     };
@@ -101,7 +100,7 @@ public class FogHandler {
             Minecraft mc = Minecraft.getInstance();
             float smog = (float)PollutionHelper.getPollution(mc.level, mc.player.blockPosition(), DestroyPollutionTypes.SMOG.get());
             Color existing = new Color(event.getRed(), event.getGreen(), event.getBlue(), 1f);
-            DestroyClient.FOG_HANDLER.setTargetColor(Color.mixColors(existing, BROWN, 0.8f * smog / (float)DestroyPollutionTypes.SMOG.get().max), AnimationTickHolder.getPartialTicks());
+            DestroyClient.FOG_HANDLER.setTargetColor(Color.mixColors(existing, BROWN, 0.8f * smog / (float)PollutionHelper.getChunkPollutionTypeProperties(DestroyPollutionTypes.SMOG.get()).max()), AnimationTickHolder.getPartialTicks());
             Color color = DestroyClient.FOG_HANDLER.getColor(AnimationTickHolder.getPartialTicks());
             event.setRed(color.getRedAsFloat());
             event.setGreen(color.getGreenAsFloat());

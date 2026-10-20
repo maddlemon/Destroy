@@ -1,14 +1,11 @@
 package petrolpark.mc.destroy.config;
 
-import petrolpark.mc.destroy.core.pollution.ClientPollutionConfigs;
-
 public class DestroyClientConfigs extends DestroyConfigBase {
 
     public final ConfigBool tempramentalItemDescriptions = b(true, "TempramentalItemDescriptions", Comments.temperamentalItemDescriptions);
 
     public final DestroyClientChemistryConfigs chemistry = nested(0, DestroyClientChemistryConfigs::new, Comments.chemistry);
     public final DestroyMenuButtonConfig configurationButtons = nested(0, DestroyMenuButtonConfig::new, Comments.configurationButtons);
-    public final ClientPollutionConfigs pollution = nested(0, ClientPollutionConfigs::new, "Pollution");
     
     public final ConfigGroup extraInventory = group(0, "extraInventory");
     public final ConfigBool extraInventoryLeft = b(true, "extraHotbarLeft", "Whether the extra slots render to the left rather than right of containers");

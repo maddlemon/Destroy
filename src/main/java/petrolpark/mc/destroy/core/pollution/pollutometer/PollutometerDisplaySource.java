@@ -16,8 +16,8 @@ public class PollutometerDisplaySource extends PercentOrProgressBarDisplaySource
     @Nullable
     protected Float getProgress(DisplayLinkContext context) {
         if (!(context.getSourceBlockEntity() instanceof PollutometerBlockEntity pollutometer)) return null;
-        PollutionType pollutionType = pollutometer.getPollutionType();
-        return (float)PollutionHelper.getPollution(context.level(), context.getSourcePos(), pollutionType) / pollutionType.max;
+        PollutionType<?> pollutionType = pollutometer.getPollutionType();
+        return (float)PollutionHelper.getPollution(context.level(), context.getSourcePos(), pollutionType) / PollutionHelper.getPollutionTypeProperties(pollutionType).max();
     };
 
     @Override

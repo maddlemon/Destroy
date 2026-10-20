@@ -1,10 +1,11 @@
 package petrolpark.mc.destroy.mixin.client;
 
+import petrolpark.mc.destroy.DestroyPollutionTypes;
 import net.createmod.ponder.api.level.PonderLevel;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 
-import petrolpark.mc.destroy.core.pollution.Pollution;
+import petrolpark.mc.destroy.core.pollution.PollutionHelper;
 import petrolpark.mc.destroy.core.pollution.SmogAffectedBlockColor;
 
 import net.minecraft.core.BlockPos;
@@ -20,7 +21,7 @@ public class ClientNeoForgeMod$1Mixin {
     
     @Overwrite(remap = false)
     public int getTintColor(FluidState state, BlockAndTintGetter getter, BlockPos pos) {
-        if (getter instanceof PonderLevel ponder) return SmogAffectedBlockColor.getColor(0xFF3F76E4, ponder.getCapability(Pollution.CAPABILITY));
+        if (getter instanceof PonderLevel ponder) return SmogAffectedBlockColor.getColor(0xFF3F76E4, PollutionHelper.getPollution(ponder, BlockPos.ZERO, DestroyPollutionTypes.SMOG.get()));
         return SmogAffectedBlockColor.getAverageWaterColor(getter, pos) | 0xFF000000;
     };
 };

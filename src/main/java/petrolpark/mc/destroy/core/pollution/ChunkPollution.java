@@ -3,7 +3,6 @@ package petrolpark.mc.destroy.core.pollution;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -23,8 +22,10 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.attachment.IAttachmentHolder;
 import net.neoforged.neoforge.event.level.ChunkWatchEvent;
 import petrolpark.mc.destroy.DestroyAttachmentTypes;
-import petrolpark.mc.destroy.DestroyDataMapTypes;
+import petrolpark.mc.destroy.DestroyPollutionTypes;
 import petrolpark.mc.destroy.DestroyRegistries;
+import petrolpark.mc.destroy.config.DestroyAllConfigs;
+import petrolpark.mc.destroy.config.DestroyPollutionConfigs;
 import petrolpark.mc.library.core.world.ChunkTickEvent;
 import petrolpark.mc.library.util.RandomHelper;
 
@@ -34,8 +35,27 @@ public class ChunkPollution extends Pollution<ChunkAccess> {
 
     public static final Serializer SERIALIZER = new ChunkPollution.Serializer();
 
+    /**
+     * Client-side only: the Smog level when this Chunk's colours were last refreshed.
+     */
+    private int smogLevelSinceLastRerender;
+
     public ChunkPollution(ChunkAccess holder, Map<PollutionType<ChunkAccess>, Integer> values) {
         super(holder, values);
+        smogLevelSinceLastRerender = getPollution(DestroyPollutionTypes.SMOG.get());
+    };
+
+    /**
+     * As in 1.20.1, Chunk colours are only refreshed once Smog has changed by at least 1/64 of its maximum since the last refresh.
+     * @return Whether this Chunk's colours should be refreshed
+     */
+    public boolean checkRerender() {
+        final int smog = getPollution(DestroyPollutionTypes.SMOG.get());
+        if (Math.abs(smog - smogLevelSinceLastRerender) >= getProperties(DestroyPollutionTypes.SMOG.get()).max() / 64) {
+            smogLevelSinceLastRerender = smog;
+            return true;
+        };
+        return false;
     };
 
     public static final ChunkPollution create(IAttachmentHolder holder) {
@@ -62,33 +82,46 @@ public class ChunkPollution extends Pollution<ChunkAccess> {
         return PollutionHelper.getChunkPollutionTypeProperties(pollutionType);
     };
 
-    public PollutionType.SpreadingProperties getSpreadingProperties(PollutionType<ChunkAccess> pollutionType) {
-        return Optional.ofNullable(DestroyRegistries.CHUNK_POLLUTION_TYPES.getData(DestroyDataMapTypes.CHUNK_POLLUTION_SPREADING_PROPERTIES, DestroyRegistries.CHUNK_POLLUTION_TYPES.wrapAsHolder(pollutionType).getKey())).orElse(PollutionType.SpreadingProperties.DEFAULT);
+    @Override
+    public float getDecreaseRate(PollutionType<ChunkAccess> pollutionType) {
+        return DestroyPollutionConfigs.get(DestroyAllConfigs.SERVER.pollution.pollutionDecreaseRates, DestroyRegistries.CHUNK_POLLUTION_TYPES.getKey(pollutionType), DestroyPollutionConfigs.DEFAULT_DECREASE_RATE);
     };
 
+    public float getSpreadingRate(PollutionType<ChunkAccess> pollutionType) {
+        return DestroyPollutionConfigs.get(DestroyAllConfigs.SERVER.pollution.pollutionSpreadingRates, DestroyRegistries.CHUNK_POLLUTION_TYPES.getKey(pollutionType), DestroyPollutionConfigs.DEFAULT_SPREADING_RATE);
+    };
+
+    public float getSpreadingAmount(PollutionType<ChunkAccess> pollutionType) {
+        return DestroyPollutionConfigs.get(DestroyAllConfigs.SERVER.pollution.pollutionSpreadingAmounts, DestroyRegistries.CHUNK_POLLUTION_TYPES.getKey(pollutionType), DestroyPollutionConfigs.DEFAULT_SPREADING_AMOUNT);
+    };
+
+    /**
+     * Decay, then spread to adjacent Chunks, as 1.20.1's {@code ServerLevelMixin#inTickChunk} did.
+     */
     @Override
-    public boolean tickPollutionTypeUnsynced(RandomSource random, PollutionType<ChunkAccess> pollutionType) {
+    public void tick(RandomSource random) {
+        super.tick(random); // Decay (only if Pollution is enabled)
         final Level level = holder.getLevel();
-        if (level == null) return false;
-        boolean sync = super.tickPollutionTypeUnsynced(random, pollutionType);
-        final PollutionType.SpreadingProperties spreadingProperties = getSpreadingProperties(pollutionType);
-        
-        if (holder.getPos().x % 2 == holder.getPos().z % 2) { // Only spread to/from chunks in a checkerboard fashion, as it is really the Chunk boundaries we want to tick
-            final List<ChunkPos> adjacentPositions = new ArrayList<>(List.of(new ChunkPos(holder.getPos().x - 1, holder.getPos().z), new ChunkPos(holder.getPos().x + 1, holder.getPos().z), new ChunkPos(holder.getPos().x, holder.getPos().z - 1), new ChunkPos(holder.getPos().x, holder.getPos().z + 1)));
-            RandomHelper.shuffle(adjacentPositions, random);
-            for (ChunkPos otherPos : adjacentPositions) {
-                final ChunkAccess otherChunk = level.getChunk(otherPos.x, otherPos.z, ChunkStatus.FULL, false);
-                if (otherChunk == null) continue;
-                final ChunkPollution otherPollution = otherChunk.getData(DestroyAttachmentTypes.CHUNK_POLLUTION);
-                if (random.nextFloat() > spreadingProperties.chance()) continue;
-                final int transfer = (int)((getPollution(pollutionType) - otherPollution.getPollution(pollutionType)) * spreadingProperties.rate());
+        if (level == null || !PollutionHelper.isPollutionEnabled()) return;
+        final ChunkPos pos = holder.getPos();
+        if (Math.abs(pos.x) % 2 != Math.abs(pos.z) % 2) return; // Only spread to/from chunks in a checkerboard fashion, as it is really the Chunk boundaries we want to tick
+        final List<ChunkPos> adjacentPositions = new ArrayList<>(List.of(new ChunkPos(pos.x - 1, pos.z), new ChunkPos(pos.x + 1, pos.z), new ChunkPos(pos.x, pos.z - 1), new ChunkPos(pos.x, pos.z + 1)));
+        RandomHelper.shuffle(adjacentPositions, random);
+        for (ChunkPos otherPos : adjacentPositions) {
+            final ChunkAccess otherChunk = level.getChunk(otherPos.x, otherPos.z, ChunkStatus.FULL, false);
+            if (otherChunk == null) continue;
+            final ChunkPollution otherPollution = otherChunk.getData(DestroyAttachmentTypes.CHUNK_POLLUTION);
+            for (PollutionType<ChunkAccess> pollutionType : DestroyRegistries.CHUNK_POLLUTION_TYPES) {
+                if (random.nextFloat() >= getSpreadingRate(pollutionType)) continue;
+                final boolean thisMorePolluted = getPollution(pollutionType) >= otherPollution.getPollution(pollutionType);
+                final ChunkPollution morePolluted = thisMorePolluted ? this : otherPollution;
+                final ChunkPollution lessPolluted = thisMorePolluted ? otherPollution : this;
+                final int transfer = (int)(0.5f + (morePolluted.getPollution(pollutionType) - lessPolluted.getPollution(pollutionType)) * 0.5f * getSpreadingAmount(pollutionType));
                 if (transfer == 0) continue;
-                sync |= changePollutionUnchecked(pollutionType, -transfer);
-                otherPollution.changePollution(pollutionType, transfer);
+                morePolluted.changePollution(pollutionType, -transfer);
+                lessPolluted.changePollution(pollutionType, transfer);
             };
         };
-
-        return sync;
     };
 
     public static class Serializer extends Pollution.Serializer<ChunkAccess, ChunkPollution> {
@@ -115,6 +148,9 @@ public class ChunkPollution extends Pollution<ChunkAccess> {
         event.getChunk().getData(DestroyAttachmentTypes.CHUNK_POLLUTION).syncTo(event.getPlayer());
     };
 
+    /**
+     * Fired at the end of {@code ServerLevel.tickChunk}, where 1.20.1 injected.
+     */
     @SubscribeEvent
     public static final void onTickChunk(ChunkTickEvent.Post event) {
         event.getChunk().getData(DestroyAttachmentTypes.CHUNK_POLLUTION).tick(event.getChunk().getLevel().getRandom());

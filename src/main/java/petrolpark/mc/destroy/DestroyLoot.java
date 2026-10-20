@@ -6,6 +6,5 @@ public class DestroyLoot {
     
     public static void register(IEventBus eventBus) {
         DestroyLootConditions.register(eventBus);
-        DestroyNumberProviders.register(eventBus);
     };
 };

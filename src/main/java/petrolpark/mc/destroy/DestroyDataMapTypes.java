@@ -17,7 +17,7 @@ import petrolpark.mc.destroy.core.pollution.PollutionType;
 @EventBusSubscriber
 public class DestroyDataMapTypes {
     
-    private static final List<DataMapType<?, ?>> DATA_MAP_TYPES = new ArrayList<>(1);
+    private static final List<DataMapType<?, ?>> DATA_MAP_TYPES = new ArrayList<>(3);
 
     public static final DataMapType<PollutionType<Level>, PollutionType.Properties> LEVEL_POLLUTION_PROPERTIES = register(DataMapType
         .builder(
@@ -34,15 +34,6 @@ public class DestroyDataMapTypes {
             DestroyRegistries.Keys.CHUNK_POLLUTION_TYPE,
             PollutionType.Properties.CODEC
         ).synced(PollutionType.Properties.CODEC, true)
-        .build()
-    ); 
-
-    public static final DataMapType<PollutionType<ChunkAccess>, PollutionType.SpreadingProperties> CHUNK_POLLUTION_SPREADING_PROPERTIES = register(DataMapType
-        .builder(
-            Destroy.asResource("spreading_properties"),
-            DestroyRegistries.Keys.CHUNK_POLLUTION_TYPE,
-            PollutionType.SpreadingProperties.CODEC
-        ).synced(PollutionType.SpreadingProperties.CODEC, true)
         .build()
     ); 
 

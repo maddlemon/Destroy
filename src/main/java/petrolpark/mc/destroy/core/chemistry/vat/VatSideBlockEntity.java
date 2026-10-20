@@ -357,7 +357,7 @@ public class VatSideBlockEntity extends CopycatBlockEntity implements IHaveLabGo
     public float getSkyUV() {
         if (!getLevel().canSeeSky(getBlockPos())) return 0f;
         float uvPower = 10f;
-        if (PollutionHelper.isPollutionEnabled() && DestroyAllConfigs.SERVER.pollution.vatUVPowerAffected.get()) uvPower += 20f * (float)PollutionHelper.getPollution(getLevel(), getBlockPos(), DestroyPollutionTypes.OZONE_DEPLETION.get()) / (float)DestroyPollutionTypes.OZONE_DEPLETION.get().max;
+        if (PollutionHelper.isPollutionEnabled() && DestroyAllConfigs.SERVER.pollution.vatUVPowerAffected.get()) uvPower += 20f * (float)PollutionHelper.getPollution(getLevel(), getBlockPos(), DestroyPollutionTypes.OZONE_DEPLETION.get()) / (float)PollutionHelper.getLevelPollutionTypeProperties(DestroyPollutionTypes.OZONE_DEPLETION.get()).max();
         return uvPower;
     };
 

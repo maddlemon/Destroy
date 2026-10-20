@@ -1,12 +1,12 @@
 package petrolpark.mc.destroy.core.pollution;
 
+import petrolpark.mc.destroy.DestroyAttachmentTypes;
 import petrolpark.mc.destroy.DestroyPollutionTypes;
 import java.util.function.BiFunction;
 import java.util.function.IntSupplier;
 
 import javax.annotation.Nullable;
 
-import petrolpark.mc.destroy.core.pollution.PollutionType;
 
 import net.createmod.catnip.theme.Color;
 import net.createmod.ponder.api.level.PonderLevel;
@@ -21,7 +21,6 @@ import net.minecraft.world.level.GrassColor;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
-import net.neoforged.neoforge.common.util.LazyOptional;
 
 public class SmogAffectedBlockColor implements BlockColor {
 
@@ -66,7 +65,7 @@ public class SmogAffectedBlockColor implements BlockColor {
 
     @Override
     public int getColor(BlockState state, @Nullable BlockAndTintGetter level, @Nullable BlockPos pos, int tintIndex) {
-        if (level != null && level instanceof PonderLevel ponder) return getColor(fallback.getAsInt(), ponder.getCapability(Pollution.CAPABILITY));
+        if (level != null && level instanceof PonderLevel ponder) return getColor(fallback.getAsInt(), PollutionHelper.getPollution(ponder, BlockPos.ZERO, DestroyPollutionTypes.SMOG.get()));
         return wrapped.getColor(state, level, pos, tintIndex);
     };
 
@@ -78,14 +77,13 @@ public class SmogAffectedBlockColor implements BlockColor {
             Minecraft mc = Minecraft.getInstance();
             ChunkPos chunkPos = new ChunkPos(pos); 
             LevelChunk chunk = mc.level.getChunkSource().getChunk(chunkPos.x, chunkPos.z, false);
-            if (chunk != null) return getColor(originalColor, chunk.getCapability(Pollution.CAPABILITY));
+            if (chunk != null) return getColor(originalColor, chunk.getData(DestroyAttachmentTypes.CHUNK_POLLUTION).getPollution(DestroyPollutionTypes.SMOG.get()));
         };
         return originalColor;
     };
 
-    public static int getColor(int originalColor, LazyOptional<Pollution> pollutionOp) {
-        if (!pollutionOp.isPresent()) return originalColor;
-        return Color.mixColors(originalColor, brown, (float) pollutionOp.resolve().get().get(DestroyPollutionTypes.SMOG.get()) / DestroyPollutionTypes.SMOG.get().max);
+    public static int getColor(int originalColor, int smog) {
+        return Color.mixColors(originalColor, brown, (float) smog / PollutionHelper.getChunkPollutionTypeProperties(DestroyPollutionTypes.SMOG.get()).max());
     };
     
     private static final int brown = 0xFF3F332A;

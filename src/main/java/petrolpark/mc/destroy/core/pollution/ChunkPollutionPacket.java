@@ -30,7 +30,8 @@ public record ChunkPollutionPacket(ChunkPos pos, Map<PollutionType<ChunkAccess>,
 
     @Override
     public void handle(LocalPlayer player) {
-        player.level().getChunk(pos().x, pos().z).getData(DestroyAttachmentTypes.CHUNK_POLLUTION).setValues(values());
-        ClientPollutionEvents.refreshSmog(pos());
+        final ChunkPollution pollution = player.level().getChunk(pos().x, pos().z).getData(DestroyAttachmentTypes.CHUNK_POLLUTION);
+        pollution.setValues(values());
+        if (pollution.checkRerender()) ClientPollutionEvents.refreshSmog(pos());
     };
 };

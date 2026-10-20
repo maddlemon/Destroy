@@ -280,6 +280,11 @@
     "create.destroy.pollution.ozone_depletion": "Ozone Depletion",
     "create.destroy.pollution.radioactivity": "Radioactivity",
     "create.destroy.pollution.smog": "Smog Level",
+    "pollution_type.destroy.acid_rain": "Rain Acidity",
+    "pollution_type.destroy.greenhouse": "Greenhouse Gas Level",
+    "pollution_type.destroy.ozone_depletion": "Ozone Depletion",
+    "pollution_type.destroy.radioactivity": "Radioactivity",
+    "pollution_type.destroy.smog": "Smog Level",
 
     "create.item_attributes.circuit_pattern_punched": "position %1$s East, %2$s South is punched",
     "create.item_attributes.circuit_pattern_punched.inverted": "position %1$s East, %2$s South is not punched",

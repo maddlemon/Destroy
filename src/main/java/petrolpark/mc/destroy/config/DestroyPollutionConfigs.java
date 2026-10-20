@@ -1,10 +1,24 @@
 package petrolpark.mc.destroy.config;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+
+import petrolpark.mc.destroy.Destroy;
 import petrolpark.mc.destroy.util.DestroyLang;
+
+import net.minecraft.resources.ResourceLocation;
 
 public class DestroyPollutionConfigs extends DestroyConfigBase {
 
     public final ConfigBool enablePollution = b(true, "enablePollution", Comments.enablePollution);
+
+    // Same names, comments and defaults as 1.20.1 (which keyed them by its PollutionType enum); keyed by Pollution Type ID path
+    public final Map<String, ConfigFloat> pollutionDecreaseRates = perPollutionType(List.of("greenhouse", "ozone_depletion", "smog", "acid_rain", "radioactivity"), v -> "pollution" + DestroyLang.pascal(v) + "Decrease", v -> new String[]{"The chance per tick that the "+DestroyLang.pascal(v) + " level of the world will decrease"}, DEFAULT_DECREASE_RATE);
+    public final Map<String, ConfigFloat> pollutionSpreadingRates = perPollutionType(LOCAL_POLLUTION_TYPES, v -> "pollution" + DestroyLang.pascal(v) + "SpreadingRate", v -> new String[]{"The chance per tick that the "+DestroyLang.pascal(v) + " level of two adjacent chunks will transfer"}, DEFAULT_SPREADING_RATE);
+    public final Map<String, ConfigFloat> pollutionSpreadingAmounts = perPollutionType(LOCAL_POLLUTION_TYPES, v -> "pollution" + DestroyLang.pascal(v) + "SpreadingAmount", v -> new String[]{"The "+DestroyLang.pascal(v) + " level transferred between two adjacent chunks", "[If set to 1.0, the two chunks will immediately equalize]"}, DEFAULT_SPREADING_AMOUNT);
+
     public final ConfigFloat acidRainReplacementChance = f(0.1f, 0f, 1f, "acidRainReplacementChance", "Chance that a randomly ticked Block is destroyed or changed by Acid Rain");
     public final ConfigFloat acidRainOxidationChance = f(0.2f, 0f, 1f, "acidRainOxidationChance", "Chance that a randomly ticked oxidizable Block is oxidized by Acid Rain");
 
@@ -27,6 +41,26 @@ public class DestroyPollutionConfigs extends DestroyConfigBase {
     //public final ConfigBool itemCarboxylationAffected = b(true, "itemCarboxylationAffected", "Items which carboxylate like Quicklime do so faster with higher Greenhouse Gas levels");
     public final ConfigBool vatUVPowerAffected = b(true, "vatUVPowerAffected", "Whether the level of Ozone Depletion increases the amount of UV power supplied to Vats by the sun");
     
+    public static final float DEFAULT_DECREASE_RATE = 0.002f;
+    public static final float DEFAULT_SPREADING_RATE = 0.002f;
+    public static final float DEFAULT_SPREADING_AMOUNT = 0.005f;
+    private static final List<String> LOCAL_POLLUTION_TYPES = List.of("smog", "radioactivity");
+
+    private Map<String, ConfigFloat> perPollutionType(List<String> pollutionTypes, Function<String, String> nameGetter, Function<String, String[]> commentGetter, float defaultValue) {
+        Map<String, ConfigFloat> map = new HashMap<>();
+        for (String pollutionType : pollutionTypes) map.put(pollutionType, f(defaultValue, 0f, 1f, nameGetter.apply(pollutionType), commentGetter.apply(pollutionType)));
+        return map;
+    };
+
+    /**
+     * @return The configured value for this Destroy Pollution Type, or the default for Pollution Types 1.20.1 did not have (e.g. from add-ons)
+     */
+    public static float get(Map<String, ConfigFloat> configs, ResourceLocation pollutionTypeId, float defaultValue) {
+        if (pollutionTypeId == null || !Destroy.MOD_ID.equals(pollutionTypeId.getNamespace())) return defaultValue;
+        ConfigFloat config = configs.get(pollutionTypeId.getPath());
+        return config == null ? defaultValue : config.getF();
+    };
+
     @Override
 	public String getName() {
 		return "pollution";

@@ -5,10 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import petrolpark.mc.destroy.Destroy;
+import com.simibubi.create.AllBlockEntityTypes;
 import com.simibubi.create.api.event.BlockEntityBehaviourEvent;
-import com.simibubi.create.content.fluids.drain.ItemDrainBlockEntity;
-import com.simibubi.create.content.fluids.spout.SpoutBlockEntity;
-import com.simibubi.create.content.processing.basin.BasinBlockEntity;
 import com.simibubi.create.foundation.blockEntity.SmartBlockEntity;
 import com.simibubi.create.foundation.blockEntity.behaviour.BehaviourType;
 import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour;
@@ -52,19 +50,14 @@ public class PollutingBehaviour extends BlockEntityBehaviour {
         return TYPE;
     };
 
+    /**
+     * 1.20.1 attached this to Basins, Item Drains and Spouts with one generic event each; Create 6 has one event for all Smart Block Entities.
+     */
     @SubscribeEvent
-    public static void onAttachBasinBehaviours(BlockEntityBehaviourEvent<BasinBlockEntity> event) {
-        event.attach(new PollutingBehaviour(event.getBlockEntity()));
-    };
-
-    @SubscribeEvent
-    public static void onAttachDrainBehaviours(BlockEntityBehaviourEvent<ItemDrainBlockEntity> event) {
-        event.attach(new PollutingBehaviour(event.getBlockEntity()));
-    };
-
-    @SubscribeEvent
-    public static void onAttachSpoutBehaviours(BlockEntityBehaviourEvent<SpoutBlockEntity> event) {
-        event.attach(new PollutingBehaviour(event.getBlockEntity()));
+    public static void onAttachBehaviours(BlockEntityBehaviourEvent event) {
+        event.forType(AllBlockEntityTypes.BASIN.get(), be -> event.attach(new PollutingBehaviour(be)));
+        event.forType(AllBlockEntityTypes.ITEM_DRAIN.get(), be -> event.attach(new PollutingBehaviour(be)));
+        event.forType(AllBlockEntityTypes.SPOUT.get(), be -> event.attach(new PollutingBehaviour(be)));
     };
     
 };

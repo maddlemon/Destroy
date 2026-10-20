@@ -4,8 +4,8 @@ import net.createmod.catnip.platform.CatnipServices;
 import java.util.Random;
 
 import petrolpark.mc.destroy.DestroyFluids;
+import petrolpark.mc.destroy.DestroyPollutionTypes;
 import petrolpark.mc.destroy.core.fluid.gasparticle.EvaporatingFluidS2CPacket;
-import petrolpark.mc.destroy.core.pollution.PollutionType;
 import com.simibubi.create.api.effect.OpenPipeEffectHandler;
 
 import net.minecraft.core.BlockPos;
@@ -20,8 +20,8 @@ public class PollutingOpenEndedPipeEffectHandler implements OpenPipeEffectHandle
     @SuppressWarnings("deprecation")
     public boolean canApplyEffects(FluidStack fluid) {
         if (DestroyFluids.isMixture(fluid)) return true;
-        for (PollutionType pollutionType : PollutionType.values()) {
-            if (fluid.getFluid().is(pollutionType.fluidTag)) return true;
+        for (DestroyPollutionTypes.Source source : DestroyPollutionTypes.SOURCES.get()) {
+            if (fluid.getFluid().is(source.fluidTag())) return true;
         };
         return false;
     };

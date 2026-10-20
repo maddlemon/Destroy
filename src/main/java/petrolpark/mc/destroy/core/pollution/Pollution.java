@@ -11,6 +11,8 @@ import com.mojang.serialization.Codec;
 
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import net.createmod.ponder.api.level.PonderLevel;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.NbtOps;
@@ -18,8 +20,11 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.attachment.IAttachmentHolder;
 import net.neoforged.neoforge.attachment.IAttachmentSerializer;
+import petrolpark.mc.destroy.DestroyPollutionTypes;
+import petrolpark.mc.destroy.config.DestroyAllConfigs;
 import petrolpark.mc.library.util.codec.ContextualCodec;
 import petrolpark.mc.library.util.codec.RecordContextualCodecBuilder;
 
@@ -87,24 +92,20 @@ public abstract class Pollution<HOLDER extends IAttachmentHolder> {
         return values.getInt(pollutionType);
     };
 
+    /**
+     * As in 1.20.1: if Pollution is enabled, each Pollution Type has a (configurable) chance per tick of decreasing by 1.
+     */
     public void tick(RandomSource random) {
-        boolean sync = false;
-        for (PollutionType<HOLDER> pollutionType : values.keySet()) sync |= tickPollutionTypeUnsynced(random, pollutionType);
-        if (sync) sync();
+        if (!PollutionHelper.isPollutionEnabled()) return;
+        for (PollutionType<HOLDER> pollutionType : values.keySet()) {
+            if (random.nextFloat() <= getDecreaseRate(pollutionType)) changePollution(pollutionType, -1);
+        };
     };
 
     /**
-     * @param random
-     * @param pollutionType
-     * @return Whether we need to sync
+     * @return The chance per tick that the level of this Pollution Type decreases by 1
      */
-    public boolean tickPollutionTypeUnsynced(RandomSource random, PollutionType<HOLDER> pollutionType) {
-        if (getPollution(pollutionType) <= 0) return false;
-        final PollutionType.Properties properties = getProperties(pollutionType);
-        final int flatDecrease = (int)properties.decayChancePerTick();
-        final float decreaseChance = properties.decayChancePerTick() - flatDecrease;
-        return changePollutionUnchecked(pollutionType, - (flatDecrease + (random.nextFloat() < decreaseChance ? 1 : 0)));
-    };
+    public abstract float getDecreaseRate(PollutionType<HOLDER> pollutionType);
 
     public void setChanged() {};
 
@@ -116,6 +117,27 @@ public abstract class Pollution<HOLDER extends IAttachmentHolder> {
     protected abstract void syncInternal();
 
     public abstract PollutionType.Properties getProperties(PollutionType<HOLDER> pollutionType);
+
+    public static final float BASE_OUTDOOR_TEMPERATURE = 289f;
+
+    /**
+     * Get the outdoor ("room") temperature at the given position, accounting for the change in temperature due to pollution
+     * and the natural heat of the Biome at that position. Same as 1.20.1, including its integer division: Greenhouse Gas
+     * (+20K) and Ozone Depletion (+4K) only raise the temperature when at their maximum.
+     * @param level
+     * @param pos
+     * @return Temperature in kelvins
+     */
+    public static float getLocalTemperature(Level level, BlockPos pos) {
+        if (level instanceof PonderLevel) return BASE_OUTDOOR_TEMPERATURE; // 1.20.1 gave Ponder Levels no Level Pollution
+        float outdoorTemperature = BASE_OUTDOOR_TEMPERATURE;
+        if (PollutionHelper.isPollutionEnabled() && DestroyAllConfigs.SERVER.pollution.temperatureAffected.get()) {
+            outdoorTemperature +=
+                (PollutionHelper.getPollution(level, DestroyPollutionTypes.GREENHOUSE) / PollutionHelper.getLevelPollutionTypeProperties(DestroyPollutionTypes.GREENHOUSE.get()).max()) * 20f
+              + (PollutionHelper.getPollution(level, DestroyPollutionTypes.OZONE_DEPLETION) / PollutionHelper.getLevelPollutionTypeProperties(DestroyPollutionTypes.OZONE_DEPLETION.get()).max()) * 4f;
+        };
+        return outdoorTemperature + (10f * level.getBiome(pos).value().getBaseTemperature());
+    };
 
     public static abstract class Serializer<HOLDER extends IAttachmentHolder, POLLUTION extends Pollution<HOLDER>> implements IAttachmentSerializer<Tag, POLLUTION> {
 

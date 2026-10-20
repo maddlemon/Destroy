@@ -175,7 +175,7 @@ public class ChemistryHazardHelper {
     };
 
     public static void onPlayerTick(Player player) {
-        if (player.level().canSeeSky(player.blockPosition()) && !player.hasEffect(DestroyMobEffects.SUN_PROTECTION) && player.getRandom().nextInt(DestroyPollutionTypes.OZONE_DEPLETION.get().max * 600) < PollutionHelper.getPollution(player.level(), player.blockPosition(), DestroyPollutionTypes.OZONE_DEPLETION.get())) player.addEffect(DestroyMobEffects.cancerInstance());
+        if (player.level().canSeeSky(player.blockPosition()) && !player.hasEffect(DestroyMobEffects.SUN_PROTECTION) && player.getRandom().nextInt(PollutionHelper.getLevelPollutionTypeProperties(DestroyPollutionTypes.OZONE_DEPLETION.get()).max() * 600) < PollutionHelper.getPollution(player.level(), player.blockPosition(), DestroyPollutionTypes.OZONE_DEPLETION.get())) player.addEffect(DestroyMobEffects.cancerInstance());
     };
 
     /**

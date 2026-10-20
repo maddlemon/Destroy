@@ -18,6 +18,8 @@ import net.neoforged.neoforge.event.entity.player.PlayerEvent.PlayerLoggedInEven
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import petrolpark.mc.destroy.DestroyAttachmentTypes;
 import petrolpark.mc.destroy.DestroyRegistries;
+import petrolpark.mc.destroy.config.DestroyAllConfigs;
+import petrolpark.mc.destroy.config.DestroyPollutionConfigs;
 
 @EventBusSubscriber
 @ParametersAreNonnullByDefault
@@ -81,9 +83,23 @@ public class LevelPollution extends Pollution<Level> {
         syncTo(event.getEntity());
     };
 
+    /**
+     * 1.20.1 decayed Level Pollution in a {@code LevelTickEvent} handler that ignored the phase, so it ran at both the start and the
+     * end of each tick; kept here by subscribing to both. Server-side only, as the server syncs the values.
+     */
     @SubscribeEvent
-    public static final void onLevelTick(LevelTickEvent.Post event) {
-        event.getLevel().getData(DestroyAttachmentTypes.LEVEL_POLLUTION).tick(event.getLevel().getRandom());
+    public static final void onLevelTickPre(LevelTickEvent.Pre event) {
+        if (!event.getLevel().isClientSide()) event.getLevel().getData(DestroyAttachmentTypes.LEVEL_POLLUTION).tick(event.getLevel().getRandom());
+    };
+
+    @SubscribeEvent
+    public static final void onLevelTickPost(LevelTickEvent.Post event) {
+        if (!event.getLevel().isClientSide()) event.getLevel().getData(DestroyAttachmentTypes.LEVEL_POLLUTION).tick(event.getLevel().getRandom());
+    };
+
+    @Override
+    public float getDecreaseRate(PollutionType<Level> pollutionType) {
+        return DestroyPollutionConfigs.get(DestroyAllConfigs.SERVER.pollution.pollutionDecreaseRates, DestroyRegistries.LEVEL_POLLUTION_TYPES.getKey(pollutionType), DestroyPollutionConfigs.DEFAULT_DECREASE_RATE);
     };
     
 };

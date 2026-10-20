@@ -12,12 +12,10 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 import com.mojang.blaze3d.systems.RenderSystem;
 import petrolpark.mc.destroy.config.DestroyAllConfigs;
 import petrolpark.mc.destroy.core.fluid.TintedSplashParticle;
-import petrolpark.mc.destroy.core.pollution.ClientLevelPollutionData;
-import petrolpark.mc.destroy.core.pollution.Pollution;
 import petrolpark.mc.destroy.core.pollution.PollutionHelper;
-import petrolpark.mc.destroy.core.pollution.PollutionType;
 
 import net.minecraft.client.Camera;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.LightTexture;
@@ -105,9 +103,9 @@ public class LevelRendererMixin {
     };
 
     private Color getRainColor() {
-        Pollution levelPollution = ClientLevelPollutionData.getLevelPollution();
-        if (levelPollution == null) return new Color(0xFF3E5EB8);
-        return new Color(Color.mixColors(0xFF3E5EB8, 0xFF00FF00, (float)levelPollution.get(DestroyPollutionTypes.ACID_RAIN.get()) / (float)DestroyPollutionTypes.ACID_RAIN.get().max));
+        ClientLevel level = Minecraft.getInstance().level; // 1.20.1 kept the last Level Pollution it was sent; now each client Level has its own
+        if (level == null) return new Color(0xFF3E5EB8);
+        return new Color(Color.mixColors(0xFF3E5EB8, 0xFF00FF00, PollutionHelper.getPollutionProportion(level, DestroyPollutionTypes.ACID_RAIN)));
     };
 
     private static boolean rainColorAffected() {

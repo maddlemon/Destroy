@@ -1,7 +1,6 @@
 package petrolpark.mc.destroy.core.event;
 
 import net.createmod.catnip.platform.CatnipServices;
-import petrolpark.mc.destroy.DestroyPollutionTypes;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,8 +19,6 @@ import petrolpark.mc.destroy.DestroyTrades;
 import petrolpark.mc.destroy.DestroyVillagers;
 import petrolpark.mc.destroy.util.DestroyLang;
 import petrolpark.mc.destroy.config.DestroyAllConfigs;
-import petrolpark.mc.destroy.content.oil.ChunkCrudeOil;
-import petrolpark.mc.destroy.content.oil.CrudeOilCommand;
 import petrolpark.mc.destroy.content.processing.glassblowing.BlowpipeItem;
 import petrolpark.mc.destroy.content.processing.trypolithography.CircuitPatternsS2CPacket;
 import petrolpark.mc.destroy.content.processing.trypolithography.RegenerateCircuitPatternCommand;
@@ -35,7 +32,6 @@ import petrolpark.mc.destroy.content.redstone.programmer.RedstoneProgrammerBlock
 import petrolpark.mc.destroy.content.sandcastle.BuildSandCastleGoal;
 import petrolpark.mc.destroy.core.DestroyVillageAddition;
 import petrolpark.mc.destroy.core.block.IPickUpPutDownBlock;
-import petrolpark.mc.destroy.core.chemistry.hazard.EntityChemicalPoisonCapability;
 import petrolpark.mc.destroy.core.chemistry.novelcompounds.PlayerNovelCompoundsSynthesizedCapability;
 import petrolpark.mc.destroy.core.chemistry.storage.IMixtureStorageItem;
 import petrolpark.mc.destroy.core.chemistry.storage.measuringcylinder.MeasuringCylinderBlock;
@@ -46,14 +42,8 @@ import petrolpark.mc.destroy.core.chemistry.vat.material.VatMaterialResourceList
 import petrolpark.mc.destroy.core.debug.AttachedCheckCommand;
 import petrolpark.mc.destroy.core.explosion.mixedexplosive.ExplosiveProperties;
 import petrolpark.mc.destroy.core.extendedinventory.ExtendedInventory;
-import petrolpark.mc.destroy.core.player.PlayerCrouchingCapability;
 import petrolpark.mc.destroy.core.player.PlayerPreviousPositionsCapability;
-import petrolpark.mc.destroy.core.pollution.LevelPollutionS2CPacket;
 import petrolpark.mc.destroy.core.pollution.Pollution;
-import petrolpark.mc.destroy.core.pollution.PollutionType;
-import petrolpark.mc.destroy.core.pollution.PollutionCommand;
-import petrolpark.mc.destroy.core.pollution.PollutionHelper;
-import petrolpark.mc.destroy.core.pollution.SyncChunkPollutionS2CPacket;
 import petrolpark.mc.library.core.data.recipe.ingredient.BlockIngredient;
 import com.simibubi.create.AllItems;
 import com.simibubi.create.content.equipment.potatoCannon.PotatoProjectileEntity;
@@ -64,15 +54,12 @@ import com.simibubi.create.foundation.blockEntity.behaviour.BlockEntityBehaviour
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.createmod.catnip.data.Couple;
-import net.createmod.ponder.api.level.PonderLevel;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction.Axis;
 import net.minecraft.core.Registry;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -81,7 +68,6 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -95,7 +81,6 @@ import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.levelgen.structure.pools.StructureTemplatePool;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureProcessorList;
 import net.minecraft.world.phys.BlockHitResult;
@@ -103,17 +88,12 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.util.FakePlayer;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
-import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.EntityTravelToDimensionEvent;
 import net.neoforged.neoforge.event.entity.living.BabyEntitySpawnEvent;
-import net.neoforged.neoforge.event.entity.player.BonemealEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
-import net.neoforged.neoforge.event.level.BlockEvent.CropGrowEvent;
-import net.neoforged.neoforge.event.level.ChunkWatchEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
-import net.neoforged.neoforge.event.level.SaplingGrowTreeEvent;
 import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
 import net.neoforged.neoforge.event.village.VillagerTradesEvent;
 import net.neoforged.bus.api.Event;
@@ -125,18 +105,13 @@ import net.neoforged.fml.common.EventBusSubscriber;
 public class DestroyCommonEvents {
 
     /**
-     * Collect the Player's Badges and refresh the Pollution they see.
+     * Collect the Player's Badges (Pollution is synced by {@link petrolpark.mc.destroy.core.pollution.LevelPollution}).
      */
     @SubscribeEvent
     public static final void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
         Player player = event.getEntity();
         if (!(player instanceof ServerPlayer serverPlayer)) return;
         Level level = player.level();
-
-        // Update render info
-        level.getCapability(Pollution.CAPABILITY).ifPresent(levelPollution -> {
-            CatnipServices.NETWORK.sendToClient(serverPlayer, new LevelPollutionS2CPacket(levelPollution));
-        });
 
         // Update the Ponders for periodic table blocks
         CatnipServices.NETWORK.sendToClient(serverPlayer, new RefreshPeriodicTablePonderSceneS2CPacket());
@@ -152,30 +127,13 @@ public class DestroyCommonEvents {
         CatnipServices.NETWORK.sendToClient(serverPlayer, new SyncVatMaterialsS2CPacket(datapackMaterials));
     };
 
-    @SubscribeEvent
-    public static final void onPlayerLoadsChunk(ChunkWatchEvent.Watch event) {
-        event.getChunk().getCapability(Pollution.CAPABILITY).ifPresent(pollution -> {
-            CatnipServices.NETWORK.sendToClient(event.getPlayer(), new SyncChunkPollutionS2CPacket(event.getPos(), pollution));
-        });
-    };
-
     /**
-     * Refresh the Pollution the Player sees and remove information on their previous positions.
+     * Remove information on the Player's previous positions (Pollution is synced by {@link petrolpark.mc.destroy.core.pollution.LevelPollution}).
      */
     @SubscribeEvent
     public static final void onEntityTravelToDimension(EntityTravelToDimensionEvent event) {
         Entity entity = event.getEntity();
         if (!(entity instanceof ServerPlayer player)) return;
-        MinecraftServer server = player.level().getServer();
-        if (server == null) return;
-        Level level = server.getLevel(event.getDimension());
-        if (level == null) return;
-
-        // Update render info
-        level.getCapability(Pollution.CAPABILITY).ifPresent(levelPollution -> {
-            CatnipServices.NETWORK.sendToClient(player, new LevelPollutionS2CPacket(levelPollution));
-        });
-
         // Clear Chorus wine info
         PlayerPreviousPositionsCapability.of(player).ifPresent(previousPositions -> {
             previousPositions.clearPositions();
@@ -215,22 +173,11 @@ public class DestroyCommonEvents {
 
     @SubscribeEvent
     public static final void onRegisterCommands(RegisterCommandsEvent event) {
-        new CrudeOilCommand(event.getDispatcher());
         new BabyBlueAddictionCommand(event.getDispatcher());
-        new PollutionCommand(event.getDispatcher());
         new RegenerateCircuitPatternCommand(event.getDispatcher());
         new AttachedCheckCommand(event.getDispatcher());
     };
 
-    @SubscribeEvent
-    public static final void onRegisterCapabilities(RegisterCapabilitiesEvent event) {
-        event.register(ChunkCrudeOil.class);
-        event.register(Pollution.class);
-        event.register(PlayerBabyBlueAddictionCapability.class);
-        event.register(PlayerPreviousPositionsCapability.class);
-        event.register(PlayerCrouchingCapability.class);
-        event.register(EntityChemicalPoisonCapability.class);
-    };
 
     /**
      * Add trades to the Innkeeper.
@@ -276,10 +223,7 @@ public class DestroyCommonEvents {
             villager.goalSelector.addGoal(0, new BuildSandCastleGoal(villager, true)); // It would be cleaner to use a Behavior rather than a Goal here but what you have failed to consider with that option is that I am lazy
         };
 
-        // Regenerate ozone
-        if (event.getEntity().getType() == EntityType.LIGHTNING_BOLT && PollutionHelper.isPollutionEnabled() && DestroyAllConfigs.SERVER.pollution.lightningRegeneratesOzone.get()) {
-            PollutionHelper.changePollution(event.getLevel(), event.getEntity().getOnPos(), DestroyPollutionTypes.OZONE_DEPLETION.get(), -50);
-        };
+        // (Lightning regenerating ozone is in PollutionEvents)
     };
 
     /**
@@ -453,7 +397,7 @@ public class DestroyCommonEvents {
     };
 
     /**
-     * Add a chance for birth failures depending on the level of Smog in the world and whether either parent is infertile.
+     * Birth failures when either parent is infertile (Destroy's own tag; failures due to Smog are in {@link petrolpark.mc.destroy.core.pollution.PollutionEvents}).
      */
     @SubscribeEvent
     public static final void onBabyEntitySpawn(BabyEntitySpawnEvent event) {
@@ -470,9 +414,6 @@ public class DestroyCommonEvents {
             };
         };
 
-        // Failure due to smog
-        if (!failure && PollutionHelper.isPollutionEnabled() && DestroyAllConfigs.SERVER.pollution.breedingAffected.get() && event.getParentA().getRandom().nextInt(DestroyPollutionTypes.SMOG.get().max) <= PollutionHelper.getPollution(level, event.getParentA().getOnPos(), DestroyPollutionTypes.SMOG.get())) failure = true; // 0% chance of failure for 0 smog, 100% chance for full smog
-
         if (failure) { 
             if (level instanceof ServerLevel serverLevel) {
                 for (Mob parent : parents) for (int i = 0; i < 7; i++) serverLevel.sendParticles(ParticleTypes.ANGRY_VILLAGER, parent.getRandomX(1d), parent.getRandomY() + 0.5d, parent.getRandomZ(1d), 1, random.nextGaussian() * 0.5d, random.nextGaussian() * 0.5d, random.nextGaussian() * 0.5d, 0.02d);
@@ -481,74 +422,6 @@ public class DestroyCommonEvents {
         };
     };
 
-    /**
-     * Add a chance for crop growth failures depending on the level of smog, greenhouse gas and acid rain.
-     */
-    @SubscribeEvent
-    public static final void onCropGrowPre(CropGrowEvent.Pre event) {
-        if (!PollutionHelper.isPollutionEnabled() || !DestroyAllConfigs.SERVER.pollution.growingAffected.get()) return;
-        if (!(event.getLevel() instanceof Level level)) return;
-        BlockPos pos = event.getPos();
-        for (PollutionType pollutionType : new PollutionType[]{DestroyPollutionTypes.SMOG.get(), DestroyPollutionTypes.GREENHOUSE.get(), DestroyPollutionTypes.ACID_RAIN.get()}) {
-            if (level.random.nextInt(pollutionType.max) <= PollutionHelper.getPollution(level, pos, pollutionType)) {
-                if (level instanceof ServerLevel serverLevel) serverLevel.sendParticles(PollutionHelper.cropGrowthFailureParticles(), pos.getX() + 0.5d, pos.getY() + level.random.nextDouble() * event.getState().getShape(level, pos).max(Axis.Y), pos.getZ() + 0.5d, 10, 0.25d, 0.25d, 0.25d, 0.02d);
-                event.setResult(Result.DENY);
-                return;
-            };
-        };
-    };
-
-    /**
-     * Add a chance for crop bonemealing failures depending on the level of smog, greenhouse gas and acid rain.
-     */
-    @SubscribeEvent
-    public static final void onBonemeal(BonemealEvent event) {
-        if (!PollutionHelper.isPollutionEnabled() || !DestroyAllConfigs.SERVER.pollution.growingAffected.get() || !DestroyAllConfigs.SERVER.pollution.bonemealingAffected.get() || event.getStack().is(DestroyTags.Items.BONEMEAL_BYPASSES_POLLUTION.tag)) return;
-        Level level = event.getLevel();
-        BlockPos pos = event.getPos();
-        for (PollutionType pollutionType : new PollutionType[]{DestroyPollutionTypes.SMOG.get(), DestroyPollutionTypes.GREENHOUSE.get(), DestroyPollutionTypes.ACID_RAIN.get()}) {
-            if (level.random.nextInt(pollutionType.max) <= PollutionHelper.getPollution(level, pos, pollutionType)) {
-                if (level instanceof ServerLevel serverLevel) serverLevel.sendParticles(PollutionHelper.cropGrowthFailureParticles(), pos.getX() + 0.5d, pos.getY() + level.random.nextDouble() * event.getBlock().getShape(level, pos).max(Axis.Y), pos.getZ() + 0.5d, 10, 0.25d, 0.25d, 0.25d, 0.02d);
-                event.setResult(Result.DENY);
-                return;
-            };
-        };
-    };
-
-    /**
-     * Decrease Pollution when a tree is grown.
-     */
-    @SubscribeEvent
-    public static final void onSaplingGrowTree(SaplingGrowTreeEvent event) {
-        if (!(event.getLevel() instanceof Level level) || !PollutionHelper.isPollutionEnabled() || !DestroyAllConfigs.SERVER.pollution.growingTreesDecreasesPollution.get()) return;
-        BlockPos pos = event.getPos();
-        if (level.random.nextInt(3) == 0) PollutionHelper.changePollution(level, pos, DestroyPollutionTypes.GREENHOUSE.get(), -1);
-        if (level.random.nextInt(3) == 0) PollutionHelper.changePollution(level, pos, DestroyPollutionTypes.SMOG.get(), -1);
-        if (level.random.nextInt(3) == 0) PollutionHelper.changePollution(level, pos, DestroyPollutionTypes.ACID_RAIN.get(), -1);
-    };
-
-    /**
-     * Naturally decrease Pollution over time.
-     */
-    @SubscribeEvent
-    public static final void onLevelTickPre(LevelTickEvent.Pre event) {
-        onLevelTick(event.getLevel());
-    };
-
-    // Forge fired this tick event at both START and END and the handler ignored the phase, so it ran twice per tick. Kept that way to match 1.20.1.
-    @SubscribeEvent
-    public static final void onLevelTickPost(LevelTickEvent.Post event) {
-        onLevelTick(event.getLevel());
-    };
-
-    public static final void onLevelTick(Level level) {
-
-        // Global Pollution
-        for (PollutionType pollutionType : PollutionType.values()) {
-            if (PollutionHelper.isPollutionEnabled() && !pollutionType.local && level.random.nextFloat() <= DestroyAllConfigs.SERVER.pollution.pollutionDecreaseRates.get(pollutionType).getF()) PollutionHelper.changePollutionGlobal(level, pollutionType, -1);
-        };
-
-    };
 
     @SubscribeEvent
     public static final void onAddReloadListeners(AddReloadListenerEvent event) {

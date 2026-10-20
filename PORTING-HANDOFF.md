@@ -27,10 +27,9 @@ Library to the pack.
 
 ## START HERE — current state and next steps
 
-**State:** compile has **863 javac errors**. Recipes (step 1) and packets (step 2) are done at the
-code level — the only errors left in their files depend on other steps (see each step's status).
-Most common remaining missing symbols: pollution API (`pollute`, `max`, `CAPABILITY`,
-`SyncChunkPollutionS2CPacket`, `LevelPollutionS2CPacket`), `GUESSED_TICK`.
+**State:** compile has **764 javac errors**. Recipes (step 1), packets (step 2) and the pollution half of
+step 3 are done at the code level — the only errors left in their files depend on other steps (see each
+step's status). Next: the crude oil / seismology half of step 3 (`GUESSED_TICK`, `OilPonderScenes`, pumpjack).
 
 **Do next, in this order** (each is a self-contained batch; compile + commit after each):
 
@@ -93,16 +92,34 @@ Most common remaining missing symbols: pollution API (`pollute`, `max`, `CAPABIL
    **Left for step 3:** the pollution sends in `DestroyCommonEvents` and `ServerLevelMixin` already use
    `CatnipServices.NETWORK` but still construct the deleted 1.20.1 `LevelPollutionS2CPacket` /
    `SyncChunkPollutionS2CPacket` — switch them to the author's `LevelPollutionPacket` / `ChunkPollutionPacket`.
-3. **Pollution / crude oil consumers.** Old code still uses the 1.20.1 `Pollution.CAPABILITY`,
-   enum fields `.local`/`.max`, `PollutionType.values()`, `PollutionHelper.pollute(...)` (10 sites),
-   `changePollutionGlobal`, `getCropGrowthFailureParticles`, `SyncChunkPollutionS2CPacket`. Port them
-   onto the author's design: `DestroyPollutionTypes` registry entries, `LevelPollution`/`ChunkPollution`
-   attachments, and data-map `PollutionType.Properties` (max, decay, etc). Same for crude oil: old
-   `content.oil.ChunkCrudeOil` (capability) vs the author's `core.oil.ChunkCrudeOil` (attachment) —
-   keep the author's. Users: `SmogAffectedBlockColor`, `ServerLevelMixin`, `ClientNeoForgeMod$1Mixin`,
-   `ForgeMod`-style water tint, `PumpjackBlockEntity`, seismology (`GUESSED_TICK`, `OilPonderScenes`).
-   Then re-enable the pollution ponder storyboards marked `TODO(port)` in `DestroyPonderScenes`
-   (the author's `PollutionPonderScenes` is commented out upstream — port it from upstream `1.20.1`).
+3. **Pollution / crude oil consumers.**
+   **Pollution — DONE (code level).** Decided by the humans: the author's framework (attachments,
+   `DestroyPollutionTypes` registry, data maps, packets, commands) but **1.20.1 behaviour**, except the author's
+   new acid rain, which is kept (see Behaviour differences). Rule used: what was a server config in 1.20.1
+   stays a config (`pollution<Type>Decrease`, `…SpreadingRate`, `…SpreadingAmount` — same keys/defaults,
+   keyed by type id path in `DestroyPollutionConfigs`; per-effect switches); what was hardcoded is in the data
+   maps with the 1.20.1 numbers (`data/destroy/data_maps/destroy/{level,chunk}_pollution_type/properties.json`:
+   max 65536, `sync_threshold` 1, lightning −50 ozone, trees −1 smog/greenhouse/acid rain with a 1 in 3 chance,
+   crop/bonemeal/breeding multipliers 1, villager 50 smog). `decay_chance_per_tick` and the spreading data map
+   are removed (configs). Radioactivity is back (chunk type). 1.20.1 algorithms restored: decay `nextFloat() <=
+   rate` → −1, only with pollution enabled; Level decay at `LevelTickEvent.Pre` **and** `Post` (1.20.1's handler
+   ignored the phase), server only; chunk spreading in `ChunkPollution.tick` (`abs(x)%2 == abs(z)%2` chunks,
+   `(int)(0.5 + diff × 0.5 × amount)` from the more polluted chunk), via the library's `ChunkTickEvent.Post`
+   (= 1.20.1's `tickChunk` RETURN); effect rolls `PollutionHelper.rollPollutionEffect` = 1.20.1's
+   `nextInt(max) <= level`. Sources: `PollutionHelper.pollute`/`polluteMixture` ported (fluid/molecule tags in
+   `DestroyPollutionTypes.SOURCES`). `Pollution.getLocalTemperature` ported (incl. its integer-division quirk).
+   Client: 1.20.1 visuals kept (`SmogAffectedBlockColor` + `ClientLevelMixin` tint caches, `FogHandler`, rain
+   colour, water tint); the author's client tint/fog handlers and their client configs are removed; chunk
+   colours refresh after a smog change of ≥ max/64 like 1.20.1 (`ChunkPollution.checkRerender`). Ponder Levels
+   keep one set of chunk pollution (`PollutionHelper` `PONDER_CHUNK_POLLUTION`; their chunks are not persistent).
+   Removed: Destroy's `ServerLevelMixin`, `BlockMixin` (old acid rain), the smog part of `VillagerMixin`, the
+   1.20.1 handlers in `DestroyCommonEvents`, `ClientLevelPollutionData`, `ClientPollutionConfigs`, old
+   `DestroyNumberProviders` (duplicate `destroy:pollution` id). `PollutionNumberProvider` reads 1.20.1 JSON
+   (`"SMOG"`, `scale`, `invert`). Added `pollution_type.destroy.*` lang keys (author's `getName()`).
+   **Left in step 3:** crude oil / seismology — compare the author's `core.oil` / `core.seismology` with 1.20.1's
+   `content.oil` (same behaviour question as pollution: ask before adopting author rebalances); `PumpjackBlockEntity`,
+   `OilPonderScenes`, `SeismometerItem`/`SeismographItem` in `DestroyItems`; then port `PollutionPonderScenes` from
+   upstream `1.20.1` and re-enable the storyboards marked `TODO(port)` in `DestroyPonderScenes`.
 4. **Item capabilities + leftover NBT.** `ItemMixtureTank`, Blowpipe spout handler, measuring
    cylinder, test tube → `Capabilities.FluidHandler.ITEM` registered with `event.registerItem` in
    `DestroyCapabilities` (handlers backed by `ItemStackNBT` / data components). Inventory
@@ -223,6 +240,22 @@ JAVA_HOME=$JDK ./gradlew compileJava --console=plain    # log to a file, run det
 
 Intended to be empty. Current entries:
 
+- **New (approved by the humans): the author's acid rain.** Rain changes blocks via the
+  `destroy:acid_rain_replacement` block data map (mossy → plain, bricks → cracked, `#destroy:acid_rain_destroys` →
+  air, dirt → coarse dirt, …) with chance `acidity × acidRainReplacementChance` (0.1), and oxidizes copper with
+  `acidity × acidRainOxidationChance` (0.2). Replaces 1.20.1's `BlockMixin` acid rain. Gated on `enablePollution`
+  and `rainBreaksBlocks` (neither 1.20.1's nor the author's version checked them).
+- **Bug fix:** Level pollution is synced to clients whenever it changes (1.20.1 only synced it on login,
+  dimension change and `/pollution set`, so e.g. rain colour went stale; its client handler also threw on every
+  Level packet).
+- Upstream quirk kept: polluted Bone Meal only shows the failure particles and still works — 1.20.1 set
+  `Result.DENY`, which Forge ignores for Bone Meal. (Making it really fail is a one-line change in
+  `PollutionEvents.onBonemeal` if wanted.)
+- Upstream quirks kept: `PollutionHelper.pollute` always sends evaporation particles to all clients
+  (`particleWeight` unused because of a stray semicolon); outdoor temperature only rises at maximum greenhouse /
+  ozone depletion (integer division); Level pollution decays at twice the configured rate (phase-less tick handler).
+- Pollution Type names: `pollution_type.destroy.*` lang keys added (same English names as 1.20.1).
+
 - **Bug fix:** `ExtendedBasinBehaviour` wrote `"EvaporatedFluid"` but read `"EvaporatedFluidStack"`,
   so a basin's evaporated fluid was lost on reload. Now reads the key it writes.
 - **Sodium compat is new** (1.20.1 only had Embeddium compat, and the pack uses Sodium). It redirects
@@ -295,8 +328,9 @@ Intended to be empty. Current entries:
 | `127f23a1` | Farmer's Delight / Embeddium / Sodium compat mixins; **`DestroyMixinPlugin` package fixed** (was `com.destroy.mixin`, so compat mixins were never gated — would crash without the mod); water tint mixin retargeted to `ClientNeoForgeMod$1`; missing cartography mixins listed; `port-tools/`; this doc restructured |
 | `26b63081` | Recipes part 4: trypolithography + disc stamping recipes, sequenced assembly mixin, recipe consumers (sieve, dynamo, distillation, blowpipe, basin reactions, vat materials) |
 | `6f5d02b0` | Packets: 21 packets → Catnip payloads in `DestroyPackets`, `DestroyMessages` deleted, 38 send sites → `CatnipServices.NETWORK`, `NetworkHooks` replaced, creative-slot mixin retargeted |
+| _(this commit)_ | Pollution: author's framework with 1.20.1 behaviour (configs, data maps, decay/spreading, sources, effects, temperature, radioactivity, client visuals), author's acid rain kept |
 
-Error counts: 2,301 error lines (batch 1) → 2,178 javac → 2,050 → 1,940 → 1,892 → 1,718 → 1,621 → 1,502 → 1,501 → 1,281 (recipes 1) → 1,217 (recipes 2) → 1,184 → 1,071 (recipes 4) → 863 (packets).
+Error counts: 2,301 error lines (batch 1) → 2,178 javac → 2,050 → 1,940 → 1,892 → 1,718 → 1,621 → 1,502 → 1,501 → 1,281 (recipes 1) → 1,217 (recipes 2) → 1,184 → 1,071 (recipes 4) → 863 (packets) → 764 (pollution).
 
 ## Verified API mappings (NeoForge 21.1.262 / MC 1.21.1 / Create 6.0.10 / library 1.21.1-1.5.11)
 

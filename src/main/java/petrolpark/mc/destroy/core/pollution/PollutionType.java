@@ -33,14 +33,26 @@ public class PollutionType<P extends IAttachmentHolder> {
         return name;
     };
     
+    /**
+     * Data map values (see {@link petrolpark.mc.destroy.DestroyDataMapTypes}). The shipped values reproduce 1.20.1, where these were hardcoded.
+     * Decay and spreading rates are not here: as in 1.20.1 they are server configs ({@link petrolpark.mc.destroy.config.DestroyPollutionConfigs}).
+     * @param max The maximum level (1.20.1: 65536)
+     * @param syncThreshold How much the level must change before it is sent to clients
+     * @param lightningStrikeChange Change when lightning strikes (1.20.1: -50 Ozone Depletion)
+     * @param treeGrowthChange Change with a 1 in 3 chance when a tree, fungus or mushroom grows (1.20.1: -1 Smog, Greenhouse Gas and Acid Rain)
+     * @param breedingFailureChanceMultiplier Chance of breeding failing at the maximum level (1.20.1: 1 for Smog)
+     * @param growthFailureChanceMultiplier Chance of crops failing to grow at the maximum level (1.20.1: 1 for Smog, Greenhouse Gas and Acid Rain)
+     * @param bonemealFailureChanceMultiplier Chance of Bone Meal failing at the maximum level (1.20.1: as for crop growth)
+     * @param villagerPriceMultiplier Villager price increase at the maximum level (1.20.1: 50 for Smog)
+     */
     public static final record Properties(
-        int max, int syncThreshold, float decayChancePerTick,
+        int max, int syncThreshold,
         int lightningStrikeChange, int treeGrowthChange,
         float breedingFailureChanceMultiplier, float growthFailureChanceMultiplier, float bonemealFailureChanceMultiplier, float villagerPriceMultiplier
     ) {
 
         public static final PollutionType.Properties DEFAULT = new PollutionType.Properties(
-            65565, 1000, 0.002f,
+            65536, 1,
             0, 0,
             0f, 0f, 0f, 0f
         );
@@ -48,23 +60,12 @@ public class PollutionType<P extends IAttachmentHolder> {
         public static final Codec<PollutionType.Properties> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             CodecHelper.POS_INT.optionalFieldOf("max", DEFAULT.max()).forGetter(PollutionType.Properties::max),
             CodecHelper.POS_INT.optionalFieldOf("sync_threshold", DEFAULT.syncThreshold()).forGetter(PollutionType.Properties::syncThreshold),
-            Codec.floatRange(0f, Float.MAX_VALUE).optionalFieldOf("decay_chance_per_tick", DEFAULT.decayChancePerTick()).forGetter(PollutionType.Properties::decayChancePerTick),
             Codec.INT.optionalFieldOf("lightning_strike_change", DEFAULT.lightningStrikeChange()).forGetter(PollutionType.Properties::lightningStrikeChange),
-            Codec.INT.optionalFieldOf("tree_growth_change", DEFAULT.lightningStrikeChange()).forGetter(PollutionType.Properties::treeGrowthChange),
+            Codec.INT.optionalFieldOf("tree_growth_change", DEFAULT.treeGrowthChange()).forGetter(PollutionType.Properties::treeGrowthChange),
             Codec.floatRange(0f, 1f).optionalFieldOf("breeding_failure_chance_multiplier", DEFAULT.breedingFailureChanceMultiplier()).forGetter(PollutionType.Properties::breedingFailureChanceMultiplier),
             Codec.floatRange(0f, 1f).optionalFieldOf("growth_failure_chance_multiplier", DEFAULT.growthFailureChanceMultiplier()).forGetter(PollutionType.Properties::growthFailureChanceMultiplier),
             Codec.floatRange(0f, 1f).optionalFieldOf("bonemeal_failure_chance_multiplier", DEFAULT.bonemealFailureChanceMultiplier()).forGetter(PollutionType.Properties::bonemealFailureChanceMultiplier),
             Codec.FLOAT.optionalFieldOf("villager_price_multiplier", DEFAULT.villagerPriceMultiplier()).forGetter(PollutionType.Properties::villagerPriceMultiplier)
         ).apply(instance, PollutionType.Properties::new));
-    };
-
-    public static final record SpreadingProperties(float chance, float rate) {
-
-        public static final PollutionType.SpreadingProperties DEFAULT = new PollutionType.SpreadingProperties(0.002f, 0.005f);
-
-        public static final Codec<PollutionType.SpreadingProperties> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            Codec.floatRange(0f, 1f).optionalFieldOf("chance", 0.002f).forGetter(PollutionType.SpreadingProperties::chance),
-            Codec.floatRange(0f, 1f).optionalFieldOf("rate", 0.005f).forGetter(PollutionType.SpreadingProperties::rate)
-        ).apply(instance, PollutionType.SpreadingProperties::new));
     };
 };
