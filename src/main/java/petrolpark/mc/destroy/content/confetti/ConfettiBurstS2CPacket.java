@@ -1,5 +1,7 @@
 package petrolpark.mc.destroy.content.confetti;
 
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
 import org.joml.Vector3f;
 
 import net.createmod.catnip.net.base.ClientboundPacketPayload;
@@ -38,6 +40,7 @@ public class ConfettiBurstS2CPacket implements ClientboundPacketPayload {
         buffer.writeVector3f(velocity);
     };
 
+    @OnlyIn(Dist.CLIENT)
     @Override
     public void handle(LocalPlayer player) {
         Minecraft mc = Minecraft.getInstance();

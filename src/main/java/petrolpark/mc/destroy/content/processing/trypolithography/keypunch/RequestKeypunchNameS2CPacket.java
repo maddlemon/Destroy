@@ -1,5 +1,7 @@
 package petrolpark.mc.destroy.content.processing.trypolithography.keypunch;
 
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
 import net.createmod.catnip.platform.CatnipServices;
 import java.util.List;
 
@@ -31,6 +33,7 @@ public class RequestKeypunchNameS2CPacket implements ClientboundPacketPayload {
         buffer.writeBlockPos(pos);
     };
 
+    @OnlyIn(Dist.CLIENT)
     @Override
     public void handle(LocalPlayer player) {
         Minecraft minecraft = Minecraft.getInstance();

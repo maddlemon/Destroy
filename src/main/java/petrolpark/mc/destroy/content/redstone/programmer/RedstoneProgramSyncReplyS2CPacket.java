@@ -1,5 +1,7 @@
 package petrolpark.mc.destroy.content.redstone.programmer;
 
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
 import net.createmod.catnip.net.base.ClientboundPacketPayload;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -23,6 +25,7 @@ public class RedstoneProgramSyncReplyS2CPacket implements ClientboundPacketPaylo
 
     };
 
+    @OnlyIn(Dist.CLIENT)
     @Override
     public void handle(LocalPlayer player) {
         Minecraft mc = Minecraft.getInstance();

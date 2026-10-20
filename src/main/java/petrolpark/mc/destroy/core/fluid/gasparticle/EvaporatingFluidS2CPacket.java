@@ -1,5 +1,7 @@
 package petrolpark.mc.destroy.core.fluid.gasparticle;
 
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
 import petrolpark.mc.destroy.DestroyPackets;
 import petrolpark.mc.destroy.client.DestroyParticleTypes;
 
@@ -41,6 +43,7 @@ public class EvaporatingFluidS2CPacket implements ClientboundPacketPayload {
 
     @Override
     @SuppressWarnings("resource")
+    @OnlyIn(Dist.CLIENT)
     public void handle(LocalPlayer player) {
         ClientLevel level = Minecraft.getInstance().level;
         Vec3 center = VecHelper.getCenterOf(blockPos);

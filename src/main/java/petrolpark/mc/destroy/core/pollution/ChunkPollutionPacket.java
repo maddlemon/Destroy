@@ -1,5 +1,7 @@
 package petrolpark.mc.destroy.core.pollution;
 
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,6 +30,7 @@ public record ChunkPollutionPacket(ChunkPos pos, Map<PollutionType<ChunkAccess>,
         return DestroyPackets.CHUNK_POLLUTION;
     };
 
+    @OnlyIn(Dist.CLIENT)
     @Override
     public void handle(LocalPlayer player) {
         final ChunkPollution pollution = player.level().getChunk(pos().x, pos().z).getData(DestroyAttachmentTypes.CHUNK_POLLUTION);

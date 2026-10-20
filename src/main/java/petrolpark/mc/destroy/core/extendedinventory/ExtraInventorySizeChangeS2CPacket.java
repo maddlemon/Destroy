@@ -1,5 +1,7 @@
 package petrolpark.mc.destroy.core.extendedinventory;
 
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
 import net.createmod.catnip.net.base.ClientboundPacketPayload;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -32,6 +34,7 @@ public class ExtraInventorySizeChangeS2CPacket implements ClientboundPacketPaylo
         buffer.writeBoolean(requestFullState);
     };
 
+    @OnlyIn(Dist.CLIENT)
     @Override
     public void handle(LocalPlayer player) {
         ExtendedInventoryClientHandler.handleExtendedInventorySizeChange(this);

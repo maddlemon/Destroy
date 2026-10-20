@@ -40,10 +40,10 @@
         "HeatLevelMixin",
         "ItemDrainBlockMixin",
         "ItemEntityMixin",
+        "ItemValueSettingsPacketMixin",
         "LevelSettingsMixin",
         "LivingEntityMobEffectMixin",
         "MechanicalMixerBlockEntityMixin",
-        "MultiPlayerGameModeMixin",
         "PipeConnectionMixin",
         "PlayerMixin",
         "PonderTagScreenMixin",
@@ -60,6 +60,7 @@
         "VillagerMixin"
     ],
     "client": [
+        "MultiPlayerGameModeMixin",
         "compat.embeddium.client.WorldSliceMixin",
         "compat.sodium.client.LevelSliceMixin",
         "client.CartographyTableScreenMixin",

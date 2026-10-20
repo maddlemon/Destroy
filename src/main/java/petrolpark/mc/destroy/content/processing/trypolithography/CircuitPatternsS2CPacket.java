@@ -1,5 +1,7 @@
 package petrolpark.mc.destroy.content.processing.trypolithography;
 
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.HashMap;
@@ -40,6 +42,7 @@ public class CircuitPatternsS2CPacket implements ClientboundPacketPayload {
         };
     };
 
+    @OnlyIn(Dist.CLIENT)
     @Override
     public void handle(LocalPlayer player) {
         Destroy.CIRCUIT_PATTERN_HANDLER.setPatterns(patterns);

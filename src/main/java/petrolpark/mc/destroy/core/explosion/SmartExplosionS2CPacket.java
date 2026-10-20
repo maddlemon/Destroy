@@ -1,5 +1,7 @@
 package petrolpark.mc.destroy.core.explosion;
 
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
 import net.createmod.catnip.platform.CatnipServices;
 import java.util.Optional;
 
@@ -42,6 +44,7 @@ public class SmartExplosionS2CPacket implements ClientboundPacketPayload {
         buffer.writeDouble(recipientKnockback.z());
     };
 
+    @OnlyIn(Dist.CLIENT)
     @Override
     public void handle(LocalPlayer player) {
         Minecraft mc = Minecraft.getInstance();

@@ -1,5 +1,7 @@
 package petrolpark.mc.destroy.core.chemistry.vat.material;
 
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,6 +42,7 @@ public class SyncVatMaterialsS2CPacket implements ClientboundPacketPayload {
         });
     };
 
+    @OnlyIn(Dist.CLIENT)
     @Override
     public void handle(LocalPlayer player) {
         VatMaterial.clearDatapackMaterials();

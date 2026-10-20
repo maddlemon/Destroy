@@ -1,5 +1,7 @@
 package petrolpark.mc.destroy.content.product.periodictable;
 
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
 import petrolpark.mc.destroy.DestroyPackets;
 import petrolpark.mc.destroy.client.DestroyPonderScenes;
 
@@ -18,6 +20,7 @@ public class RefreshPeriodicTablePonderSceneS2CPacket implements ClientboundPack
 
     public void toBytes(RegistryFriendlyByteBuf buffer) {};
 
+    @OnlyIn(Dist.CLIENT)
     @Override
     public void handle(LocalPlayer player) {
         DestroyPonderScenes.refreshPeriodicTableBlockScenes();

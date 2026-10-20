@@ -6,6 +6,24 @@ This document covers the step-5 (remaining API changes) work sessions after it w
 and the state at hand-off. Two humans work on this: Azzie (Linux box, this machine) and
 Maddie (Windows, git identity `Meowfoe`). **Pull before starting.**
 
+## Hand-off #3 (Maddie, Windows, end of session) — READ FIRST
+
+- **Compiles clean; mod constructs on client classpath and on a dedicated server; GameTest server boots, loads all data and
+  passes `test/DestroyGameTests`** (`./gradlew runGameTestServer` — use its log as the data check; the plain server needs EULA).
+- **Jar:** `dist/destroy-1.21.1-0.2.0.jar` (built from this commit, requested by Azzie). NOT tested in a client world yet.
+- **JEI bumped to 19.56.0.441** (library 1.5.11 requires 19.53–19.57).
+- **Still failing at load:** ~12 recipes — `distillation/*` and `element_tank_filling/*` report "Recipe specified a duration"
+  even with no `processing_time` (oxygen.json has none) — cause not found yet; check how `AdvancedProcessingRecipe.Serializer`
+  / `ProcessingRecipeParams.codec` fill `processingDuration` for these types. Also `chlorine/hydrogen/mercury` still have a
+  `processing_time` key to delete, and `distillation/borax` uses a `biomes` tag list (make it a string or a Destroy tag like brine).
+- **Not done:** step 6 (JEI compat, 45 files + 7 mixins), client in-game test, datagen (Registrate in the library no longer adds
+  default "drop self" loot, so `runData` fails loot validation — the committed 1.20.1 loot tables are converted and used instead).
+- **Session fixes worth knowing:** `port-tools/mixin_check.py` (static mixin target/descriptor check), `port-tools/migrate_data.py`
+  (data migration, idempotent); HeatCondition `cooled` codec rebuilt in `HeatConditionMixin`; Seismometer no longer implements the
+  library's `IValueSettingsItem` (it crashes dedicated servers) — `SeismometerClient` + `ItemValueSettingsPacketMixin` instead;
+  clientbound packet `handle` methods are `@OnlyIn(CLIENT)`; potato projectile effects `level` 0 → 1 (Create 6 is 1-based),
+  `minecraft:harm` → `instant_damage`; rose quartz crushing's `count: 0.5` silica dropped (was an empty output in 1.20.1).
+
 ## State at hand-off
 
 - Branch `1.21.1-neoforge`. Steps 1–4 (recipes, packets, pollution / crude oil / seismology,

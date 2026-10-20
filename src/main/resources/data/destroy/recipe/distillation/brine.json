@@ -48,8 +48,5 @@
         }
     ],
     "heat_requirement": "heated",
-    "biomes": [
-        "#minecraft:is_ocean",
-        "#minecraft:is_beach"
-    ]
+    "biomes": "#destroy:brine_distillation"
 }

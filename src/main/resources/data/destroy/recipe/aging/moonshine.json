@@ -25,7 +25,7 @@
     "neoforge:conditions": [
         {
             "type": "petrolpark:config_bool",
-            "value": "destroy:common.enableAlcohol"
+            "key": "destroy:common.enableAlcohol"
         }
     ]
 }

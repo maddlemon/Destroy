@@ -1,5 +1,7 @@
 package petrolpark.mc.destroy.core.pollution;
 
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,6 +27,7 @@ public record LevelPollutionPacket(Map<PollutionType<Level>, Integer> values) im
         return DestroyPackets.LEVEL_POLLUTION;
     };
 
+    @OnlyIn(Dist.CLIENT)
     @Override
     public void handle(LocalPlayer player) {
         player.level().getData(DestroyAttachmentTypes.LEVEL_POLLUTION).setValues(values());

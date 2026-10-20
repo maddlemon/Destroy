@@ -1,5 +1,7 @@
 package petrolpark.mc.destroy.core.chemistry.hazard;
 
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
 import petrolpark.mc.destroy.DestroyPackets;
 import petrolpark.mc.destroy.chemistry.legacy.LegacySpecies;
 
@@ -33,6 +35,7 @@ public class ChemicalPoisonS2CPacket implements ClientboundPacketPayload {
         buffer.writeUtf(molecule == null ? "NO_MOLECULE" : molecule.getFullID());
     };
 
+    @OnlyIn(Dist.CLIENT)
     @Override
     public void handle(LocalPlayer player) {
         Minecraft minecraft = Minecraft.getInstance();

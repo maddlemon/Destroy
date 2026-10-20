@@ -11,8 +11,8 @@
   },
   "on_entity_hit": {
     "type": "create:potion_effect",
-    "effect": "minecraft:harm",
-    "level": 0,
+    "effect": "minecraft:instant_damage",
+    "level": 1,
     "recoverable": false,
     "ticks": 100
   }

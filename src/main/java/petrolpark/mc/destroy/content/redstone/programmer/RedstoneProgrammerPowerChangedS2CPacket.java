@@ -1,5 +1,7 @@
 package petrolpark.mc.destroy.content.redstone.programmer;
 
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
 import petrolpark.mc.destroy.DestroyPackets;
 import petrolpark.mc.destroy.content.redstone.programmer.RedstoneProgrammerMenu.DummyRedstoneProgram;
 
@@ -27,6 +29,7 @@ public class RedstoneProgrammerPowerChangedS2CPacket implements ClientboundPacke
         buffer.writeBoolean(powered);
     };
 
+    @OnlyIn(Dist.CLIENT)
     @Override
     public void handle(LocalPlayer player) {
         Minecraft mc = Minecraft.getInstance();

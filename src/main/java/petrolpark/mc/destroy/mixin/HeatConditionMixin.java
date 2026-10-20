@@ -1,5 +1,10 @@
 package petrolpark.mc.destroy.mixin;
 
+import net.minecraft.util.StringRepresentable;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.codec.ByteBufCodecs;
+import io.netty.buffer.ByteBuf;
+import com.mojang.serialization.Codec;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -26,6 +31,22 @@ public abstract class HeatConditionMixin {
     private static HeatCondition[] $VALUES;
 
     private static final HeatCondition COOLED = heatConditionModifier$addValue("COOLED", 0xD9FEFF);
+
+    @Shadow
+    @Final
+    @Mutable
+    public static Codec<HeatCondition> CODEC;
+
+    @Shadow
+    @Final
+    @Mutable
+    public static StreamCodec<ByteBuf, HeatCondition> STREAM_CODEC;
+
+    static {
+        // Create 6 builds these in its own static initializer, before COOLED is added (mixin static code runs after); rebuild them so recipes can use "cooled"
+        CODEC = StringRepresentable.fromEnum(HeatCondition::values);
+        STREAM_CODEC = ByteBufCodecs.VAR_INT.map(i -> HeatCondition.values()[i], Enum::ordinal);
+    };
 
     @Invoker("<init>")
     public static HeatCondition heatConditionModifier$invokeInit(String internalName, int internalId, int color) {

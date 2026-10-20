@@ -1,5 +1,7 @@
 package petrolpark.mc.destroy.core.chemistry.hazard.mobeffect;
 
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
 import petrolpark.mc.destroy.DestroyPackets;
 import petrolpark.mc.destroy.DestroyMobEffects;
 
@@ -36,6 +38,7 @@ public class CryingS2CPacket implements ClientboundPacketPayload {
     };
     
     @SuppressWarnings("resource")
+    @OnlyIn(Dist.CLIENT)
     @Override
     public void handle(LocalPlayer player) {
         ClientLevel level = Minecraft.getInstance().level;

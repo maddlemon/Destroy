@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.core.seismology;
 
+import petrolpark.mc.destroy.Destroy;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -52,12 +53,16 @@ import petrolpark.mc.destroy.DestroyTags;
 import petrolpark.mc.destroy.config.DestroyConfigs;
 import petrolpark.mc.destroy.core.oil.ChunkCrudeOil;
 import petrolpark.mc.destroy.util.DestroyLang;
-import petrolpark.mc.library.compat.create.core.world.item.valueSettings.IValueSettingsItem;
 import petrolpark.mc.library.compat.pquality.OptionalQuality;
 
 @EventBusSubscriber
 @ParametersAreNonnullByDefault
-public class SeismometerItem extends Item implements IValueSettingsItem {
+/**
+ * Value-settings item (choose the Seismology Provider) like the library's {@code IValueSettingsItem}, but not implementing it: that interface's
+ * default method holds a client Screen, so linking it crashes dedicated servers. {@code ItemValueSettingsPacketMixin} routes the library's packet here
+ * and {@link SeismometerClient} opens the library's screen.
+ */
+public class SeismometerItem extends Item {
 
     public static List<Holder<ISeismologyProvider>> getProviders() {
         final List<Holder<ISeismologyProvider>> providers = DestroyRegistries.SEISMOLOGY_PROVIDERS.getTag(DestroyTags.SeismologyProviders.FOR_SEISMOMETER.tag).stream()
@@ -85,10 +90,11 @@ public class SeismometerItem extends Item implements IValueSettingsItem {
 
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand usedHand) {
-        return useValueSettingsItem(level, player, usedHand);
+        ItemStack stack = player.getItemInHand(usedHand);
+        if (level.isClientSide()) Destroy.unsafeRunClient(() -> () -> SeismometerClient.openValueSettings(this, player, usedHand, stack));
+        return InteractionResultHolder.success(stack);
     };
 
-    @Override
     public ValueSettingsBoard createValueSettingsBoard(Player player, InteractionHand hand, ItemStack stack) {
         final List<Holder<ISeismologyProvider>> providers = getProviders();
         return new ValueSettingsBoard(
@@ -100,12 +106,10 @@ public class SeismometerItem extends Item implements IValueSettingsItem {
         );
     };
 
-    @Override
     public ValueSettings getValueSettings(ItemStack stack) {
         return new ValueSettings(getProviders().indexOf(getProvider(stack)), 0);
     };
 
-    @Override
     public void setValueSettings(ItemStack stack, ValueSettings valueSettings, boolean ctrlDown) {
         final int index = valueSettings.row();
         final List<Holder<ISeismologyProvider>> providers = getProviders();
