@@ -78,7 +78,6 @@
         "client.GuiMixin",
         "client.LevelRendererMixin",
         "client.MinecraftMixin",
-        "client.MultiPlayerGameModeMixin",
         "client.PonderLevelMixin",
         "client.RecipeBookComponentMixin"
     ],

@@ -5,10 +5,8 @@ import javax.annotation.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.At.Shift;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -17,7 +15,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.CartographyTableMenu;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.saveddata.maps.MapId;
 import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
 import petrolpark.mc.destroy.DestroyItems;
@@ -41,19 +38,26 @@ public abstract class CartographyTableScreenMixin extends AbstractContainerScree
     @Shadow
     abstract void renderMap(GuiGraphics guiGraphics, @Nullable MapId mapId, @Nullable MapItemSavedData mapData, int x, int y, float scale);
 
+    /**
+     * Was a locals-capturing injection into {@code renderBg}, whose locals changed in 1.21.1 (the injection failed and the sprite never showed).
+     * {@code renderResultingMap} is called at the end of {@code renderBg} with the same Map data, so the error sprite is drawn here instead.
+     */
     @Inject(
-        method = "renderBg",
-        at = @At(
-            value = "INVOKE",
-            target = "getSavedData",
-            shift = Shift.BY,
-            by = 5
-        ),
-        locals = LocalCapture.CAPTURE_FAILEXCEPTION
+        method = "renderResultingMap",
+        at = @At("HEAD")
     )
-    public void destroy$seismographError(GuiGraphics guiGraphics, float partialTick, int mouseX, int mouseY, CallbackInfo ci, int i, int j, ItemStack modifier, boolean hasMap, boolean hasPaper, boolean hasGlassPane, ItemStack map, MapId mapId, boolean isMaxSize, MapItemSavedData mapData) {
-        if (DestroyItems.SEISMOMETER.isIn(modifier) && (mapData.scale != 0 || mapData.locked)) {
-            guiGraphics.blitSprite(ERROR_SPRITE, i + 35, j + 31, 28, 21);
+    public void destroy$seismographError(
+        GuiGraphics guiGraphics,
+        @Nullable MapId mapId,
+        @Nullable MapItemSavedData mapData,
+        boolean hasMap,
+        boolean hasPaper,
+        boolean hasGlassPane,
+        boolean isMaxSize,
+        CallbackInfo ci
+    ) {
+        if (mapData != null && DestroyItems.SEISMOMETER.isIn(menu.getSlot(1).getItem()) && (mapData.scale != 0 || mapData.locked)) {
+            guiGraphics.blitSprite(ERROR_SPRITE, leftPos + 35, topPos + 31, 28, 21);
         };
     };
 
@@ -87,7 +91,7 @@ public abstract class CartographyTableScreenMixin extends AbstractContainerScree
                     guiGraphics.flush();
                 }; guiGraphics.pose().popPose();
 
-            }; guiGraphics.pose().pushPose();
+            }; guiGraphics.pose().popPose();
 
             ci.cancel();
         };
