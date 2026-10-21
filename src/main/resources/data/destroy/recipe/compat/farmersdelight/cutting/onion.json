@@ -8,8 +8,9 @@
     "result": [
         {
             "item": {
-                "id": "minecraft:air"
-            }
+                "id": "minecraft:onion"
+            },
+            "chance": 0.0
         }
     ],
     "tool": {
