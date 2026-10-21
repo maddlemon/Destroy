@@ -6,6 +6,41 @@
 (pack rebuild + first server setup + boot-1/boot-2 crash root causes), then this.
 **Pull before starting.** Two humans: Azzie (Linux) and Maddie (Windows, git identity `Meowfoe`).
 
+## UPDATE 2026-10-22 (2): first-join kicks fixed; whitelist + Discord bot
+
+**First-join "Network Protocol Error" kicks (Azzie's client log) — two separate causes, both fixed:**
+1. **Destroy (`2222b1fc`):** `IllegalStateException: No such circuit pattern destroy:shared_hard_0` while the client
+   handled `ClientboundUpdateRecipesPacket`. Circuit patterns were sent on `PlayerLoggedInEvent` (as 1.20.1), which in
+   1.21.1 comes **after** the recipe packet, and NeoForge 1.21's client recipe book calls `getItems()` on every
+   ingredient as recipes arrive (Forge 1.20.1's `hasNoElements` skipped non-simple ingredients). Now sent on
+   `OnDatapackSyncEvent` (fires right before the recipe packet; `/reload` still re-sends via the reload listener).
+   Singleplayer can't show it (shared handler). Reproduced with a dev dedicated server (offline, temp `run-server/`)
+   + headless dev client via `--quickPlayMultiplayer localhost:<port>`; fixed run joins cleanly. Server-side fix.
+2. **Pack:** `Chunky is not loaded` from Distant Horizons' Chunky hook on the **client** — Chunky was shipped to
+   clients although the modlist says S. Audit `chunky.client_side` → `unsupported`; packs rebuilt (Chunky
+   `env.client = unsupported`). Azzie's Prism instance: Chunky renamed `.disabled`, Destroy jar replaced.
+
+Jar sha1 `5db510c18665cf6eb963e21eeb53b48b1f3ecd19` (public URL verified), audit + modlist + mrpack/prism rebuilt
+(validation none, doc mismatches none). Server updated + restarted (old jar at `~/destroy-1.21.1-0.2.0.jar.old-6f49d09f`).
+
+**Whitelist (server):** `white-list=true`, `enforce-whitelist=true`; initial entries `azziewas`, `Mraowdeline`.
+`server.properties` backup: `~/maddiecraft/server.properties.bak-20261021` (file now `chmod 600`: holds the RCON password).
+
+**RCON:** `enable-rcon=true`, `rcon.port=25576`, random password (in `~/maddiecraft-bot/config.json`, 600),
+`broadcast-rcon-to-ops=false`. Minecraft binds RCON to 0.0.0.0, so **nftables** drops it from anything but `lo`:
+`/etc/maddiecraft-rcon-guard.nft` (table `inet maddiecraft_rcon_guard`), applied at boot by system unit
+`maddiecraft-rcon-guard.service` (enabled). Verified: blocked from outside, works locally. `/etc/nftables.conf`
+untouched. The old `~/mc` server is untouched.
+
+**Discord bot "coalbot"** (`~/maddiecraft-bot/`: `bot.py`, `venv/` with discord.py 2.7.1, `token` 600, `config.json` 600;
+reference copy of `bot.py` locally at `build/maddiecraft-bot/`). Slash commands `/whitelist add|remove|list <player>`
+over local RCON; guild-only, visible/usable only by members with **Manage Server**; usernames validated
+(`[A-Za-z0-9_]{3,16}`). Runs as **systemd user** unit `maddiecraft-bot.service` (Restart=always; linger enabled):
+`systemctl --user status|restart maddiecraft-bot`, logs `journalctl --user -u maddiecraft-bot`. To update: edit
+`~/maddiecraft-bot/bot.py`, `systemctl --user restart maddiecraft-bot`. Invite (no extra permissions needed):
+`https://discord.com/oauth2/authorize?client_id=1562577436304998470&scope=bot+applications.commands&permissions=0`.
+Note: the whitelist only changes via RCON/console/bot — editing `whitelist.json` by hand needs `/whitelist reload`.
+
 ## UPDATE 2026-10-22: client join crash with Destroy — FIXED (`1ee90b8d`)
 
 **Symptom (Maddie/Azzie's client log):** crash in `ClientPacketListener.handleLogin` when joining —
@@ -324,3 +359,4 @@ yet another machine, re-verify those two counts before trusting anything.
 | *(this commit)* | PORTING-HANDOFF-5.md (hand-off #6): server up on 25566 + voice 24455, 7 client-only mods moved off the server (DH crash fix), onion recipe final fix, packs rebuilt+verified |
 | `1ee90b8d` | Client join crash fix (Puzzles Lib vs Destroy's private `@Overwrite` of `sameDestroyTarget` — mixin removed, NeoForge has the fix) + cartography seismograph error sprite; jar rebuilt; pack files rebuilt |
 | *(this commit)* | Server updated to the fixed jar and restarted (pid 945822, Done, 0 errors) |
+\n| `2222b1fc` | Circuit patterns sent before recipes (first-join kick fix); Chunky client-unsupported in pack; jar + packs rebuilt; server: new jar, whitelist, RCON (nft-guarded), coalbot whitelist bot |\n
