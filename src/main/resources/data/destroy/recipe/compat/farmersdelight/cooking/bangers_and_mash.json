@@ -13,7 +13,7 @@
         "id": "destroy:bangers_and_mash"
     },
     "container": {
-        "item": "minecraft:bowl"
+        "id": "minecraft:bowl"
     },
     "experience": 0.1,
     "cookingtime": 200,
