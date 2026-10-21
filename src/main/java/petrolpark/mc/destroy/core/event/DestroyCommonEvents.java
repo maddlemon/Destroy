@@ -98,6 +98,7 @@ import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
 import net.neoforged.neoforge.event.village.VillagerTradesEvent;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 
 @EventBusSubscriber(modid = Destroy.MOD_ID, bus = EventBusSubscriber.Bus.GAME)
@@ -106,6 +107,16 @@ public class DestroyCommonEvents {
     /**
      * Collect the Player's Badges (Pollution is synced by {@link petrolpark.mc.destroy.core.pollution.LevelPollution}).
      */
+    /**
+     * Send the circuit patterns to a joining Player. 1.20.1 sent them on login, but in 1.21.1 that is after the Recipes, and the client
+     * now reads every Ingredient's Items (including circuit pattern ones) as soon as the Recipes arrive. This event comes just before them.
+     */
+    @SubscribeEvent
+    public static final void onDatapackSync(OnDatapackSyncEvent event) {
+        ServerPlayer player = event.getPlayer();
+        if (player != null) CatnipServices.NETWORK.sendToClient(player, new CircuitPatternsS2CPacket(Destroy.CIRCUIT_PATTERN_HANDLER.getAllPatterns()));
+    };
+
     @SubscribeEvent
     public static final void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
         Player player = event.getEntity();
@@ -115,8 +126,7 @@ public class DestroyCommonEvents {
         // Update the Ponders for periodic table blocks
         CatnipServices.NETWORK.sendToClient(serverPlayer, new RefreshPeriodicTablePonderSceneS2CPacket());
 
-        // Update the circuit pattern crafting recipes
-        CatnipServices.NETWORK.sendToClient(serverPlayer, new CircuitPatternsS2CPacket(Destroy.CIRCUIT_PATTERN_HANDLER.getAllPatterns()));
+        // Circuit patterns are sent in onDatapackSync, before the Recipes
 
         // Update the known Vat Materials
         Map<BlockIngredient<?>, VatMaterial> datapackMaterials = new HashMap<>(VatMaterial.BLOCK_MATERIALS.size());
