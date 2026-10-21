@@ -1,0 +1,72 @@
+   [t+120] 0 -60 0
+     1.20.1: create:depot  [('minecraft:redstone_torch', 1)]
+     1.21.1: create:depot  [('minecraft:redstone_torch', 1)]
+   [t+120] 20 -59 0
+     1.20.1: create:basin  [('destroy:calcium_carbide', 1)]
+     1.21.1: create:basin  [('destroy:calcium_carbide', 1)]
+!! [t+120] 30 -60 1
+     1.20.1: create:fluid_tank  [('destroy:mixture', 11)]  molecules=['destroy:isoprene']
+     1.21.1: create:fluid_tank  [('destroy:mixture', 10)]  molecules=['destroy:isoprene']
+   [t+120] 42 -56 3
+     1.20.1: create:fluid_tank  [('minecraft:milk', 3000)]
+     1.21.1: create:fluid_tank  [('minecraft:milk', 3000)]
+   [t+120] 42 -60 1
+     1.20.1: create:fluid_tank  []
+     1.21.1: create:fluid_tank  []
+   [t+120] 42 -60 3
+     1.20.1: create:fluid_tank  []
+     1.21.1: create:fluid_tank  []
+   [t+120] items 10 -59 0 1.5
+     1.20.1: {create:crushed_raw_copper=5}
+     1.21.1: {create:crushed_raw_copper=5}
+   [t+400] 0 -58 0
+     1.20.1: destroy:dynamo  []
+     1.21.1: destroy:dynamo  []
+   [t+400] 0 -60 0
+     1.20.1: create:depot  [('minecraft:redstone_torch', 1)]
+     1.21.1: create:depot  [('minecraft:redstone_torch', 1)]
+   [t+400] 10 -58 0
+     1.20.1: destroy:mechanical_sieve  []
+     1.21.1: destroy:mechanical_sieve  []
+   [t+400] 20 -57 0
+     1.20.1: destroy:dynamo  []
+     1.21.1: destroy:dynamo  []
+   [t+400] 20 -59 0
+     1.20.1: create:basin  [('destroy:calcium_carbide', 1)]
+     1.21.1: create:basin  [('destroy:calcium_carbide', 1)]
+!! [t+400] 30 -60 1
+     1.20.1: create:fluid_tank  [('destroy:mixture', 11)]  molecules=['destroy:isoprene']
+     1.21.1: create:fluid_tank  [('destroy:mixture', 10)]  molecules=['destroy:isoprene']
+   [t+400] 33 -60 2
+     1.20.1: destroy:tree_tap  []
+     1.21.1: destroy:tree_tap  []
+   [t+400] 42 -56 3
+     1.20.1: create:fluid_tank  [('minecraft:milk', 2000)]
+     1.21.1: create:fluid_tank  [('minecraft:milk', 2000)]
+   [t+400] 42 -58 3
+     1.20.1: destroy:centrifuge  [('destroy:cream', 500), ('minecraft:milk', 1000), ('minecraft:milk', 1000)]
+     1.21.1: destroy:centrifuge  [('destroy:cream', 500), ('minecraft:milk', 1000), ('minecraft:milk', 1000)]
+   [t+400] 42 -60 1
+     1.20.1: create:fluid_tank  []
+     1.21.1: create:fluid_tank  []
+   [t+400] 42 -60 3
+     1.20.1: create:fluid_tank  [('destroy:skimmed_milk', 500)]
+     1.21.1: create:fluid_tank  [('destroy:skimmed_milk', 500)]
+   [t+400] items 10 -59 0 1.5
+     1.20.1: {create:crushed_raw_copper=5}
+     1.21.1: {create:crushed_raw_copper=5}
+   [t+1200] 20 -59 0
+     1.20.1: create:basin  [('destroy:calcium_carbide', 1)]
+     1.21.1: create:basin  [('destroy:calcium_carbide', 1)]
+!! [t+1200] 30 -60 1
+     1.20.1: create:fluid_tank  [('destroy:mixture', 11)]  molecules=['destroy:isoprene']
+     1.21.1: create:fluid_tank  [('destroy:mixture', 10)]  molecules=['destroy:isoprene']
+   [t+1200] 42 -56 3
+     1.20.1: create:fluid_tank  [('minecraft:milk', 1000)]
+     1.21.1: create:fluid_tank  [('minecraft:milk', 1000)]
+   [t+1200] 42 -60 1
+     1.20.1: create:fluid_tank  []
+     1.21.1: create:fluid_tank  []
+   [t+1200] 42 -60 3
+     1.20.1: create:fluid_tank  [('destroy:skimmed_milk', 1000)]
+     1.21.1: create:fluid_tank  [('destroy:skimmed_milk', 1000)]

@@ -1,0 +1,20 @@
+CHAT head - curios, create
+CHAT hands - curios
+CHAT charm - curios
+CHAT entities - petrolpark
+CHAT ring - curios
+CHAT belt - curios
+CHAT petrolpark_badge - petrolpark
+CHAT back - curios
+CHAT necklace - curios
+CHAT bracelet - curios
+CHAT body - curios
+CHAT curio - curios
+PROTECTION nothing [FEET=false, LEGS=false, BODY=false, HEAD=false, EYES=false, NOSE=false, MOUTH=false, MOUTH_COVERED=false]
+CHAT Replaced slot head for Dev with [Lab Goggles]
+PROTECTION goggles_in_curio_head [FEET=false, LEGS=false, BODY=false, HEAD=false, EYES=true, NOSE=false, MOUTH=false, MOUTH_COVERED=false]
+CHAT Replaced slot head for Dev with [Paper Mask]
+PROTECTION paper_mask_in_curio_head [FEET=false, LEGS=false, BODY=false, HEAD=false, EYES=false, NOSE=true, MOUTH=true, MOUTH_COVERED=true]
+CHAT Replaced slot head for Dev with [Air]
+CHAT Replaced a slot on Dev with [Gas Mask]
+PROTECTION gas_mask_on_head [FEET=false, LEGS=false, BODY=false, HEAD=true, EYES=true, NOSE=true, MOUTH=true, MOUTH_COVERED=true]

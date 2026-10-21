@@ -1,0 +1,152 @@
+===== items.tsv =====
+  249 keys in 1.20.1, 249 in 1.21.1: 0 only 1.20.1, 0 only 1.21.1, 2 changed
+  ~ destroy:seismograph
+      1.20.1: Seismograph	false	1	Hold [W] to Ponder
+      1.21.1: Seismograph	false	1	Hold [W] to Ponder | Seismic source: Nothing!
+  ~ destroy:seismometer
+      1.20.1: Handheld Seismometer	false	1	Hold [W] to Ponder
+      1.21.1: Handheld Seismometer	false	1	Hold [W] to Ponder | Seismic source: Crude Oil (Destroy)
+===== blocks.tsv =====
+  105 keys in 1.20.1, 105 in 1.21.1: 0 only 1.20.1, 0 only 1.21.1, 0 changed
+===== fluids.tsv =====
+  40 keys in 1.20.1, 40 in 1.21.1: 0 only 1.20.1, 0 only 1.21.1, 0 changed
+===== creative.tsv =====
+  252 keys in 1.20.1, 252 in 1.21.1: 1 only 1.20.1, 1 only 1.21.1, 1 changed
+  - search tab total destroy items: 245	
+  + search tab total destroy items: 242	
+  ~ SEARCH
+      1.20.1: destroy:badge/patreon_1	Dame of Demolition
+      1.20.1: destroy:badge/patreon_2	Duke of Devastation
+      1.20.1: destroy:badge/patreon_3	Deity of Destruction
+===== recipes.tsv =====
+  386 keys in 1.20.1, 386 in 1.21.1: 0 only 1.20.1, 0 only 1.21.1, 1 changed
+  ~ COUNT
+      1.20.1: create:deploying	112
+      1.20.1: create:milling	63
+      1.20.1: create:pressing	11
+      1.20.1: minecraft:crafting	1559
+      1.20.1: minecraft:smithing	31
+      1.20.1: minecraft:stonecutting	525
+      1.21.1: create:deploying	167
+      1.21.1: create:milling	66
+      1.21.1: create:pressing	12
+      1.21.1: minecraft:crafting	1641
+      1.21.1: minecraft:smithing	33
+      1.21.1: minecraft:stonecutting	590
+      1.21.1: petrolpark:drying	1
+      1.21.1: petrolpark:extrusion	1
+      1.21.1: petrolpark:lidded_basin	1
+      1.21.1: petrolpark:mandrel	1
+===== enchant.tsv =====
+  248 keys in 1.20.1, 248 in 1.21.1: 0 only 1.20.1, 0 only 1.21.1, 9 changed
+  ~ destroy:bucket_and_spade
+      1.20.1: 0	A=[minecraft:mending, minecraft:unbreaking, minecraft:vanishing_curse]	T=[minecraft:unbreaking]
+      1.21.1: 0	A=[minecraft:mending, minecraft:unbreaking, minecraft:vanishing_curse]	T=[minecraft:mending, minecraft:unbreaking, minecraft:vanishing_curse]
+  ~ destroy:gas_mask
+      1.20.1: 0	A=[minecraft:binding_curse, minecraft:vanishing_curse]	T=[]
+      1.21.1: 0	A=[minecraft:binding_curse, minecraft:vanishing_curse]	T=[minecraft:binding_curse, minecraft:vanishing_curse]
+  ~ destroy:gold_laboratory_goggles
+      1.20.1: 0	A=[minecraft:binding_curse, minecraft:vanishing_curse]	T=[]
+      1.21.1: 0	A=[minecraft:binding_curse, minecraft:vanishing_curse]	T=[minecraft:binding_curse, minecraft:vanishing_curse]
+  ~ destroy:hazmat_leggings
+      1.20.1: 0	A=[minecraft:binding_curse, minecraft:blast_protection, minecraft:fire_protection, minecraft:mending, minecraft:projectile_protection, minecraft:protection, minecraft:swift_sneak, minecraft:thorns, minecraft:unbreaking, minecraft:vanishing_curse]	T=[minecraft:blast_protection, minecraft:fire_protection, minecraft:projectile_protection, minecraft:protection, minecraft:unbreaking]
+      1.21.1: 0	A=[minecraft:binding_curse, minecraft:blast_protection, minecraft:fire_protection, minecraft:mending, minecraft:projectile_protection, minecraft:protection, minecraft:swift_sneak, minecraft:thorns, minecraft:unbreaking, minecraft:vanishing_curse]	T=[minecraft:binding_curse, minecraft:blast_protection, minecraft:fire_protection, minecraft:mending, minecraft:projectile_protection, minecraft:protection, minecraft:swift_sneak, minecraft:unbreaking, minecraft:vanishing_curse]
+  ~ destroy:hazmat_suit
+      1.20.1: 0	A=[minecraft:binding_curse, minecraft:blast_protection, minecraft:fire_protection, minecraft:mending, minecraft:projectile_protection, minecraft:protection, minecraft:thorns, minecraft:unbreaking, minecraft:vanishing_curse]	T=[create:capacity, minecraft:blast_protection, minecraft:fire_protection, minecraft:projectile_protection, minecraft:protection, minecraft:thorns, minecraft:unbreaking]
+      1.21.1: 0	A=[minecraft:binding_curse, minecraft:blast_protection, minecraft:fire_protection, minecraft:mending, minecraft:projectile_protection, minecraft:protection, minecraft:thorns, minecraft:unbreaking, minecraft:vanishing_curse]	T=[minecraft:binding_curse, minecraft:blast_protection, minecraft:fire_protection, minecraft:mending, minecraft:projectile_protection, minecraft:protection, minecraft:thorns, minecraft:unbreaking, minecraft:vanishing_curse]
+  ~ destroy:laboratory_goggles
+      1.20.1: 0	A=[minecraft:binding_curse, minecraft:vanishing_curse]	T=[]
+      1.21.1: 0	A=[minecraft:binding_curse, minecraft:vanishing_curse]	T=[minecraft:binding_curse, minecraft:vanishing_curse]
+  ~ destroy:paper_mask
+      1.20.1: 0	A=[minecraft:binding_curse, minecraft:vanishing_curse]	T=[]
+      1.21.1: 0	A=[minecraft:binding_curse, minecraft:vanishing_curse]	T=[minecraft:binding_curse, minecraft:vanishing_curse]
+  ~ destroy:swiss_army_knife
+      1.20.1: 10	A=[minecraft:efficiency, minecraft:fortune, minecraft:mending, minecraft:silk_touch, minecraft:unbreaking, minecraft:vanishing_curse]	T=[minecraft:efficiency, minecraft:fortune, minecraft:silk_touch, minecraft:unbreaking]
+      1.21.1: 10	A=[minecraft:efficiency, minecraft:fortune, minecraft:mending, minecraft:silk_touch, minecraft:unbreaking, minecraft:vanishing_curse, pquality:enhancement]	T=[minecraft:efficiency, minecraft:fortune, minecraft:mending, minecraft:silk_touch, minecraft:unbreaking, minecraft:vanishing_curse, pquality:enhancement]
+  ~ destroy:wellington_boots
+      1.20.1: 0	A=[minecraft:binding_curse, minecraft:blast_protection, minecraft:depth_strider, minecraft:feather_falling, minecraft:fire_protection, minecraft:frost_walker, minecraft:mending, minecraft:projectile_protection, minecraft:protection, minecraft:soul_speed, minecraft:thorns, minecraft:unbreaking, minecraft:vanishing_curse]	T=[minecraft:blast_protection, minecraft:depth_strider, minecraft:feather_falling, minecraft:fire_protection, minecraft:projectile_protection, minecraft:protection, minecraft:unbreaking]
+      1.21.1: 0	A=[minecraft:binding_curse, minecraft:blast_protection, minecraft:depth_strider, minecraft:feather_falling, minecraft:fire_protection, minecraft:frost_walker, minecraft:mending, minecraft:projectile_protection, minecraft:protection, minecraft:soul_speed, minecraft:thorns, minecraft:unbreaking, minecraft:vanishing_curse]	T=[minecraft:binding_curse, minecraft:blast_protection, minecraft:depth_strider, minecraft:feather_falling, minecraft:fire_protection, minecraft:frost_walker, minecraft:mending, minecraft:projectile_protection, minecraft:protection, minecraft:soul_speed, minecraft:unbreaking, minecraft:vanishing_curse]
+===== compost.tsv =====
+  17 keys in 1.20.1, 17 in 1.21.1: 0 only 1.20.1, 0 only 1.21.1, 0 changed
+===== jei.tsv =====
+  64 keys in 1.20.1, 74 in 1.21.1: 2 only 1.20.1, 12 only 1.21.1, 22 changed
+  - minecraft:campfire	Campfire Cooking	11	11	82x44	minecraft:campfire(Campfire),minecraft:soul_campfire(Soul Campfire)
+  - minecraft:furnace	Smelting	126	126	82x54	minecraft:furnace(Furnace)
+  + minecraft:campfire_cooking	Campfire Cooking	11	11	82x44	minecraft:campfire(Campfire),minecraft:soul_campfire(Soul Campfire)
+  + minecraft:grindstone	Grindstone	226	226	125x52	minecraft:grindstone(Grindstone)
+  + minecraft:smelting	Smelting	127	127	116x54	minecraft:furnace(Furnace)
+  + petrolpark:ageing	Ageing	0	0	125x20	minecraft:barrel(Barrel)
+  + petrolpark:crop_fertilizing	Crop Fertilizing	0	0	120x125	
+  + petrolpark:flags	Flag Info	8	8	170x120	
+  + petrolpark:fluid_intrinsic_flags	Intrinsic Fluid Flags	0	0	178x110	
+  + petrolpark:item_intrinsic_flags	Intrinsic Item Flags	0	0	178x110	
+  + petrolpark:mysterious_conversion	Mysterious Conversion	0	0	177x50	
+  + petrolpark:tag_recipes/badge	Badge Tags	0	0	142x110	
+  + petrolpark:tag_recipes/flag	Flag Tags	0	0	142x110	
+  + pquality:effects	Quality Effects	22	22	170x55	
+  ~ create:automatic_brewing
+      1.20.1: Automated Brewing	445	445	177x103	create:mechanical_mixer(Mechanical Mixer),create:basin(Basin)
+      1.21.1: Automated Brewing	485	485	177x103	create:mechanical_mixer(Mechanical Mixer),create:basin(Basin)
+  ~ create:automatic_packing
+      1.20.1: Automated Packing	110	110	177x85	create:mechanical_press(Mechanical Press),create:basin(Basin)
+      1.21.1: Automated Packing	112	112	177x85	create:mechanical_press(Mechanical Press),create:basin(Basin)
+  ~ create:automatic_shaped
+      1.20.1: Automated Shaped Crafting	1155	1155	177x107	create:mechanical_crafter(Mechanical Crafter)
+      1.21.1: Automated Shaped Crafting	1216	1216	177x107	create:mechanical_crafter(Mechanical Crafter)
+  ~ create:automatic_shapeless
+      1.20.1: Automated Shapeless Crafting	376	376	177x85	create:mechanical_mixer(Mechanical Mixer),create:basin(Basin)
+      1.21.1: Automated Shapeless Crafting	396	396	177x85	create:mechanical_mixer(Mechanical Mixer),create:basin(Basin)
+  ~ create:block_cutting
+      1.20.1: Block Cutting	97	97	177x70	create:mechanical_saw(Mechanical Saw)
+      1.21.1: Block Cutting	108	108	177x70	create:mechanical_saw(Mechanical Saw)
+  ~ create:crushing
+      1.20.1: Crushing	145	145	177x100	create:crushing_wheel(Crushing Wheel)
+      1.21.1: Crushing	148	148	177x100	create:crushing_wheel(Crushing Wheel)
+  ~ create:deploying
+      1.20.1: Deploying	140	140	177x70	create:deployer(Deployer),create:depot(Depot),create:belt_connector(Mechanical Belt)
+      1.21.1: Deploying	198	198	177x70	create:deployer(Deployer),create:depot(Depot),create:belt_connector(Mechanical Belt)
+  ~ create:draining
+      1.20.1: Item Draining	143	143	177x50	create:item_drain(Item Drain)
+      1.21.1: Item Draining	15	15	177x50	create:item_drain(Item Drain)
+  ~ create:milling
+      1.20.1: Milling	63	63	177x53	create:millstone(Millstone)
+      1.21.1: Milling	66	66	177x53	create:millstone(Millstone)
+  ~ create:pressing
+      1.20.1: Pressing	11	11	177x70	create:mechanical_press(Mechanical Press)
+      1.21.1: Pressing	12	12	177x70	create:mechanical_press(Mechanical Press)
+  ~ create:spout_filling
+      1.20.1: Filling by Spout	193	193	177x70	create:spout(Spout)
+      1.21.1: Filling by Spout	65	65	177x70	create:spout(Spout)
+  ~ destroy:electrolysis
+      1.20.1: Electrolysis	24	24	177x85	destroy:dynamo(Dynamo),create:basin(Basin)
+      1.21.1: Electrolysis	27	27	177x85	destroy:dynamo(Dynamo),create:basin(Basin)
+  ~ destroy:potion_centrifugation
+      1.20.1: Potion Separation	112	112	120x115	destroy:centrifuge(Centrifuge)
+      1.21.1: Potion Separation	120	120	120x115	destroy:centrifuge(Centrifuge)
+  ~ minecraft:anvil
+      1.20.1: Anvil	826	826	125x38	minecraft:anvil(Anvil)
+      1.21.1: Anvil	874	874	125x38	minecraft:anvil(Anvil)
+  ~ minecraft:brewing
+      1.20.1: Brewing	230	230	114x61	minecraft:brewing_stand(Brewing Stand)
+      1.21.1: Brewing	250	250	114x61	minecraft:brewing_stand(Brewing Stand)
+  ~ minecraft:crafting
+      1.20.1: Crafting	1645	1645	116x54	minecraft:crafting_table(Crafting Table)
+      1.21.1: Crafting	1707	1707	116x54	minecraft:crafting_table(Crafting Table),minecraft:crafter(Crafter)
+  ~ minecraft:smithing
+      1.20.1: Smithing Table	31	31	108x28	minecraft:smithing_table(Smithing Table)
+      1.21.1: Smithing Table	33	33	108x28	minecraft:smithing_table(Smithing Table)
+  ~ minecraft:stonecutting
+      1.20.1: Stonecutting	525	525	82x34	minecraft:stonecutter(Stonecutter)
+      1.21.1: Stonecutting	590	590	82x34	minecraft:stonecutter(Stonecutter)
+  ~ minecraft:tag_recipes/block
+      1.20.1: Block Tags	323	323	142x110	
+      1.21.1: Block Tags	345	345	142x110	
+  ~ minecraft:tag_recipes/fluid
+      1.20.1: Fluid Tags	13	13	142x110	
+      1.21.1: Fluid Tags	16	16	142x110	
+  ~ minecraft:tag_recipes/item
+      1.20.1: Item Tags	436	436	142x110	
+      1.21.1: Item Tags	541	541	142x110	
+  ~ minecraft:tag_recipes/worldgen/biome
+      1.20.1: Worldgen/biome Tags	104	104	142x110	
+      1.21.1: Biome Tags	137	137	142x110	
