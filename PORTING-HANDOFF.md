@@ -332,6 +332,8 @@ Intended to be empty. Current entries:
   electroplating + Destroy's discs' tags). NeoForge puts every vanilla disc in it.
 - `FillMixedExplosiveItemRecipe.matches` passed `null` registries in 1.20.1; it passes the level's now
   (1.21 needs them to read the Item's explosive inventory). Same result.
+- Removed `client.MultiPlayerGameModeMixin` (1.20.1's workaround for NeoForge#143): NeoForge 21.1 contains the same
+  fix, so block-breaking behaves the same; the mixin crashed with Puzzles Lib (see hand-off #6 update).
 - **JEI recipe IDs:** JEI 19 shows `RecipeHolder`s. Datapack recipes keep their real IDs; JEI-only recipes built at
   runtime keep their 1.20.1 IDs where those were fixed (cartography table, disc electroplating, arc furnace
   blasting/smelting). The rest (extrusion, reactions, mutation, tapping, vat materials, explosives, potion

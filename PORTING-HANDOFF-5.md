@@ -6,6 +6,49 @@
 (pack rebuild + first server setup + boot-1/boot-2 crash root causes), then this.
 **Pull before starting.** Two humans: Azzie (Linux) and Maddie (Windows, git identity `Meowfoe`).
 
+## UPDATE 2026-10-22: client join crash with Destroy — FIXED (`1ee90b8d`)
+
+**Symptom (Maddie/Azzie's client log):** crash in `ClientPacketListener.handleLogin` when joining —
+`InvalidMixinException: PRIVATE @Overwrite method sameDestroyTarget in destroy.mixins.json:client.MultiPlayerGameModeMixin
+cannot reduce visibility of PUBLIC target method`.
+
+**Root cause:** Destroy's `client.MultiPlayerGameModeMixin` was a private `@Overwrite` of
+`MultiPlayerGameMode.sameDestroyTarget`, a temporary fix for NeoForge#143 marked "TODO remove in 1.21".
+**Puzzles Lib** (`puzzleslib-v21.1.64`, in the pack) has an access transformer making that method `public`, and
+Mixin refuses a private overwrite of a public method. The dev client never had Puzzles Lib, so it didn't show.
+Found by downloading all 116 pack jars and scanning their ATs/classes.
+
+**Fix:** mixin removed. NeoForge 21.1's own `sameDestroyTarget` already has the identical logic
+(`destroyingItem.shouldCauseBlockBreakReset(mainHandItem)`), so behaviour is unchanged.
+**Verified:** dev client + the pack's Puzzles Lib jar: old code reproduces the exact crash; fixed code joins the world,
+JEI starts, 0 ERROR/FATAL lines.
+**Audit of the same risk:** the pack's 88 access transformers were scanned against every Destroy `@Overwrite`
+target that isn't already public (`SequencedAssemblyRecipe.advance`, `FluidTankBlockEntity.createInventory`,
+`ValueSettingsPacket.applySettings`): no pack mod widens any of them. Re-run this scan if mods are added
+(any AT that makes an overwritten private/protected method public crashes the same way).
+
+**Also fixed (was in "Known non-fatal items"):** `CartographyTableScreenMixin`'s seismograph error sprite
+captured `renderBg` locals (changed in 1.21.1 → injection failed silently). Now drawn at the head of
+`renderResultingMap` (same Map data, same draw order). Plus a `pushPose` that should have been `popPose`
+after the seismograph preview.
+
+**Pack:** jar rebuilt into `dist/` (sha1 `6f49d09f0eee450aae7046ad717602f8d2a2b804`, 9393656 bytes; public raw URL
+verified serving it), audit `destroy` entry updated, `download_jars.py` / `depcheck_v2.py` (all required deps
+satisfied) / `build_packs.py` / `final_verify2.py` (index valid, doc ↔ index: no mismatches) re-run;
+`Maddiecraft-1.21.1-neoforge.mrpack` + prism zip + `modlist-1.21.1-neoforge-short.md` updated.
+`final_verify2` section 3 lists 10 mods with **newer** Modrinth releases than pinned (ambientsounds, jei — pinned
+on purpose —, puzzles-lib, sophisticated-backpacks/core, sound-physics-remastered, amendments, naturalist,
+fresh-animations, petrolpark) — not errors; not updated (needs the humans' call).
+
+**Server NOT updated** (the agent was not permitted to write to the box): `~/maddiecraft/mods/` still has the
+old jar (sha1 `614cfe42…`). The removed mixin is client-only, so the running server works with the fixed
+client as-is. To keep them identical at the next convenient restart: stop the server, then
+`scp -i ~/.ssh/netbox -o IdentitiesOnly=yes -P 22 dist/destroy-1.21.1-0.2.0.jar azziee@152.53.94.90:maddiecraft/mods/`
+and start it (runbook below). Don't overwrite the jar while the server runs.
+
+**Client update:** re-import the new `.mrpack` (or replace `mods/destroy-1.21.1-0.2.0.jar` with the new `dist/` jar —
+the old pack file's hash check will reject the new jar from the URL, so use the new pack file).
+
 ## Current state (2026-10-21 ~21:50 UTC): EVERYTHING IS UP
 
 - **Maddiecraft server RUNNING**: `152.53.94.90:25566` (NeoForge 21.1.262, **86 mods**,
@@ -270,3 +313,4 @@ yet another machine, re-verify those two counts before trusting anything.
 | `bc4b38e7` | Onion placeholder item `minecraft:onion` → `farmersdelight:onion` (vanilla has no onion); jar rebuilt; **server boot clean, recipe loads** |
 | *(this commit)* | PORTING-HANDOFF-5.md updated: client crash investigation (Tectonic/Lithostitched root cause), **Tectonic + Lithostitched + Apollib removed** from the pack (117 files, server 86 mods, fresh world, server up), Prism headless diagnosis, non-fatal log items (Destroy CartographyTableScreenMixin LVT, Estrogen model warnings) |
 | *(this commit)* | PORTING-HANDOFF-5.md (hand-off #6): server up on 25566 + voice 24455, 7 client-only mods moved off the server (DH crash fix), onion recipe final fix, packs rebuilt+verified |
+| `1ee90b8d` | Client join crash fix (Puzzles Lib vs Destroy's private `@Overwrite` of `sameDestroyTarget` — mixin removed, NeoForge has the fix) + cartography seismograph error sprite; jar rebuilt; pack files rebuilt |
