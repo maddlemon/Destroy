@@ -359,4 +359,5 @@ yet another machine, re-verify those two counts before trusting anything.
 | *(this commit)* | PORTING-HANDOFF-5.md (hand-off #6): server up on 25566 + voice 24455, 7 client-only mods moved off the server (DH crash fix), onion recipe final fix, packs rebuilt+verified |
 | `1ee90b8d` | Client join crash fix (Puzzles Lib vs Destroy's private `@Overwrite` of `sameDestroyTarget` — mixin removed, NeoForge has the fix) + cartography seismograph error sprite; jar rebuilt; pack files rebuilt |
 | *(this commit)* | Server updated to the fixed jar and restarted (pid 945822, Done, 0 errors) |
-\n| `2222b1fc` | Circuit patterns sent before recipes (first-join kick fix); Chunky client-unsupported in pack; jar + packs rebuilt; server: new jar, whitelist, RCON (nft-guarded), coalbot whitelist bot |\n
+
+| `2222b1fc` | Circuit patterns sent before recipes (first-join kick fix); Chunky client-unsupported in pack; jar + packs rebuilt; server: new jar, whitelist, RCON (nft-guarded), coalbot whitelist bot |
