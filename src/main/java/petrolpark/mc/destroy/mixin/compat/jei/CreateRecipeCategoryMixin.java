@@ -16,6 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import petrolpark.mc.destroy.DestroyFluids;
 import petrolpark.mc.destroy.chemistry.legacy.ClientMixture;
+import petrolpark.mc.destroy.chemistry.minecraft.MixtureFluid;
 import petrolpark.mc.destroy.util.DestroyLang;
 import petrolpark.mc.destroy.compat.jei.DestroyJEI;
 import petrolpark.mc.destroy.config.DestroyAllConfigs;
@@ -31,7 +32,7 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.crafting.Recipe;
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStack;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 @Mixin(value = CreateRecipeCategory.class, remap = false)
@@ -87,13 +88,12 @@ public abstract class CreateRecipeCategoryMixin<T extends Recipe<?>> {
             Component name = DestroyLang.translate("mixture.mixture").component();
             boolean iupac = DestroyAllConfigs.CLIENT.chemistry.iupacNames.get();
 
-            CompoundTag fluidTag = ((FluidStack) displayed.get()).getOrCreateTag();
             List<Component> mixtureTooltip = new ArrayList<>();
 
             if (view.getRole() == RecipeIngredientRole.INPUT || view.getRole() == RecipeIngredientRole.CATALYST) {
-                mixtureTooltip = DestroyLang.mixtureIngredientTooltip(fluidTag);
+                mixtureTooltip = DestroyLang.mixtureIngredientTooltip((FluidStack) displayed.get());
             } else if (view.getRole() == RecipeIngredientRole.OUTPUT) {
-                CompoundTag mixtureTag = fluidTag.getCompound("Mixture");
+                CompoundTag mixtureTag = MixtureFluid.getMixtureTag((FluidStack) displayed.get());
                 if (!mixtureTag.isEmpty()) {
                     ClientMixture mixture = ClientMixture.readNBT(ClientMixture::new, mixtureTag);
                     name = mixture.getName();

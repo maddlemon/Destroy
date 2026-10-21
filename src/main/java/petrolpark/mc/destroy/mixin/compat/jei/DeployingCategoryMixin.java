@@ -10,9 +10,11 @@ import com.simibubi.create.compat.jei.category.DeployingCategory;
 import com.simibubi.create.content.kinetics.deployer.DeployerApplicationRecipe;
 
 import mezz.jei.api.registration.IRecipeRegistration;
-import net.minecraft.tags.ItemTags;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.neoforge.common.Tags;
 
 @Mixin(DeployingCategory.class)
 public abstract class DeployingCategoryMixin extends CreateRecipeCategory<DeployerApplicationRecipe> {
@@ -24,6 +26,6 @@ public abstract class DeployingCategoryMixin extends CreateRecipeCategory<Deploy
     @Override
     public void registerRecipes(IRecipeRegistration registration) {
         super.registerRecipes(registration);
-        registration.addRecipes(getRecipeType(), ForgeRegistries.ITEMS.tags().getTag(ItemTags.MUSIC_DISCS).stream().filter(item -> !item.equals(DestroyItems.BLANK_MUSIC_DISC.get())).map(item -> DiscStampingRecipe.create(DiscStamperItem.of(new ItemStack(item)))).toList());
+        registration.addRecipes(getRecipeType(), BuiltInRegistries.ITEM.getTag(Tags.Items.MUSIC_DISCS).stream().flatMap(HolderSet.Named::stream).map(Holder::value).filter(item -> !item.equals(DestroyItems.BLANK_MUSIC_DISC.get())).map(item -> DiscStampingRecipe.create(DiscStamperItem.of(new ItemStack(item)))).toList());
     };
 };

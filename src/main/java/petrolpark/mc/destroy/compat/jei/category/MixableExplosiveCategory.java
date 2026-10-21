@@ -6,7 +6,6 @@ import java.util.Map.Entry;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import petrolpark.mc.library.compat.jei.category.PetrolparkRecipeCategory;
-import petrolpark.mc.destroy.Destroy;
 import petrolpark.mc.destroy.client.DestroyGuiTextures;
 import petrolpark.mc.destroy.compat.jei.DestroyJEI;
 import petrolpark.mc.destroy.core.explosion.mixedexplosive.ExplosiveProperties;
@@ -25,11 +24,12 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.ShapelessRecipe;
 
 public class MixableExplosiveCategory extends PetrolparkRecipeCategory<MixableExplosiveCategory.MixableExplosiveRecipe> {
     
-    public static RecipeType<MixableExplosiveRecipe> TYPE;
+    public static RecipeType<RecipeHolder<MixableExplosiveRecipe>> TYPE;
     
     public MixableExplosiveCategory(Info<MixableExplosiveRecipe> info, IJeiHelpers helpers) {
         super(info, helpers);
@@ -73,8 +73,6 @@ public class MixableExplosiveCategory extends PetrolparkRecipeCategory<MixableEx
     
     public static class MixableExplosiveRecipe extends ShapelessRecipe {
 
-        private static int id = 0;
-
         public final Item item;
         public final ExplosiveProperties properties;
 
@@ -83,7 +81,7 @@ public class MixableExplosiveCategory extends PetrolparkRecipeCategory<MixableEx
         };
 
         public MixableExplosiveRecipe(Item item, ExplosiveProperties properties) {
-            super(Destroy.asResource("explosive_properties_"+id++), "", CraftingBookCategory.MISC, ItemStack.EMPTY, NonNullList.create());
+            super("", CraftingBookCategory.MISC, ItemStack.EMPTY, NonNullList.create());
             this.item = item;
             this.properties = properties;
         };

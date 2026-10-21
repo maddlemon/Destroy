@@ -5,6 +5,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import petrolpark.mc.destroy.compat.jei.DestroyJEI;
 import petrolpark.mc.destroy.compat.jei.animation.AnimatedCooler;
 import petrolpark.mc.destroy.content.processing.centrifuge.potion.PotionFluidMixingRecipes;
 import petrolpark.mc.destroy.content.processing.cooler.CoolerBlockEntity.ColdnessLevel;
@@ -17,6 +18,7 @@ import com.simibubi.create.infrastructure.config.AllConfigs;
 
 import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.registration.IRecipeRegistration;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 
 @Mixin(MixingCategory.class)
@@ -55,7 +57,7 @@ public abstract class MixingCategoryMixin extends BasinCategory {
     public void registerRecipes(IRecipeRegistration registration) {
         super.registerRecipes(registration);
         if (AllConfigs.server().recipes.allowBrewingInMixer.get() && getRecipeType().getUid().equals(Create.asResource("automatic_brewing"))) {
-            registration.addRecipes(getRecipeType(), PotionFluidMixingRecipes.ALL.stream().map(recipe -> (BasinRecipe)recipe).toList());
+            registration.addRecipes(getRecipeType(), DestroyJEI.<BasinRecipe>holdersOf(PotionFluidMixingRecipes.getRecipes(Minecraft.getInstance().level)));
         };
     };
 };

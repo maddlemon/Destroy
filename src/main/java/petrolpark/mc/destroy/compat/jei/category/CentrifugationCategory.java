@@ -4,7 +4,7 @@ import petrolpark.mc.library.core.client.rendering.PetrolparkGuiTexture;
 import petrolpark.mc.library.compat.jei.category.PetrolparkRecipeCategory;
 import petrolpark.mc.destroy.compat.jei.animation.AnimatedCentrifuge;
 import petrolpark.mc.destroy.content.processing.centrifuge.CentrifugationRecipe;
-import com.simibubi.create.foundation.fluid.FluidIngredient;
+import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 import com.simibubi.create.foundation.gui.AllGuiTextures;
 
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
@@ -12,7 +12,7 @@ import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.helpers.IJeiHelpers;
 import mezz.jei.api.recipe.IFocusGroup;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 public class CentrifugationCategory extends PetrolparkRecipeCategory<CentrifugationRecipe> {
 
@@ -28,7 +28,7 @@ public class CentrifugationCategory extends PetrolparkRecipeCategory<Centrifugat
     @Override
     public void setRecipe(IRecipeLayoutBuilder builder, CentrifugationRecipe recipe, IFocusGroup focuses) {
 
-        FluidIngredient inputFluid = recipe.getFluidIngredients().iterator().next();
+        SizedFluidIngredient inputFluid = recipe.getFluidIngredients().iterator().next();
         FluidStack denseOutputFluid = recipe.getDenseOutputFluid();
         FluidStack lightOutputFluid = recipe.getLightOutputFluid();
 

@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.compat.jei.category;
 
+import java.util.Arrays;
 import java.util.List;
 
 import petrolpark.mc.library.compat.jei.category.PetrolparkRecipeCategory;
@@ -57,7 +58,7 @@ public class FlameRetardantApplicationCategory extends PetrolparkRecipeCategory<
 	public void draw(FlameRetardantApplicationRecipe recipe, IRecipeSlotsView iRecipeSlotsView, GuiGraphics graphics, double mouseX, double mouseY) {
 		AllGuiTextures.JEI_SHADOW.render(graphics, 62, 57);
 		AllGuiTextures.JEI_DOWN_ARROW.render(graphics, 126, 29);
-		spout.withFluids(recipe.getRequiredFluid().getMatchingFluidStacks()).draw(graphics, getBackground().getWidth() / 2 - 13, 22);
+		spout.withFluids(Arrays.asList(recipe.getRequiredFluid().getFluids())).draw(graphics, getBackground().getWidth() / 2 - 13, 22);
 	};
     
 };

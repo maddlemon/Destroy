@@ -1,7 +1,10 @@
 package petrolpark.mc.destroy.compat.jei.category;
 
+import net.neoforged.neoforge.common.Tags;
+import petrolpark.mc.destroy.Destroy;
 import petrolpark.mc.destroy.DestroyItems;
 import petrolpark.mc.destroy.DestroyRecipeTypes;
+import petrolpark.mc.destroy.compat.jei.DestroyJEI;
 import petrolpark.mc.destroy.compat.jei.animation.AnimatedDynamo;
 import petrolpark.mc.destroy.content.processing.discstamping.DiscElectroplatingRecipe;
 import com.simibubi.create.compat.jei.CreateJEI;
@@ -12,15 +15,18 @@ import mezz.jei.api.gui.ingredient.IRecipeSlotsView;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.registration.IRecipeRegistration;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.tags.ItemTags;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.world.item.crafting.RecipeHolder;
 
 public class ElectrolysisCategory extends BasinCategory {
 
     private final AnimatedDynamo dynamo;
 
-    protected final RecipeType<BasinRecipe> type;
+    protected final RecipeType<RecipeHolder<BasinRecipe>> type;
 
     public ElectrolysisCategory(Info<BasinRecipe> info) {
         super(info, false);
@@ -36,9 +42,9 @@ public class ElectrolysisCategory extends BasinCategory {
     @Override
     public void registerRecipes(IRecipeRegistration registration) {
         super.registerRecipes(registration);
-        CreateJEI.<DiscElectroplatingRecipe>consumeTypedRecipes(recipe -> {
-            if (recipe.original) registration.addRecipes(type, ForgeRegistries.ITEMS.tags().getTag(ItemTags.MUSIC_DISCS).stream().filter(item -> !item.equals(DestroyItems.BLANK_MUSIC_DISC.get())).map(
-                item -> recipe.copyWithDisc(new ItemStack(item))
+        CreateJEI.<DiscElectroplatingRecipe>consumeTypedRecipes(holder -> {
+            if (holder.value() instanceof DiscElectroplatingRecipe recipe && recipe.original) registration.addRecipes(type, BuiltInRegistries.ITEM.getTag(Tags.Items.MUSIC_DISCS).stream().flatMap(HolderSet.Named::stream).map(Holder::value).filter(item -> !item.equals(DestroyItems.BLANK_MUSIC_DISC.get())).map(
+                item -> DestroyJEI.holderOf(Destroy.asResource("disc_electroplating_"+Item.getId(item)), recipe.copyWithDisc(new ItemStack(item))) // ID as in 1.20.1
             ).toList());
         }, DestroyRecipeTypes.DISC_ELECTROPLATING.getType());
     };

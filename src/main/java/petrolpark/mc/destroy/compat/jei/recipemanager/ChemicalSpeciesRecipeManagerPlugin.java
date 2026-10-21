@@ -5,10 +5,12 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+import petrolpark.mc.destroy.DestroyDataComponentTypes;
 import petrolpark.mc.destroy.DestroyFluids;
 import petrolpark.mc.destroy.chemistry.legacy.LegacyFunctionalGroup;
 import petrolpark.mc.destroy.chemistry.legacy.LegacySpecies;
 import petrolpark.mc.destroy.chemistry.legacy.ReadOnlyMixture;
+import petrolpark.mc.destroy.chemistry.minecraft.MixtureFluid;
 import petrolpark.mc.destroy.compat.jei.DestroyJEI;
 import petrolpark.mc.destroy.compat.jei.MoleculeJEIIngredient;
 import petrolpark.mc.destroy.compat.jei.category.GenericReactionCategory;
@@ -23,8 +25,9 @@ import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.advanced.IRecipeManagerPlugin;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.crafting.Recipe;
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 public class ChemicalSpeciesRecipeManagerPlugin implements IRecipeManagerPlugin {
 
@@ -63,15 +66,16 @@ public class ChemicalSpeciesRecipeManagerPlugin implements IRecipeManagerPlugin 
         focus.checkedCast(NeoForgeTypes.FLUID_STACK).ifPresent(fluidFocus -> { // Check to see if it's a Fluid ingredient
             FluidStack fluidStack = fluidFocus.getTypedValue().getIngredient();
             if (!DestroyFluids.isMixture(fluidStack)) return;
-            MixtureFluidIngredientSubType<?> ingredientType = MixtureFluidIngredient.MIXTURE_FLUID_INGREDIENT_SUBTYPES.get(fluidStack.getOrCreateTag().getString("MixtureFluidIngredientSubtype"));
+            CompoundTag ingredientDisplayTag = fluidStack.getOrDefault(DestroyDataComponentTypes.MIXTURE_INGREDIENT_DISPLAY, new CompoundTag()); // Was the Fluid Stack's NBT in 1.20.1
+            MixtureFluidIngredientSubType<?> ingredientType = MixtureFluidIngredient.MIXTURE_FLUID_INGREDIENT_SUBTYPES.get(ingredientDisplayTag.getString("MixtureFluidIngredientSubtype"));
             
             Collection<LegacySpecies> molecules = List.of();
 
             //TODO replace with disambiguation page of all contained Molecules, rather than just include the uses/recipes of all component Molecules in one
             if (ingredientType != null) { // Mixture ingredients
-                molecules = ingredientType.getContainedMolecules(fluidStack.getOrCreateTag());
-            } else if (fluidStack.getOrCreateTag().contains("Mixture")) { // Mixture outputs
-                molecules = ReadOnlyMixture.readNBT(ReadOnlyMixture::new, fluidStack.getOrCreateChildTag("Mixture")).getContents(true);
+                molecules = ingredientType.getContainedMolecules(ingredientDisplayTag);
+            } else if (MixtureFluid.hasMixtureTag(fluidStack)) { // Mixture outputs
+                molecules = ReadOnlyMixture.readNBT(ReadOnlyMixture::new, MixtureFluid.getMixtureTag(fluidStack)).getContents(true);
             };
 
             molecules.forEach(molecule -> {
@@ -91,7 +95,7 @@ public class ChemicalSpeciesRecipeManagerPlugin implements IRecipeManagerPlugin 
                         molecule.getFunctionalGroups().forEach(group -> {
                             Optional.ofNullable((LegacyFunctionalGroup.groupTypesAndReactions.get(group.getType()))).ifPresent(set -> set.forEach(genericReaction -> {
                                 ReactionRecipe recipe = GenericReactionCategory.RECIPES.get(genericReaction);
-                                if (recipe != null) recipes.add((T)recipe);
+                                if (recipe != null) recipes.add((T)DestroyJEI.holderOf(recipe));
                             }));
                         });
                     }
@@ -99,7 +103,7 @@ public class ChemicalSpeciesRecipeManagerPlugin implements IRecipeManagerPlugin 
                     // Add Reaction Recipes
                     else if (recipeCategory instanceof ReactionCategory) {
                         molecule.getReactantReactions().forEach(reaction -> {
-                            Optional.ofNullable((T)(ReactionCategory.RECIPES.get(reaction.getReactionDisplayedInJEI()))).ifPresent(recipes::add);
+                            Optional.ofNullable(ReactionCategory.RECIPES.get(reaction.getReactionDisplayedInJEI())).ifPresent(recipe -> recipes.add((T)DestroyJEI.holderOf(recipe)));
                         }); // This is an unchecked conversion but I think it's fine
                     };
                     
@@ -108,7 +112,7 @@ public class ChemicalSpeciesRecipeManagerPlugin implements IRecipeManagerPlugin 
                     if (recipeUses != null) {
                         recipes.addAll(recipeUses.stream()
                             .filter(recipe -> recipe.getClass().equals(DestroyJEI.MIXTURE_APPLICABLE_RECIPE_TYPES.get(recipeCategory.getRecipeType()))) // Check for Recipes that match this category
-                            .map(recipe -> (T) recipe) // Cast these Recipes (unchecked conversion, but should be okay as we just checked the class)
+                            .map(recipe -> (T) DestroyJEI.holderOf(recipe)) // Cast these Recipes (unchecked conversion, but should be okay as we just checked the class)
                             .toList()
                         );
                     };
@@ -121,21 +125,21 @@ public class ChemicalSpeciesRecipeManagerPlugin implements IRecipeManagerPlugin 
                         molecule.getFunctionalGroups().forEach(group -> {
                             Optional.ofNullable((GenericReactionCategory.GROUP_RECIPES.get(group.getType()))).ifPresent(set -> set.forEach(genericReaction -> {
                                 ReactionRecipe recipe = GenericReactionCategory.RECIPES.get(genericReaction);
-                                if (recipe != null) recipes.add((T)recipe);
+                                if (recipe != null) recipes.add((T)DestroyJEI.holderOf(recipe));
                             }));
                         });
                     }
 
                     // Add Reaction Recipes
                     else if (recipeCategory instanceof ReactionCategory) molecule.getProductReactions().forEach(reaction -> {
-                        Optional.ofNullable((T)(ReactionCategory.RECIPES.get(reaction.getReactionDisplayedInJEI()))).ifPresent(recipes::add);
+                        Optional.ofNullable(ReactionCategory.RECIPES.get(reaction.getReactionDisplayedInJEI())).ifPresent(recipe -> recipes.add((T)DestroyJEI.holderOf(recipe)));
                     }); // This is an unchecked conversion but I think it's fine
                 
                     // Add non-Reaction Recipes
                     List<Recipe<?>> recipeProductions = DestroyJEI.MOLECULES_OUTPUT.get(molecule); // Recipes in which a Mixture containing this Molecule is produced
                     if (recipeProductions != null) recipes.addAll(recipeProductions.stream()
                         .filter(recipe -> recipe.getClass().equals(DestroyJEI.MIXTURE_APPLICABLE_RECIPE_TYPES.get(recipeCategory.getRecipeType()))) // Check for Recipes that match this category
-                        .map(recipe -> (T) recipe) // Cast these Recipes (unchecked conversion, but should be okay as we just checked the class)
+                        .map(recipe -> (T) DestroyJEI.holderOf(recipe)) // Cast these Recipes (unchecked conversion, but should be okay as we just checked the class)
                         .toList()
                     );
                     break;

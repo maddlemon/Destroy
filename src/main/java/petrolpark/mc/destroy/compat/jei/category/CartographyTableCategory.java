@@ -18,6 +18,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -26,23 +27,24 @@ import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.ShapelessRecipe;
 import net.minecraft.world.level.ItemLike;
+import net.minecraft.world.level.saveddata.maps.MapId;
 
 public class CartographyTableCategory extends PetrolparkRecipeCategory<CartographyTableCategory.CartographyTableRecipe> {
 
     private final Minecraft mc;
 
     private static final ResourceLocation seismographRecipeId = Destroy.asResource("seismograph");
-    private static final ResourceLocation scalingRecipeId = new ResourceLocation("scaling");
-    private static final ResourceLocation lockingRecipeId = new ResourceLocation("locking");
+    private static final ResourceLocation scalingRecipeId = ResourceLocation.withDefaultNamespace("scaling");
+    private static final ResourceLocation lockingRecipeId = ResourceLocation.withDefaultNamespace("locking");
 
     public static final List<CartographyTableRecipe> getAllRecipes() {
         ItemStack map = new ItemStack(Items.FILLED_MAP);
-        map.getOrCreateTag().putInt("map", 52);
+        map.set(DataComponents.MAP_ID, new MapId(52));
         ItemStack scaledMap = map.copy();
-        scaledMap.getOrCreateTag().putInt("map", 53);
+        scaledMap.set(DataComponents.MAP_ID, new MapId(53));
         return List.of(
             new CartographyTableRecipe(seismographRecipeId, DestroyItems.SEISMOGRAPH.asStack(), map, DestroyItems.SEISMOMETER),
-            new CartographyTableRecipe(new ResourceLocation("duplicating"), map.copyWithCount(2), map, Items.MAP),
+            new CartographyTableRecipe(ResourceLocation.withDefaultNamespace("duplicating"), map.copyWithCount(2), map, Items.MAP),
             new CartographyTableRecipe(scalingRecipeId, scaledMap, map, Items.PAPER),
             new CartographyTableRecipe(lockingRecipeId, map, map, Items.GLASS_PANE)
         );
@@ -62,14 +64,14 @@ public class CartographyTableCategory extends PetrolparkRecipeCategory<Cartograp
         builder.addSlot(RecipeIngredientRole.INPUT, 21, 2)
             .setBackground(getRenderedSlot(), -1, -1)
             .addIngredients(recipe.getIngredients().get(1))
-            .addRichTooltipCallback((view, tt) -> { if (recipe.getId().equals(seismographRecipeId)) tt.add(CreateLang.translateDirect("recipe.deploying.not_consumed").withStyle(ChatFormatting.GOLD)); });
+            .addRichTooltipCallback((view, tt) -> { if (recipe.id.equals(seismographRecipeId)) tt.add(CreateLang.translateDirect("recipe.deploying.not_consumed").withStyle(ChatFormatting.GOLD)); });
 
         builder.addSlot(RecipeIngredientRole.OUTPUT, 107, 2)
             .setBackground(getRenderedSlot(), -1, -1)
             .addItemStack(recipe.getResultItem(mc.level.registryAccess()))
             .addRichTooltipCallback((view, tt) -> {
-                if (recipe.getId().equals(scalingRecipeId)) tt.add(DestroyLang.translate("recipe.cartography_table.scaled").style(ChatFormatting.GOLD).component());
-                else if (recipe.getId().equals(lockingRecipeId)) tt.add(Component.translatable("filled_map.locked", 52).withStyle(ChatFormatting.GRAY));
+                if (recipe.id.equals(scalingRecipeId)) tt.add(DestroyLang.translate("recipe.cartography_table.scaled").style(ChatFormatting.GOLD).component());
+                else if (recipe.id.equals(lockingRecipeId)) tt.add(Component.translatable("filled_map.locked", 52).withStyle(ChatFormatting.GRAY));
             });
     };
 
@@ -80,8 +82,11 @@ public class CartographyTableCategory extends PetrolparkRecipeCategory<Cartograp
 
     public static class CartographyTableRecipe extends ShapelessRecipe {
 
+        public final ResourceLocation id; // Recipes knew their ID in 1.20.1
+
         public CartographyTableRecipe(ResourceLocation id, ItemStack result, ItemStack mapIngredient, ItemLike nonMapIngredient) {
-            super(id, "", CraftingBookCategory.MISC, result, NonNullList.of(Ingredient.EMPTY, Ingredient.of(mapIngredient), Ingredient.of(nonMapIngredient)));
+            super("", CraftingBookCategory.MISC, result, NonNullList.of(Ingredient.EMPTY, Ingredient.of(mapIngredient), Ingredient.of(nonMapIngredient)));
+            this.id = id;
         };
 
     };

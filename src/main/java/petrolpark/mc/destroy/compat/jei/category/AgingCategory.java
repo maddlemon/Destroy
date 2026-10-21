@@ -13,7 +13,7 @@ import petrolpark.mc.destroy.util.DestroyLang;
 import petrolpark.mc.destroy.compat.jei.animation.GUIBlockRenderer;
 import petrolpark.mc.destroy.content.processing.ageing.AgeingRecipe;
 import petrolpark.mc.destroy.content.processing.ageing.AgingBarrelBlock;
-import com.simibubi.create.foundation.fluid.FluidIngredient;
+import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
 import com.simibubi.create.foundation.gui.AllGuiTextures;
 import com.simibubi.create.foundation.item.ItemHelper;
 
@@ -50,7 +50,7 @@ public class AgingCategory extends PetrolparkRecipeCategory<AgeingRecipe> {
 		int i = 1; // Start at one as we automatically count the Fluid Input
 
         // Add the Fluid Ingredient
-        FluidIngredient fluidIngredient = recipe.getRequiredFluid();
+        SizedFluidIngredient fluidIngredient = recipe.getRequiredFluid();
         addFluidSlot(builder, xOffset, 33, fluidIngredient);
 
         // Add the Item Ingredient(s)

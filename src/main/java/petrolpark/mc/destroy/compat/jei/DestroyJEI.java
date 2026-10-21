@@ -2,8 +2,10 @@ package petrolpark.mc.destroy.compat.jei;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -86,13 +88,16 @@ import mezz.jei.api.registration.IRecipeRegistration;
 import mezz.jei.api.registration.ISubtypeRegistration;
 import mezz.jei.api.runtime.IJeiRuntime;
 import net.createmod.catnip.data.Pair;
+import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.level.Level;
 
 @JeiPlugin
 public class DestroyJEI implements IModPlugin {
@@ -118,6 +123,37 @@ public class DestroyJEI implements IModPlugin {
      * Whether Recipes have not yet been added to {@link DestroyJEI#MOLECULES_INPUT} and {@link DestroyJEI#MOLECULES_OUTPUT}.
      */
     public static boolean MOLECULE_RECIPES_NEED_PROCESSING = true;
+
+    /**
+     * The Recipe Holder of each Recipe shown in JEI. JEI 19 shows {@link RecipeHolder}s, but Destroy collects plain Recipes (1.20.1 Recipes knew their
+     * ID): Recipes the client's Recipe Manager knows get their real Holder; Recipes built at runtime (Extrusion, Reactions, examples...) get one
+     * with a made-up ID, which is kept so JEI always sees the same Holder.
+     */
+    private static final Map<Recipe<?>, RecipeHolder<?>> HOLDERS = new IdentityHashMap<>();
+    private static Collection<RecipeHolder<?>> indexedRecipes = null;
+    private static int generatedIds = 0;
+
+    @SuppressWarnings("unchecked")
+    public static <R extends Recipe<?>> RecipeHolder<R> holderOf(R recipe) {
+        final Level level = Minecraft.getInstance().level;
+        if (level != null && level.getRecipeManager().getRecipes() != indexedRecipes) { // (Re)index the Recipe Manager's Recipes when they change
+            indexedRecipes = level.getRecipeManager().getRecipes();
+            for (RecipeHolder<?> holder : indexedRecipes) HOLDERS.put(holder.value(), holder);
+        };
+        return (RecipeHolder<R>)HOLDERS.computeIfAbsent(recipe, r -> new RecipeHolder<>(Destroy.asResource("jei_generated_" + generatedIds++), r));
+    };
+
+    /**
+     * Like {@link DestroyJEI#holderOf(Recipe)}, for runtime-built Recipes which know their ID.
+     */
+    @SuppressWarnings("unchecked")
+    public static <R extends Recipe<?>> RecipeHolder<R> holderOf(ResourceLocation id, R recipe) {
+        return (RecipeHolder<R>)HOLDERS.computeIfAbsent(recipe, r -> new RecipeHolder<>(id, r));
+    };
+
+    public static <R extends Recipe<?>> List<RecipeHolder<R>> holdersOf(Collection<? extends R> recipes) {
+        return recipes.stream().<RecipeHolder<R>>map(DestroyJEI::holderOf).toList();
+    };
 
     private static final List<CreateRecipeCategory<?>> allCategories = new ArrayList<>();
 
@@ -146,7 +182,7 @@ public class DestroyJEI implements IModPlugin {
             .build("centrifugation", CentrifugationCategory::new),
 
         potion_centrifugation = builder(CentrifugationRecipe.class)
-            .addRecipes(() -> PotionSeparationRecipes.ALL.values())
+            .addRecipes(() -> holdersOf(PotionSeparationRecipes.getRecipes(Minecraft.getInstance().level).values()))
             .enableIfCreateConfig(c -> c.allowBrewingInMixer)
             .catalyst(DestroyBlocks.CENTRIFUGE::get)
             .doubleItemIcon(DestroyBlocks.CENTRIFUGE.get(), Items.BREWING_STAND)
@@ -169,14 +205,14 @@ public class DestroyJEI implements IModPlugin {
             .build("distillation", DistillationCategory::new),
 
         extrusion = builder(ExtrusionRecipe.class)
-            .addRecipes(() -> ExtrusionRecipe.RECIPES)
+            .addRecipes(() -> holdersOf(ExtrusionRecipe.RECIPES))
             .catalyst(DestroyBlocks.EXTRUSION_DIE::get)
             .itemIcon(DestroyBlocks.EXTRUSION_DIE.get())
             .emptyBackground(177, 55)
             .build("extrusion", ExtrusionCategory::new),
         
         mutation = builder(PhytominingRecipe.class)
-            .addRecipes(() -> MutationCategory.RECIPES)
+            .addRecipes(() -> holdersOf(MutationCategory.RECIPES))
             .catalyst(DestroyItems.HYPERACCUMULATING_FERTILIZER::get)
             .itemIcon(DestroyItems.HYPERACCUMULATING_FERTILIZER.get())
             .emptyBackground(120, 125)
@@ -189,7 +225,7 @@ public class DestroyJEI implements IModPlugin {
             .build("obliteration", ObliterationCategory::new),
 
         reaction = builder(ReactionRecipe.class)
-            .addRecipes(ReactionCategory.RECIPES::values)
+            .addRecipes(() -> holdersOf(ReactionCategory.RECIPES.values()))
             // Doesn't accept Mixtures as Reactions involve Molecules, not Mixtures.
             .reactionCatalysts()
             .itemIcon(DestroyItems.MOLECULE_DISPLAY.get())
@@ -197,7 +233,7 @@ public class DestroyJEI implements IModPlugin {
             .build("reaction", ReactionCategory::new),
 
         genericReaction = builder(GenericReactionRecipe.class)
-            .addRecipes(GenericReactionCategory.RECIPES::values)
+            .addRecipes(() -> holdersOf(GenericReactionCategory.RECIPES.values()))
             // Doesn't accept Mixtures as Generic Reactions involve Molecules, not Mixtures.
             .reactionCatalysts()
             .itemIcon(DestroyItems.MOLECULE_DISPLAY.get())
@@ -214,7 +250,7 @@ public class DestroyJEI implements IModPlugin {
             .build("electrolysis", (info, helpers) -> new ElectrolysisCategory(info)),
 
         tapping = builder(TappingRecipe.class)
-            .addRecipes(() -> TappingCategory.RECIPES)
+            .addRecipes(() -> holdersOf(TappingCategory.RECIPES))
             .acceptsMixtures()
             .catalyst(DestroyBlocks.TREE_TAP::get)
             .itemIcon(DestroyBlocks.TREE_TAP.get())
@@ -229,21 +265,21 @@ public class DestroyJEI implements IModPlugin {
             .build("mixture_conversion", MixtureConversionCategory::new),
 
         cartography_table = builder(CartographyTableRecipe.class)
-            .addRecipes(CartographyTableCategory::getAllRecipes)
+            .addRecipes(() -> CartographyTableCategory.getAllRecipes().stream().map(r -> holderOf(r.id, r)).toList())
             .catalyst(() -> Items.CARTOGRAPHY_TABLE)
             .itemIcon(Items.CARTOGRAPHY_TABLE)
             .emptyBackground(125, 20)
             .build("cartography_table", CartographyTableCategory::new),
 
         vat_material = builder(VatMaterialRecipe.class)
-            .addRecipes(VatMaterialCategory::getAllRecipes)
+            .addRecipes(() -> holdersOf(VatMaterialCategory.getAllRecipes()))
             .catalyst(DestroyBlocks.VAT_CONTROLLER::get)
             .itemIcon(DestroyBlocks.VAT_CONTROLLER.get())
             .emptyBackground(180, 83)
             .build("vat_material", VatMaterialCategory::new),
 
         mixable_explosive = builder(MixableExplosiveRecipe.class)
-            .addRecipes(MixableExplosiveCategory::getAllRecipes)
+            .addRecipes(() -> holdersOf(MixableExplosiveCategory.getAllRecipes()))
             .catalysts(DestroyJEISetup.CUSTOM_MIX_EXPLOSIVES)
             .doubleItemIcon(MixedExplosiveBlockItem::getExampleItemStack, () -> new ItemStack(Items.GUNPOWDER))
             .emptyBackground(180, 121)
@@ -436,9 +472,9 @@ public class DestroyJEI implements IModPlugin {
 
     private static List<IJeiAnvilRecipe> getAnvilRepairs(IRecipeRegistration registration) {
         List<Pair<Item, Ingredient>> repairables = List.of(
-            Pair.of(DestroyItems.HAZMAT_SUIT.get(), DestroyArmorMaterials.HAZMAT.getRepairIngredient()),
-            Pair.of(DestroyItems.HAZMAT_LEGGINGS.get(), DestroyArmorMaterials.HAZMAT.getRepairIngredient()),
-            Pair.of(DestroyItems.WELLINGTON_BOOTS.get(), DestroyArmorMaterials.HAZMAT.getRepairIngredient()),
+            Pair.of(DestroyItems.HAZMAT_SUIT.get(), DestroyArmorMaterials.HAZMAT.value().repairIngredient().get()),
+            Pair.of(DestroyItems.HAZMAT_LEGGINGS.get(), DestroyArmorMaterials.HAZMAT.value().repairIngredient().get()),
+            Pair.of(DestroyItems.WELLINGTON_BOOTS.get(), DestroyArmorMaterials.HAZMAT.value().repairIngredient().get()),
 
             Pair.of(DestroyItems.GAS_MASK.get(), DestroyItems.GAS_MASK.get().getRepairIngredient()),
             Pair.of(DestroyItems.PAPER_MASK.get(), DestroyItems.PAPER_MASK.get().getRepairIngredient()),
