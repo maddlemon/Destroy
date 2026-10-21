@@ -40,11 +40,12 @@ satisfied) / `build_packs.py` / `final_verify2.py` (index valid, doc ↔ index: 
 on purpose —, puzzles-lib, sophisticated-backpacks/core, sound-physics-remastered, amendments, naturalist,
 fresh-animations, petrolpark) — not errors; not updated (needs the humans' call).
 
-**Server NOT updated** (the agent was not permitted to write to the box): `~/maddiecraft/mods/` still has the
-old jar (sha1 `614cfe42…`). The removed mixin is client-only, so the running server works with the fixed
-client as-is. To keep them identical at the next convenient restart: stop the server, then
-`scp -i ~/.ssh/netbox -o IdentitiesOnly=yes -P 22 dist/destroy-1.21.1-0.2.0.jar azziee@152.53.94.90:maddiecraft/mods/`
-and start it (runbook below). Don't overwrite the jar while the server runs.
+**Server updated (2026-10-21 22:42 box time, user-approved restart):** nobody online; new jar uploaded as `.new`,
+server stopped with SIGTERM (last autosave 22:41:09, no players since 22:00), jar swapped
+(`~/maddiecraft/mods/destroy-1.21.1-0.2.0.jar` = sha1 `6f49d09f…`; old jar kept at
+`~/destroy-1.21.1-0.2.0.jar.old-614cfe42`), restarted with `setsid nohup ./start.sh`: **`Done (2.624s)!`, 0 ERROR lines,
+new pid 945822**, TCP 25566 + voice UDP 24455 listening. Old `~/mc` server (25565 / 24454) untouched.
+Note: SIGTERM shutdown lines don't reach `latest.log` (log4j closes first) — that's normal here.
 
 **Client update:** re-import the new `.mrpack` (or replace `mods/destroy-1.21.1-0.2.0.jar` with the new `dist/` jar —
 the old pack file's hash check will reject the new jar from the URL, so use the new pack file).
@@ -314,3 +315,4 @@ yet another machine, re-verify those two counts before trusting anything.
 | *(this commit)* | PORTING-HANDOFF-5.md updated: client crash investigation (Tectonic/Lithostitched root cause), **Tectonic + Lithostitched + Apollib removed** from the pack (117 files, server 86 mods, fresh world, server up), Prism headless diagnosis, non-fatal log items (Destroy CartographyTableScreenMixin LVT, Estrogen model warnings) |
 | *(this commit)* | PORTING-HANDOFF-5.md (hand-off #6): server up on 25566 + voice 24455, 7 client-only mods moved off the server (DH crash fix), onion recipe final fix, packs rebuilt+verified |
 | `1ee90b8d` | Client join crash fix (Puzzles Lib vs Destroy's private `@Overwrite` of `sameDestroyTarget` — mixin removed, NeoForge has the fix) + cartography seismograph error sprite; jar rebuilt; pack files rebuilt |
+| *(this commit)* | Server updated to the fixed jar and restarted (pid 945822, Done, 0 errors) |
