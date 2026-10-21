@@ -216,7 +216,8 @@ machine) and Maddie (Windows, git identity `Meowfoe`). **Pull before starting.**
 
 ### Next
 
-1. **Azzie tests `dist/destroy-1.21.1-0.2.0.jar` in a real client** (with JEI): JEI categories render,
+1. **Azzie tests `dist/destroy-1.21.1-0.2.0.jar` in a real client — full checklist, setup and what to report in
+   `TESTING-HANDOFF.md`.** Covers: JEI categories render,
    molecule ingredients, mixture fluid subtypes/tooltips, recipe book slots, ghost ingredients on the Redstone
    Programmer screen, extended inventory + its JEI handler, pollution / seismology (the reworked steps 3–4).
 2. Then step 8/9 per `PORTING-HANDOFF.md` (dedicated server test; datagen note: `runData` fails loot validation

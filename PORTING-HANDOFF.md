@@ -27,6 +27,9 @@ Library to the pack.
 
 ## START HERE — current state and next steps
 
+> **Newer state:** see `PORTING-HANDOFF-3.md` (steps 1–7 done, JEI included) and `TESTING-HANDOFF.md`
+> (in-game test checklist). The section below is the state at hand-off #2.
+
 **State:** compile has **567 javac errors**. Steps 1–4 (recipes, packets, pollution / crude oil / seismology,
 item capabilities + NBT) are done at the code level — the only errors left in their files depend on later steps
 (see each step's status). Next: step 5 (remaining API changes).
