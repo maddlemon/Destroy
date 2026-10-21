@@ -1,0 +1,287 @@
+# Visual checks: JEI categories, recipe lookups, Ponder, inventory, placed blocks
+newworld visual
+waitworld
+cmd gamerule doDaylightCycle false
+cmd time set noon
+cmd gamerule doWeatherCycle false
+cmd weather clear
+cmd gamerule doMobSpawning false
+wait 20
+jei_cat destroy:aging
+wait 15
+shot jei_cat_aging
+close
+jei_cat destroy:arc_furnace
+wait 15
+shot jei_cat_arc_furnace
+close
+jei_cat destroy:arc_furnace_blasting
+wait 15
+shot jei_cat_arc_furnace_blasting
+close
+jei_cat destroy:arc_furnace_smelting
+wait 15
+shot jei_cat_arc_furnace_smelting
+close
+jei_cat destroy:cartography_table
+wait 15
+shot jei_cat_cartography_table
+close
+jei_cat destroy:centrifugation
+wait 15
+shot jei_cat_centrifugation
+close
+jei_cat destroy:charging
+wait 15
+shot jei_cat_charging
+close
+jei_cat destroy:distillation
+wait 15
+shot jei_cat_distillation
+close
+jei_cat destroy:electrolysis
+wait 15
+shot jei_cat_electrolysis
+close
+jei_cat destroy:element_tank_filling
+wait 15
+shot jei_cat_element_tank_filling
+close
+jei_cat destroy:extrusion
+wait 15
+shot jei_cat_extrusion
+close
+jei_cat destroy:fireproofing
+wait 15
+shot jei_cat_fireproofing
+close
+jei_cat destroy:generic_reaction
+wait 15
+shot jei_cat_generic_reaction
+close
+jei_cat destroy:glassblowing
+wait 15
+shot jei_cat_glassblowing
+close
+jei_cat destroy:mixable_explosive
+wait 15
+shot jei_cat_mixable_explosive
+close
+jei_cat destroy:mixture_conversion
+wait 15
+shot jei_cat_mixture_conversion
+close
+jei_cat destroy:mutation
+wait 15
+shot jei_cat_mutation
+close
+jei_cat destroy:obliteration
+wait 15
+shot jei_cat_obliteration
+close
+jei_cat destroy:potion_centrifugation
+wait 15
+shot jei_cat_potion_centrifugation
+close
+jei_cat destroy:reaction
+wait 15
+shot jei_cat_reaction
+close
+jei_cat destroy:sieving
+wait 15
+shot jei_cat_sieving
+close
+jei_cat destroy:tapping
+wait 15
+shot jei_cat_tapping
+close
+jei_cat destroy:vat_material
+wait 15
+shot jei_cat_vat_material
+close
+jei_cat create:sequenced_assembly
+wait 15
+shot jei_create_sequenced_assembly
+close
+jei_cat create:mixing
+wait 15
+shot jei_create_mixing
+close
+jei_cat create:deploying
+wait 15
+shot jei_create_deploying
+close
+jei_cat create:spout_filling
+wait 15
+shot jei_create_spout_filling
+close
+jei_r destroy:blacklight
+wait 15
+shot jei_r_blacklight
+close
+jei_u destroy:centrifuge
+wait 15
+shot jei_u_centrifuge
+close
+jei_u destroy:vat_controller
+wait 15
+shot jei_u_vat_controller
+close
+ponder destroy:vat_controller
+wait 60
+shot ponder_vat_controller
+close
+ponder destroy:centrifuge
+wait 60
+shot ponder_centrifuge
+close
+ponder destroy:dynamo
+wait 60
+shot ponder_dynamo
+close
+inv
+wait 15
+shot creative_inventory
+close
+cmd fill -2 -60 -10 40 -40 40 air
+hud off
+cmd setblock 0 -60 0 destroy:aging_barrel
+cmd setblock 3 -60 0 destroy:blowpipe
+cmd setblock 6 -60 0 destroy:bubble_cap
+cmd setblock 9 -60 0 destroy:catalytic_converter
+cmd setblock 12 -60 0 destroy:centrifuge
+cmd setblock 15 -60 0 destroy:colorimeter
+cmd setblock 18 -60 0 destroy:cooler
+cmd setblock 21 -60 0 destroy:creative_pump
+cmd setblock 24 -60 0 destroy:custom_explosive_mix
+cmd setblock 27 -60 0 destroy:dynamo
+cmd setblock 0 -60 4 destroy:element_tank
+cmd setblock 3 -60 4 destroy:extrusion_die
+cmd setblock 6 -60 4 destroy:keypunch
+cmd setblock 9 -60 4 destroy:measuring_cylinder
+cmd setblock 12 -60 4 destroy:mechanical_sieve
+cmd setblock 15 -60 4 destroy:pollutometer
+cmd setblock 18 -60 4 destroy:pumpjack
+cmd setblock 21 -60 4 destroy:redstone_programmer
+cmd setblock 24 -60 4 destroy:siphon
+cmd setblock 27 -60 4 destroy:test_tube_rack
+cmd setblock 0 -60 8 destroy:tree_tap
+cmd setblock 3 -60 8 destroy:vat_controller
+cmd setblock 6 -60 8 destroy:blacklight
+cmd setblock 9 -60 8 destroy:beaker
+cmd setblock 12 -60 8 destroy:round_bottomed_flask
+cmd setblock 15 -60 8 destroy:anfo_block
+cmd setblock 18 -60 8 destroy:cordite
+cmd setblock 21 -60 8 destroy:dynamite_block
+cmd setblock 24 -60 8 destroy:nitrocellulose_block
+cmd setblock 27 -60 8 destroy:picric_acid_block
+cmd setblock 0 -60 12 destroy:carbon_fiber_block
+cmd setblock 3 -60 12 destroy:fluorite_block
+cmd setblock 6 -60 12 destroy:raw_nickel_block
+cmd setblock 9 -60 12 destroy:chromium_block
+cmd setblock 12 -60 12 destroy:iodine_block
+cmd setblock 15 -60 12 destroy:nether_crocoite_block
+cmd setblock 18 -60 12 destroy:nickel_block
+cmd setblock 21 -60 12 destroy:palladium_block
+cmd setblock 24 -60 12 destroy:platinum_block
+cmd setblock 27 -60 12 destroy:rhodium_block
+cmd setblock 0 -60 16 destroy:lead_block
+cmd setblock 3 -60 16 destroy:stainless_steel_block
+cmd setblock 6 -60 16 destroy:chiseled_rhodium_block
+cmd setblock 9 -60 16 destroy:fluorite_ore
+cmd setblock 12 -60 16 destroy:deepslate_fluorite_ore
+cmd setblock 15 -60 16 destroy:end_fluorite_ore
+cmd setblock 18 -60 16 destroy:nickel_ore
+cmd setblock 21 -60 16 destroy:deepslate_nickel_ore
+cmd setblock 24 -60 16 destroy:nether_crocoite_ore
+cmd setblock 27 -60 16 destroy:magic_beetroot_shoots
+cmd setblock 0 -60 20 destroy:golden_carrots
+cmd setblock 3 -60 20 destroy:hefty_beetroot
+cmd setblock 6 -60 20 destroy:coal_infused_beetroot
+cmd setblock 9 -60 20 destroy:copper_infused_beetroot
+cmd setblock 12 -60 20 destroy:diamond_infused_beetroot
+cmd setblock 15 -60 20 destroy:emerald_infused_beetroot
+cmd setblock 18 -60 20 destroy:fluorite_infused_beetroot
+cmd setblock 21 -60 20 destroy:gold_infused_beetroot
+cmd setblock 24 -60 20 destroy:iron_infused_beetroot
+cmd setblock 27 -60 20 destroy:lapis_infused_beetroot
+cmd setblock 0 -60 24 destroy:nickel_infused_beetroot
+cmd setblock 3 -60 24 destroy:nether_crocoite_infused_beetroot
+cmd setblock 6 -60 24 destroy:quartz_infused_beetroot
+cmd setblock 9 -60 24 destroy:redstone_infused_beetroot
+cmd setblock 12 -60 24 destroy:zinc_infused_beetroot
+cmd setblock 15 -60 24 destroy:hydrogen_periodic_table_block
+cmd setblock 18 -60 24 destroy:carbon_periodic_table_block
+cmd setblock 21 -60 24 destroy:nitrogen_periodic_table_block
+cmd setblock 24 -60 24 destroy:oxygen_periodic_table_block
+cmd setblock 27 -60 24 destroy:fluorine_periodic_table_block
+cmd setblock 0 -60 28 destroy:chlorine_periodic_table_block
+cmd setblock 3 -60 28 destroy:chromium_periodic_table_block
+cmd setblock 6 -60 28 destroy:iron_periodic_table_block
+cmd setblock 9 -60 28 destroy:nickel_periodic_table_block
+cmd setblock 12 -60 28 destroy:copper_periodic_table_block
+cmd setblock 15 -60 28 destroy:zinc_periodic_table_block
+cmd setblock 18 -60 28 destroy:rhodium_periodic_table_block
+cmd setblock 21 -60 28 destroy:palladium_periodic_table_block
+cmd setblock 24 -60 28 destroy:iodine_periodic_table_block
+cmd setblock 27 -60 28 destroy:platinum_periodic_table_block
+cmd setblock 0 -60 32 destroy:gold_periodic_table_block
+cmd setblock 3 -60 32 destroy:mercury_periodic_table_block
+cmd setblock 6 -60 32 destroy:lead_periodic_table_block
+cmd setblock 9 -60 32 destroy:mashed_potato_block
+cmd setblock 12 -60 32 destroy:raw_fries_block
+cmd setblock 15 -60 32 destroy:fiberglass_block
+cmd setblock 18 -60 32 destroy:borosilicate_glass
+cmd setblock 21 -60 32 destroy:plywood
+cmd setblock 24 -60 32 destroy:unvarnished_plywood
+cmd setblock 27 -60 32 destroy:molten_stainless_steel
+cmd setblock 0 -60 36 destroy:molten_borosilicate_glass
+cmd setblock 3 -60 36 destroy:stainless_steel_rods_block
+cmd setblock 6 -60 36 destroy:borosilicate_glass_fiber
+cmd setblock 9 -60 36 destroy:cordite_block
+cmd setblock 12 -60 36 destroy:insulated_stainless_steel_block
+cmd setblock 15 -60 36 destroy:extruded_cordite_block
+cmd setblock 18 -60 36 destroy:clay_monolith
+cmd setblock 21 -60 36 destroy:ceramic_monolith
+wait 10
+cmd tp @s 13.5 -57 -6.5 0 22
+wait 40
+shot blocks_row00
+wait 10
+cmd tp @s 13.5 -57 -2.5 0 22
+wait 40
+shot blocks_row01
+wait 10
+cmd tp @s 13.5 -57 1.5 0 22
+wait 40
+shot blocks_row02
+wait 10
+cmd tp @s 13.5 -57 5.5 0 22
+wait 40
+shot blocks_row03
+wait 10
+cmd tp @s 13.5 -57 9.5 0 22
+wait 40
+shot blocks_row04
+wait 10
+cmd tp @s 13.5 -57 13.5 0 22
+wait 40
+shot blocks_row05
+wait 10
+cmd tp @s 13.5 -57 17.5 0 22
+wait 40
+shot blocks_row06
+wait 10
+cmd tp @s 13.5 -57 21.5 0 22
+wait 40
+shot blocks_row07
+wait 10
+cmd tp @s 13.5 -57 25.5 0 22
+wait 40
+shot blocks_row08
+wait 10
+cmd tp @s 13.5 -57 29.5 0 22
+wait 40
+shot blocks_row09
+hud on
+quit

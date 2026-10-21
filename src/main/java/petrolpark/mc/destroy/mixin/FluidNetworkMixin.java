@@ -17,7 +17,7 @@ public class FluidNetworkMixin {
             at=@At(
                     value="INVOKE",
                     ordinal=0,
-                    target="Lnet/neoforged/neoforge/fluids/FluidStack;isFluidEqual(Lnet/neoforged/neoforge/fluids/FluidStack;)Z"
+                    target="Lnet/neoforged/neoforge/fluids/FluidStack;isSameFluidSameComponents(Lnet/neoforged/neoforge/fluids/FluidStack;Lnet/neoforged/neoforge/fluids/FluidStack;)Z"
             ),
             remap=false
     )

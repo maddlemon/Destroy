@@ -37,7 +37,6 @@
         "FilterItemStackMixin",
         "FlaggableItemsMixin",
         "FluidNetworkMixin",
-        "FluidPropagatorMixin",
         "FluidTankBlockEntityMixin",
         "FluidTankMountedStorageHandlerMixin",
         "GenericItemFillingMixin",

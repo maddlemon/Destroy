@@ -131,14 +131,19 @@ public class DestroyTags {
         GREENHOUSE_GAS,
         RADIOACTIVE,
         COOLANT,
-        CRUDE_OIL,
-        URINE,
-        APPLE_JUICE;
+        // Common tags, so other mods' fluids work in Destroy's recipes and vice versa (forge:* in 1.20.1)
+        CRUDE_OIL(true),
+        URINE(true),
+        APPLE_JUICE(true);
 
         public final TagKey<Fluid> tag;
 
         Fluids() {
-			tag = TagKey.create(Registries.FLUID, Destroy.asResource(Lang.asId(name())));
+            this(false);
+        };
+
+        Fluids(boolean common) {
+			tag = TagKey.create(Registries.FLUID, common ? ResourceLocation.fromNamespaceAndPath("c", Lang.asId(name())) : Destroy.asResource(Lang.asId(name())));
         };
 
         @SuppressWarnings("deprecation") // Create does it therefore so can I

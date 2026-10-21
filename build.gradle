@@ -104,6 +104,7 @@ repositories {
     maven { url = "https://maven.createmod.net" } // Ponder, Flywheel, Create
     maven { url = "https://mvn.devos.one/snapshots" } // Registrate
     maven { url = "https://maven.blamejared.com" } // JEI
+    maven { url = "https://maven.theillusivec4.top/" } // Curios
     exclusiveContent {
         forRepository {
             maven {
@@ -137,6 +138,9 @@ dependencies {
     implementation("maven.modrinth:pquality:${pquality_version}")
     // JEI
     implementation("mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}")
+
+    // Curios: only exercised at runtime (DestroyCurios goes through the library's PetrolparkCurios)
+    localRuntime("top.theillusivec4.curios:curios-neoforge:${curios_version}")
 
     // Compile-only compat target (compat.farmersdelight mixins are skipped by DestroyMixinPlugin when the mod is absent).
     // The Sodium/Embeddium mixins target classes by name, so those mods aren't needed to compile.
@@ -203,4 +207,28 @@ tasks.withType(Copy) {
 tasks.withType(Javadoc).configureEach {
     failOnError = false
     options.addStringOption('Xdoclint:none', '-quiet')
+}
+
+// Dev-only scripted test client (src/autotest), never part of the jar. Run with
+// ./gradlew runAutotestClient -Pautotest -PautotestScript=<absolute path to script>
+if (project.hasProperty('autotest')) {
+    sourceSets.create('autotest')
+    configurations {
+        autotestCompileClasspath.extendsFrom compileClasspath
+        autotestRuntimeClasspath.extendsFrom runtimeClasspath
+    }
+    dependencies { autotestImplementation sourceSets.main.output }
+    neoForge {
+        mods { destroytest { sourceSet(sourceSets.autotest) } }
+        runs {
+            autotestClient {
+                client()
+                sourceSet = sourceSets.autotest
+                gameDirectory = file('run-autotest')
+                systemProperty 'destroytest.script', project.findProperty('autotestScript') ?: ''
+                programArguments.addAll('--width', '1280', '--height', '720')
+                logLevel = org.slf4j.event.Level.INFO
+            }
+        }
+    }
 }

@@ -1,0 +1,8 @@
+modLoader="javafml"
+loaderVersion="[4,)"
+license="All Rights Reserved"
+
+[[mods]]
+modId="destroytest"
+version="1"
+displayName="Destroy port test driver (dev only)"

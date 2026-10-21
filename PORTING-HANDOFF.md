@@ -297,6 +297,19 @@ Intended to be empty. Current entries:
 - **Bug fix (author code):** the Fill / Complete Seismograph advancements compared the discovered rows and columns
   with `Byte.MAX_VALUE` (7 bits), so they could never trigger; now all 8 bits, as 1.20.1.
 - Pollution Type names: `pollution_type.destroy.*` lang keys added (same English names as 1.20.1).
+- **Weak-glass Vat material** lists the 14 vanilla stained glasses by id (1.20.1 used `#forge:glass/<colour>`,
+  which NeoForge 1.21 doesn't have; `#c:glass_blocks` would also have matched tinted / borosilicate glass and
+  fiberglass, which have their own, stronger materials). Same blocks as 1.20.1 unless another mod added to the
+  Forge colour tags.
+- **Upstream (Create 6.0.10), not Destroy:** Create's own recipes use the broad `#c:glass_blocks`, so Borosilicate
+  Glass and Fiberglass (in that tag, as they were in `#forge:glass`) show up in e.g. Create's fan-washing and
+  mechanical-crafting glass ingredients.
+- **New 1.21 vanilla content flows through:** Disc stamping / electroplating covers the three new music discs and
+  Potion Separation the four new potions (8 recipes), because both are generated from tags / the registry.
+- **Workaround for a library bug:** Petrolpark's Library 1.5.11 lists `petrolpark:flagged_kinetic_blocks` in
+  `global_loot_modifiers.json` but ships the file as `contaminated_kinetic_blocks.json`, so flags on broken Create
+  kinetic blocks were lost (1.20.1 kept them). Destroy ships `data/petrolpark/loot_modifiers/flagged_kinetic_blocks.json`;
+  harmless once the library is fixed.
 
 - **Bug fix:** `ExtendedBasinBehaviour` wrote `"EvaporatedFluid"` but read `"EvaporatedFluidStack"`,
   so a basin's evaporated fluid was lost on reload. Now reads the key it writes.
@@ -334,8 +347,10 @@ Intended to be empty. Current entries:
   restored (onion cutting makes nearby entities cry + advancement), ported to FD 1.21's `useItemOn` →
   `processStoredItemUsingTool`. Embeddium `WorldSliceMixin` — restored as in 1.20.1; Sodium
   `LevelSliceMixin` — added for the pack. Kept `compat/pquality` (author kept it). Create Big Cannons
-  compat dropped (CBC not in the pack; 5.11.x API incompatible) — ask before restoring. Curios compat
-  (1 file, never wired up in 1.20.1 either) dropped.
+  compat dropped (CBC not in the pack; 5.11.x API incompatible) — ask before restoring. Curios compat —
+  restored 2026-10-21 (it *was* wired up in 1.20.1: `Destroy.java` called `DestroyCurios.init` when Curios was
+  loaded): `compat/curios/DestroyCurios` registers the head-slot chemical protection tests through the library's
+  `PetrolparkCurios`, `curios:head` item tag, optional `curios`/`jei` entries in `neoforge.mods.toml` as 1.20.1.
 - Config: old config tree kept (Catnip `ConfigBase`-compatible); author's `DestroyConfigs` = engine
   (`@EventBusSubscriber(bus = Bus.MOD)`); `config/DestroyAllConfigs.java` = thin facade
   (`CLIENT/COMMON/SERVER` + `register(ModLoadingContext, ModContainer)`) so `DestroyAllConfigs.SERVER.x` works.

@@ -32,3 +32,4 @@ forge*changelog.txt
 .apt_generated_tests
 .factorypath
 .factorypath
+run-autotest

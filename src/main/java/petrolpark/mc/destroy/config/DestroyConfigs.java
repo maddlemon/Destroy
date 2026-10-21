@@ -1,5 +1,6 @@
 package petrolpark.mc.destroy.config;
 
+import com.simibubi.create.api.stress.BlockStressValues;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -61,9 +62,9 @@ public class DestroyConfigs {
 
 		for (Entry<ModConfig.Type, ConfigBase> pair : CONFIGS.entrySet()) container.registerConfig(pair.getKey(), pair.getValue().specification);
 
-		// CStress stress = server().kinetics.stressValues;
-		// BlockStressValues.IMPACTS.registerProvider(stress::getImpact);
-		// BlockStressValues.CAPACITIES.registerProvider(stress::getCapacity);
+		DestroyStressConfigs stress = server().kinetics.stressValues;
+		BlockStressValues.IMPACTS.registerProvider(stress::getImpact);
+		BlockStressValues.CAPACITIES.registerProvider(stress::getCapacity);
 	};
 
 	@SubscribeEvent

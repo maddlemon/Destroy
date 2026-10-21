@@ -1,0 +1,89 @@
+# Gameplay: machines running real recipes, same layout and timings on both versions.
+# Results are BE / ITEMS lines in autotest/log.txt; compare with port-tools/compare_logs.py
+newworld gameplay
+waitworld
+cmd gamerule doDaylightCycle false
+cmd time set noon
+cmd gamerule doWeatherCycle false
+cmd weather clear
+cmd gamerule doMobSpawning false
+cmd gamerule randomTickSpeed 0
+ponderpack
+cmd reload
+wait 40
+cmd datapack enable "file/autotest"
+wait 40
+cmd gamemode spectator
+cmd tp @s 20 -54 -12 0 25
+
+# R1 Dynamo charging: torch on a depot two below a powered dynamo -> redstone torch
+cmd setblock 0 -60 0 create:depot
+cmd setblock 0 -58 0 destroy:dynamo
+cmd setblock 0 -57 0 create:creative_motor[facing=down]{ScrollValue:256}
+
+# R2 Mechanical sieve: copper-infused beetroot ashes dropped onto a powered sieve
+cmd setblock 10 -58 0 destroy:mechanical_sieve[x=false]
+cmd setblock 10 -58 1 create:creative_motor[facing=north]{ScrollValue:256}
+
+# R3 Arc furnace: basin + lid + dynamo, items in through a funnel -> calcium carbide
+cmd setblock 20 -60 0 create:andesite_casing
+cmd setblock 20 -59 0 create:basin
+cmd setblock 20 -58 0 destroy:arc_furnace_lid[axis=z]
+cmd setblock 20 -57 0 destroy:dynamo[arc_furnace=true,axis=z]
+cmd setblock 20 -56 0 create:creative_motor[facing=down]{ScrollValue:256}
+cmd setblock 21 -59 0 create:andesite_funnel[facing=east]
+
+# R4 Tree tap (Ponder structure) on stripped jungle logs, pumping latex into a tank
+cmd place template destroytest:processing/tree_tap 30 -61 0
+cmd setblock 33 -60 6 create:creative_motor[facing=north]{ScrollValue:256}
+
+# R5 Centrifuge (Ponder structure): milk in the top tank -> cream + skimmed milk
+cmd place template destroytest:processing/centrifuge/generic 40 -61 0
+cmd setblock 41 -60 6 create:creative_motor[facing=north]{ScrollValue:256}
+v120 cmd data merge block 42 -56 3 {TankContent:{FluidName:"minecraft:milk",Amount:4000}}
+v121 cmd data merge block 42 -56 3 {TankContent:{Fluid:{id:"minecraft:milk",amount:4000}}}
+
+wait 40
+say inputs
+drop 0.5 -59.4 0.5 minecraft:torch
+drop 10.5 -56 0.5 destroy:copper_infused_beetroot_ashes
+drop 21.6 -59.0 0.5 minecraft:charcoal
+drop 21.6 -59.0 0.5 destroy:quicklime
+wait 20
+shot gameplay_t0
+
+wait 100
+say t+120
+be 0 -60 0
+items 10 -59 0 1.5
+be 20 -59 0
+be 30 -60 1
+be 42 -60 1
+be 42 -60 3
+be 42 -56 3
+
+wait 280
+say t+400
+be 0 -60 0
+items 10 -59 0 1.5
+be 20 -59 0
+be 30 -60 1
+be 42 -60 1
+be 42 -60 3
+be 42 -56 3
+be 33 -60 2
+be 42 -58 3
+be 0 -58 0
+be 10 -58 0
+be 20 -57 0
+shot gameplay_t400
+
+wait 800
+say t+1200
+be 20 -59 0
+be 30 -60 1
+be 42 -60 1
+be 42 -60 3
+be 42 -56 3
+shot gameplay_t1200
+quit

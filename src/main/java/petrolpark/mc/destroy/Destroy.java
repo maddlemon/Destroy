@@ -1,5 +1,14 @@
 package petrolpark.mc.destroy;
-
+
+import petrolpark.mc.library.compat.Mods;
+import petrolpark.mc.destroy.compat.curios.DestroyCurios;
+import petrolpark.mc.destroy.core.chemistry.hazard.ContaminatedItemTooltipModifier;
+import petrolpark.mc.destroy.core.item.tooltip.IDynamicItemDescription;
+import petrolpark.mc.destroy.core.item.tooltip.TempramentalItemDescription;
+import com.simibubi.create.foundation.item.ItemDescription;
+import com.simibubi.create.foundation.item.KineticStats;
+import com.simibubi.create.foundation.item.TooltipModifier;
+import net.createmod.catnip.lang.FontHelper.Palette;
 import petrolpark.mc.destroy.core.chemistry.vat.material.SingleBlockIngredient;
 import petrolpark.mc.library.core.data.recipe.ingredient.BlockIngredient;
 import org.slf4j.Logger;
@@ -58,7 +67,16 @@ public class Destroy {
     };
 
     // Really early stuff
-    // TODO re-wire Create-style item tooltips (library has no global tooltip factory on 1.21.1)
+    static {
+        // Tooltips
+        REGISTRATE.setTooltipModifierFactory(item -> {
+            return new ItemDescription.Modifier(item, Palette.STANDARD_CREATE)
+                .andThen(TooltipModifier.mapNull(KineticStats.create(item)))
+                .andThen(TooltipModifier.mapNull(IDynamicItemDescription.create(item)))
+                .andThen(new TempramentalItemDescription())
+                .andThen(new ContaminatedItemTooltipModifier());
+        });
+    };
 
     // Initiation
     public Destroy(IEventBus modEventBus, ModContainer modContainer) {
@@ -116,6 +134,9 @@ public class Destroy {
         // Client
         unsafeRunClient(() -> () -> DestroyClient.clientCtor(modEventBus, forgeEventBus));
 
+        // Optional compatibility mods
+        Mods.CURIOS.executeIfInstalled(() -> () -> DestroyCurios.init(modEventBus, forgeEventBus));
+
     };
 
     // Initiation Events
@@ -123,7 +144,6 @@ public class Destroy {
     public static void init(final FMLCommonSetupEvent event) {
         event.enqueueWork(() -> {
             Chemistry.initiate(new ForgeChemistryEventFirer(), Destroy.LOGGER::info);
-            DestroyCompostables.register();
             BlockIngredient.registerType(SingleBlockIngredient.TYPE);
         });
         DestroyStats.register();

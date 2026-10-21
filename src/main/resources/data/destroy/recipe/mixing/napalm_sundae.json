@@ -6,7 +6,7 @@
         },
         {
             "type": "neoforge:tag",
-            "tag": "destroy:crude_oil",
+            "tag": "c:crude_oil",
             "amount": 250
         },
         {

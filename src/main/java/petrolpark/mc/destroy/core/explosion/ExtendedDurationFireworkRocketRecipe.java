@@ -98,7 +98,7 @@ public class ExtendedDurationFireworkRocketRecipe extends CustomRecipe {
     };
 
     /**
-     * Example recipes for recipe viewers (JEI compat is currently dropped from the port, so this is unused).
+     * Example recipes for recipe viewers (shown in JEI's crafting category, as in 1.20.1).
      */
     public static List<RecipeHolder<CraftingRecipe>> exampleRecipes() {
         List<RecipeHolder<CraftingRecipe>> recipes = new ArrayList<>(2);

@@ -1,0 +1,23 @@
+# Data dumps: same world, same order on both versions
+newworld autotest
+waitworld
+cmd gamerule doDaylightCycle false
+cmd time set noon
+cmd gamerule doWeatherCycle false
+wait 20
+cmd curios list @s
+wait 10
+dump items
+dump blocks
+dump fluids
+dump creative
+dump recipes
+dump enchant
+dump compost
+dump tags
+dump jei
+dump jei_ingredients
+dump jei_recipes
+mixin_audit
+say dumps done
+quit

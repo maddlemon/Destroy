@@ -42,7 +42,7 @@ public class PipeConnectionMixin {
         method="Lcom/simibubi/create/content/fluids/PipeConnection;manageFlows(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;Lnet/neoforged/neoforge/fluids/FluidStack;Ljava/util/function/Predicate;)Z",
         at=@At(
                 value="INVOKE",
-                target="Lnet/neoforged/neoforge/fluids/FluidStack;isFluidEqual(Lnet/neoforged/neoforge/fluids/FluidStack;)Z"
+                target="Lnet/neoforged/neoforge/fluids/FluidStack;isSameFluidSameComponents(Lnet/neoforged/neoforge/fluids/FluidStack;Lnet/neoforged/neoforge/fluids/FluidStack;)Z"
         ),
         remap=false
     )

@@ -1,0 +1,55 @@
+{
+    "values": {
+        "destroy:hefty_beetroot": {
+            "chance": 0.75
+        },
+        "destroy:coal_infused_beetroot": {
+            "chance": 0.85
+        },
+        "destroy:copper_infused_beetroot": {
+            "chance": 0.85
+        },
+        "destroy:diamond_infused_beetroot": {
+            "chance": 0.85
+        },
+        "destroy:emerald_infused_beetroot": {
+            "chance": 0.85
+        },
+        "destroy:fluorite_infused_beetroot": {
+            "chance": 0.85
+        },
+        "destroy:gold_infused_beetroot": {
+            "chance": 0.85
+        },
+        "destroy:iron_infused_beetroot": {
+            "chance": 0.85
+        },
+        "destroy:lapis_infused_beetroot": {
+            "chance": 0.85
+        },
+        "destroy:nether_crocoite_infused_beetroot": {
+            "chance": 0.85
+        },
+        "destroy:nickel_infused_beetroot": {
+            "chance": 0.85
+        },
+        "destroy:quartz_infused_beetroot": {
+            "chance": 0.85
+        },
+        "destroy:redstone_infused_beetroot": {
+            "chance": 0.85
+        },
+        "destroy:zinc_infused_beetroot": {
+            "chance": 0.85
+        },
+        "destroy:mashed_potato": {
+            "chance": 0.7
+        },
+        "destroy:yeast": {
+            "chance": 0.4
+        },
+        "destroy:mashed_potato_block": {
+            "chance": 1.0
+        }
+    }
+}

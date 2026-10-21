@@ -6,7 +6,7 @@
         },
         {
             "type": "neoforge:tag",
-            "tag": "destroy:apple_juice",
+            "tag": "c:apple_juice",
             "amount": 250
         }
     ],

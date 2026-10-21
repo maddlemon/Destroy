@@ -1,0 +1,17 @@
+# Curios: head slot exists, and Destroy headwear worn there protects like 1.20.1
+newworld curios
+waitworld
+cmd curios list
+wait 10
+protection nothing
+cmd curios replace head 0 @s with destroy:laboratory_goggles
+wait 10
+protection goggles_in_curio_head
+cmd curios replace head 0 @s with destroy:paper_mask
+wait 10
+protection paper_mask_in_curio_head
+cmd curios replace head 0 @s with minecraft:air
+cmd item replace entity @s armor.head with destroy:gas_mask
+wait 10
+protection gas_mask_on_head
+quit

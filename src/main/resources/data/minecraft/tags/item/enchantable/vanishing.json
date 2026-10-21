@@ -1,0 +1,13 @@
+{
+    "values": [
+        "destroy:bucket_and_spade",
+        "destroy:gas_mask",
+        "destroy:gold_laboratory_goggles",
+        "destroy:hazmat_leggings",
+        "destroy:hazmat_suit",
+        "destroy:laboratory_goggles",
+        "destroy:paper_mask",
+        "destroy:swiss_army_knife",
+        "destroy:wellington_boots"
+    ]
+}

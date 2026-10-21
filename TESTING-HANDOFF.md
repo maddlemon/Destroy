@@ -14,6 +14,65 @@ unless it is listed under "Behaviour differences" in `PORTING-HANDOFF.md`.
   errors, every Destroy JEI mixin applies, the player stays connected. Three bugs found and fixed there.
 - **Not checked yet:** anything that needs a person to click, look or play. That is this test.
 
+## Automated side-by-side comparison with 1.20.1 (2026-10-21)
+
+A scripted dev client now runs the same script on this branch and on upstream 1.20.1 (a ForgeGradle worktree of
+`origin/1.20.1`), and the outputs are diffed. Everything below was compared that way; the fixes it led to are in
+the commit that added this section.
+
+**How it works.** `src/autotest/` is a dev-only mod (`destroytest`, never in the jar; only compiled with
+`-Pautotest`). It reads a script (`src/autotest/scripts/*.txt`) and, one line per tick: creates a fixed-seed flat
+creative world, runs commands, opens JEI categories / lookups and Ponder scenes, takes screenshots, places the mod's
+own Ponder structures (`ponderpack` + `/place template destroytest:<ponder path>`), spawns items, reads block
+entities, and dumps comparable data. `v120 …` / `v121 …` lines run on one version only.
+
+```
+./gradlew runAutotestClient -Pautotest -PautotestScript=<absolute path>/src/autotest/scripts/dumps.txt
+```
+
+Output: `run-autotest/autotest/<script>/` (`log.txt` + `*.tsv`), screenshots in `run-autotest/screenshots/`. For
+1.20.1: `git worktree add ../Destroy-1201 origin/1.20.1`, copy `src/autotest/java/destroytest/*` into its
+`src/main/java/destroytest/` with the 1.20.1 `Compat`/event differences (see the `v120` branch of each `Compat`
+call), add a `[[mods]] destroytest` entry to its `mods.toml`, take the library from Modrinth
+(`fg.deobf("maven.modrinth:petrolpark:1.20.1-1.4.9")`, Registrate `compileOnly`, JEI `implementation`) and run
+`./gradlew runClient -PautotestScript=…` with JDK 17 (first setup ≈ 20 min). Compare with
+`port-tools/compare_dumps.py`, `compare_jei_recipes.py`, `compare_gameplay.py`, `sbs_screens.py`; static mixin
+call-site check: `port-tools/mixin_at_check.py <jars>`.
+
+**Scripts:** `dumps.txt` (items: names, models, tooltips; blocks; fluids; creative tab + search; recipes; anvil /
+table enchantability; compostables; tags; JEI categories, ingredients, every recipe's slot contents; forces every
+mixin to apply), `visual.txt` (every Destroy JEI category, Blacklight / Centrifuge / Vat lookups, Ponder scenes,
+creative inventory, every Destroy block placed in the world), `gameplay.txt` (Dynamo charging, Mechanical Sieve,
+Arc Furnace, Tree Tap, Centrifuge — real machines, same timings), `curios.txt` (head slot + protection).
+
+**Result after the fixes:** identical to 1.20.1 except the documented behaviour differences and 1.21 vanilla /
+Create 6 changes: all 249 items (names, models, tooltips incl. Create summaries, stress and the "liable to change"
+note), all 105 blocks (models, hardness, light), 40 fluids, creative tab, 386 recipes, enchantability, compost,
+every Destroy JEI category and recipe, machine output and timing, Curios head-slot protection.
+
+**Found and fixed (were regressions):**
+- Crash as soon as a Create pipe network is used: `FluidPropagatorMixin`, `FluidNetworkMixin`,
+  `PipeConnectionMixin` targeted Create 0.5 calls (the first is now Create's own behaviour → removed; the other two
+  → `FluidStack.isSameFluidSameComponents`).
+- Destroy machines had no stress impact (provider registration was commented out) → Centrifuge, Dynamo, Sieve
+  etc. ran for free.
+- No Create-style tooltips (summaries, kinetic stats, "liable to change", contamination): the tooltip modifier
+  factory was never re-wired → `AbstractDestroyRegistrate.setTooltipModifierFactory`.
+- No Destroy item could be enchanted (1.21 uses `#minecraft:enchantable/*` tags) → tags reproduce 1.20.1's sets.
+- Compostables did nothing (NeoForge reads the `neoforge:compostables` data map) → data map, same chances.
+- Silica from Quartz / Amethyst Blocks impossible (`c:storage_blocks/quartz|amethyst` empty on NeoForge) → tags.
+- Crude Oil / Urine / Apple Juice fluid tags moved to the `destroy:` namespace → back to common `c:` tags.
+- 29 Items (Pure Gold, Slag, Nickel Ore, Crude Oil Bucket, Seismograph, Solid Gold Goggles, the unfinished
+  sequenced-assembly Items, …) were missing from creative search: Registrate's default search tab was skipped by
+  the library's item builder → restored on Destroy's registrate, skipping Stacks already present (NeoForge throws on
+  duplicates). The three Patreon Badges are still missing from search — they are the library's, not Destroy's.
+- Weak-glass vat material (see behaviour differences), JEI category titles (library uses
+  `<modid>.gui.jei.category.<name>`), Curios compat, library loot-modifier workaround.
+
+**Still needs a person** (not covered by the scripts): the Vat itself (building, reactions, pressure, UV),
+pollution visuals and effects over time, seismology by hand, Swiss Army Knife, glassblowing, keypunch /
+trypolithography, redstone programmer, explosives, extended inventory, and the full pack / dedicated server.
+
 ## 1. Setup
 
 Use a **fresh instance** (Prism Launcher or similar) with only these mods first, so a problem can't come from
