@@ -316,6 +316,14 @@ Intended to be empty. Current entries:
   electroplating + Destroy's discs' tags). NeoForge puts every vanilla disc in it.
 - `FillMixedExplosiveItemRecipe.matches` passed `null` registries in 1.20.1; it passes the level's now
   (1.21 needs them to read the Item's explosive inventory). Same result.
+- **JEI recipe IDs:** JEI 19 shows `RecipeHolder`s. Datapack recipes keep their real IDs; JEI-only recipes built at
+  runtime keep their 1.20.1 IDs where those were fixed (cartography table, disc electroplating, arc furnace
+  blasting/smelting). The rest (extrusion, reactions, mutation, tapping, vat materials, explosives, potion
+  separation/mixing) get `destroy:jei_generated_<n>` IDs, numbered in load order. 1.20.1's IDs for some of these
+  were counters too. Only matters for JEI bookmarks of those recipes after a modpack change.
+- **Bug fix (crash-level in 1.21):** `SwissArmyKnifeToolC2SPacket` always wrote the tool ordinal but only read it
+  when a tool was set. Forge ignored the leftover bytes; NeoForge disconnects the player. The decoder now always
+  reads it, so the wire format is unchanged.
 
 ## Decisions
 

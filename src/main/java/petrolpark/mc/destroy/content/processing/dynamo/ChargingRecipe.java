@@ -8,6 +8,7 @@ import java.util.function.Supplier;
 
 import petrolpark.mc.destroy.DestroyBlocks;
 import petrolpark.mc.destroy.DestroyRecipeTypes;
+import petrolpark.mc.destroy.compat.jei.category.AssemblyChargingSubCategory;
 import petrolpark.mc.destroy.util.DestroyLang;
 import com.simibubi.create.compat.jei.category.sequencedAssembly.SequencedAssemblySubCategory;
 import com.simibubi.create.content.processing.sequenced.IAssemblyRecipe;
@@ -64,7 +65,7 @@ public class ChargingRecipe extends AdvancedProcessingRecipe<RecipeWrapper> impl
 
     @Override
     public Supplier<Supplier<SequencedAssemblySubCategory>> getJEISubCategory() {
-        return () -> SequencedAssemblySubCategory.AssemblyDeploying::new;
+        return () -> AssemblyChargingSubCategory::new;
     };
     
 }

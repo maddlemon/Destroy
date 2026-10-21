@@ -49,7 +49,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 @MoveToPetrolparkLibrary
 public class ExtendedInventoryClientHandler {
 
-    protected static final ResourceLocation WIDGETS_LOCATION = ResourceLocation.parse("textures/gui/widgets.png");
+    protected static final ResourceLocation HOTBAR_SELECTION_SPRITE = ResourceLocation.withDefaultNamespace("hud/hotbar_selection"); // Was part of 1.20.1's widgets.png
 
     private static final List<KeyMapping> hotbarKeys = new ArrayList<>(17);
     private static boolean keysInitialized = false;
@@ -545,7 +545,7 @@ public class ExtendedInventoryClientHandler {
         };
         selectedX += selected * 20;
 
-        graphics.blit(WIDGETS_LOCATION, selectedX, y - 2, 0, 22, 24, 22);
+        graphics.blitSprite(HOTBAR_SELECTION_SPRITE, selectedX, y - 2, 24, 23); // 1.21 sprite has one more row at the bottom, like vanilla's hotbar
         
         ms.popPose();
     };

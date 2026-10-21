@@ -26,7 +26,8 @@ public class SwissArmyKnifeToolC2SPacket implements ServerboundPacketPayload {
 
     public SwissArmyKnifeToolC2SPacket(RegistryFriendlyByteBuf buffer) {
         hasTool = buffer.readBoolean();
-        tool = hasTool ? Tool.values()[buffer.readInt()] : null;
+        int toolOrdinal = buffer.readInt(); // Always written; 1.21 disconnects on unread bytes, where 1.20.1 ignored them
+        tool = hasTool ? Tool.values()[toolOrdinal] : null;
     };
 
     public void toBytes(RegistryFriendlyByteBuf buffer) {

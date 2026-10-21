@@ -1,29 +1,19 @@
-# Destroy → NeoForge 1.21.1 port — hand-off #4 (step 6 JEI compat, mid-flight)
+# Destroy → NeoForge 1.21.1 port — hand-off #4 (step 6 JEI compat: DONE, client smoke-tested)
 
 **Read `PORTING-HANDOFF.md` (steps 1–4, build, environment, API mappings, runbooks) and
 `PORTING-HANDOFF-2.md` (hand-off #3 = Maddie's end-of-session state: clean compile, GameTest
 server green, jar built) first.** This document covers the work after that: the recipe load
-fixes and the in-progress JEI compat restoration (step 6). Two humans: Azzie (Linux, this
+fixes and the JEI compat restoration (step 6). Two humans: Azzie (Linux, this
 machine) and Maddie (Windows, git identity `Meowfoe`). **Pull before starting.**
 
 ## State at hand-off
 
-- Branch `1.21.1-neoforge`. Steps 1–5 done; step 7 (data migration) done; runtime-verified via
-  `./gradlew runGameTestServer` (dedicated server boots, **all data loads with zero parse /
-  validation errors**, `test/DestroyGameTests` passes).
-- **Recipe load failures FIXED** (commit `448717a7`, pushed): the ~12 `distillation/*` +
-  `element_tank_filling/*` "Recipe specified a duration" errors and the `distillation/borax`
-  biomes parse error. Details below.
-- **Step 6 (JEI compat) is IN PROGRESS — does not compile yet: 69 errors, all in the restored
-  `compat/jei/**` / `mixin/compat/jei/**` files.** Everything else compiles clean. The 54 files
-  are restored, the 8 mixins are registered in `destroy.mixins.json`, and the first fix batches
-  are applied. The remaining errors have identified fix patterns (below).
-- Error history (JEI restore): 148 (compile12, right after restore) → 82 (compile13, batch 1)
-  → **69 (compile14, current tree)**.
-- Logs: `/var/home/azziee/Documents/Azziecraft/build/compileN.log`; parse with
-  `python3 /var/home/azziee/Documents/Azziecraft/build/parse_errors.py <log>`.
-- The built jar `dist/destroy-1.21.1-0.2.0.jar` is from `d9fc4668` — **stale** (pre-JEI); rebuild
-  after step 6 compiles.
+- Branch `1.21.1-neoforge`. Steps 1–7 done. **The whole mod compiles with 0 errors** (JEI included).
+- `./gradlew runGameTestServer`: all data loads with zero parse / validation errors, `test/DestroyGameTests` passes.
+- **Client smoke test (headless, see runbook below): the dev client joins a world, JEI starts
+  ("Starting JEI took ~10 s") with no broken-recipe or Destroy errors, every Destroy JEI mixin applies,
+  and the player stays connected.** It found and fixed three runtime bugs (see "Step 6: finish").
+- `dist/destroy-1.21.1-0.2.0.jar` is rebuilt from the step-6 fixes — **next: Azzie tests it in a real client.**
 - Raw 1.20.1 JEI sources kept at `/var/home/azziee/Documents/Azziecraft/build/jei-1201/` (scratchpad).
 
 ## Recipe load fixes (done, commit `448717a7`)
@@ -51,7 +41,7 @@ machine) and Maddie (Windows, git identity `Meowfoe`). **Pull before starting.**
 - The hand-off #3 note about `chlorine/hydrogen/mercury` still having `processing_time` keys
   was stale — they don't (Maddie's step-7 commit already cleaned them).
 
-## Step 6: JEI compat restoration (in progress)
+## Step 6: JEI compat restoration (done)
 
 ### What was done
 
@@ -182,70 +172,56 @@ machine) and Maddie (Windows, git identity `Meowfoe`). **Pull before starting.**
   `List<PhytominingRecipe>` (raw). JEI-side suppliers must wrap: `new RecipeHolder<>(Destroy.asResource("..."), recipe)`
   with unique synthetic ids (the id is only used for JEI identity / the recipe-book slot).
 
-### Remaining 69 errors (compile14) — per file, with the fix pattern
+### Step 6: finish (the 69 errors → 0, then runtime fixes)
 
-- **DestroyJEI.java (28):** `:149` `PotionSeparationRecipes.ALL` → use `getRecipes(level)` +
-  wrap in `RecipeHolder`s; `:172/179/192/200/217/232/239/246` `.addRecipes(() -> ExtrusionRecipe.RECIPES)`
-  / `MutationCategory.RECIPES` / `ReactionCategory.RECIPES` / `GenericReactionCategory.RECIPES` /
-  `CartographyTableCategory::getAllRecipes` / `MixableExplosiveCategory::getAllRecipes` /
-  `VatMaterialCategory::getAllRecipes` — raw lists → wrap in `RecipeHolder`s (synthetic ids);
-  `:277/286` `addTypedRecipesIf(() -> RecipeType.BLASTING/SMELTING, ArcFurnaceCategory::toBasinRecipe, …)`
-  — R2 inference fails, likely because `toBasinRecipe` builds via `new ProcessingRecipeBuilder<>(…)`
-  (see ArcFurnaceCategory) — fix the builder call and the method ref will infer;
-  `:439-441` `DestroyArmorMaterials.HAZMAT.getRepairIngredient()` → `.value().repairIngredient().get()`.
-- **mixin/compat/jei/client/JeiProcessingRecipeMixin.java (24):** `:17/18/39/41/45/51` cannot
-  find symbol — inspect; `:22` `net.minecraftforge.fluids` → `net.neoforged.neoforge.fluids`;
-  `:23` `net.minecraftforge.items.wrapper` → `net.neoforged.neoforge.items.wrapper`;
-  `:47/56` `RegistryEntry<?>` → `RegistryEntry<?, ?>` (Registrate 1.3 has 2 type params).
-- **category/CartographyTableCategory.java (18):** `:35/36/45` `new ResourceLocation(String)` →
-  `ResourceLocation.parse(...)`; `:40/42/65/71/72` cannot find symbol — inspect (likely
-  `CartographyTableRecipe` inner class + `Map` API); `:84` `ShapelessRecipe` 5-arg ctor → 4-arg
-  (same as VatMaterialCategory).
-- **category/ElectrolysisCategory.java (12):** `:17` `net.minecraftforge.registries` →
-  `net.minecraft.core.registries.BuiltInRegistries` (`ForgeRegistries.FLUIDS.getKey(f)` →
-  `BuiltInRegistries.FLUID.getKey(f)`); `:28` TYPE field → holder type (pattern above);
-  `:40/41` inspect.
-- **mixin/compat/jei/CreateRecipeCategoryMixin.java (10):** `:34` forge fluids import → neoforge;
-  `:85/86/90/100` inspect (exposes Create's Recipe Types into `DestroyJEI.MIXTURE_APPLICABLE_RECIPE_TYPES`
-  — remember those keys must now be **holder** types, see finalizeBuilding fix).
-- **category/CentrifugationCategory.java (10):** `:7` cannot find symbol — `AnimatedCentrifuge`
-  import? (file exists in `compat/jei/animation/` — check the import was renamed correctly);
-  `:15` forge fluids → neoforge; `:31/32/33` — `recipe.getDenseOutputFluid()` /
-  `getLightOutputFluid()` return Create `FluidStack` in 1.20.1 → NeoForge `FluidStack` in the
-  port (check `CentrifugationRecipe` in the port); `addFluidSlot(builder, x, y, fluidStack)`
-  takes NeoForge `FluidStack` — fine after import fix.
-- **recipemanager/ChemicalSpeciesRecipeManagerPlugin.java (8):** `:27` forge fluids → neoforge;
-  `:44` `focus.checkedCast(NeoForgeTypes.FLUID_STACK).map(fluidFocus -> …)` — JEI 19
-  `IFocus.checkedCast` returns `Optional<IFocus<T>>`? — the `||` operand types break; inspect
-  and adapt (JEI 19 focus API: `focus.getTypedValue()`, `focus.checkedCast(...)`);
-  `:45/64` inspect.
-- **mixin/compat/jei/DeployingCategoryMixin.java (6):** `:15` forge registries → BuiltInRegistries;
-  `:27` `ForgeRegistries` usage — inspect.
-- **category/ArcFurnaceCategory.java (6):** `:23` TYPE field → holder type; `:28`
-  `new ProcessingRecipeBuilder<>(…)` — **Create 6's `ProcessingRecipeBuilder` is abstract** —
-  see how the ported main source builds processing recipes now (e.g.
-  `StandardProcessingRecipe.Builder` / library `AdvancedProcessingRecipe.Builder`) and do the
-  same in `toBasinRecipe`.
-- **category/MixableExplosiveCategory.java (4):** `:36` TYPE field → holder type; `:86`
-  ShapelessRecipe ctor → 4-arg.
-- **category/DistillationCategory.java (4):** `:17` forge fluids → neoforge; `:43` inspect
-  (`recipe.getFluidResults()` iteration — NeoForge `FluidStack`).
-- **category/AgingCategory.java (4):** `:16` cannot find symbol (import — inspect);
-  `:53` inspect.
-- **mixin/compat/jei/MixingCategoryMixin.java (2):** `:58` inspect.
-- **category/FlameRetardantApplicationCategory.java (2):** `:60` inspect.
+- **`DestroyJEI.holderOf(recipe)` / `holderOf(id, recipe)` / `holdersOf(collection)`:** JEI 19 shows
+  `RecipeHolder`s, Destroy collects plain Recipes. `holderOf` indexes the client Recipe Manager
+  (re-indexed when its collection changes) so datapack recipes get their **real** holder (and ID); runtime-built
+  recipes get a cached holder — with their 1.20.1 ID where they had a fixed one (`holderOf(id, recipe)`:
+  cartography, disc electroplating), otherwise `destroy:jei_generated_<n>`. Cached by identity, so JEI always
+  sees the same holder for the same Recipe. Used by every `addRecipes(...)`, the recipe manager plugin's casts,
+  and the electrolysis/mixing mixins' extra recipes.
+- `ChemicalSpeciesRecipeManagerPlugin`: NeoForge `FluidStack`; the ingredient subtype/molecules are read from
+  `MIXTURE_INGREDIENT_DISPLAY`, mixture outputs from `MixtureFluid.getMixtureTag`.
+- `JeiProcessingRecipeMixin`: Create 6 `ProcessingRecipeParams` (top-level class), `SizedFluidIngredient`
+  (`.ingredient() instanceof MixtureFluidIngredient`), `getSubType().getContainedMolecules(...)`.
+- `CreateRecipeCategoryMixin` (mixture tooltips): Create 6's `addPotionTooltip` has the same shape
+  (`Optional<FluidStack> displayed` captured at `Optional.get`); reads the Mixture components.
+- Categories: `SizedFluidIngredient` (aging, centrifugation), spout `withFluids(Arrays.asList(getFluids()))`,
+  holder `RecipeType` fields, 1.21 `ShapelessRecipe` ctor, map IDs via `DataComponents.MAP_ID`,
+  `ResourceLocation.withDefaultNamespace`; `ArcFurnaceCategory.toBasinRecipe` is now
+  `RecipeHolder<?> → RecipeHolder<BasinRecipe>` using `StandardProcessingRecipe.Builder` (ID `arc_furnace_<path>`
+  as 1.20.1); music discs via `BuiltInRegistries.ITEM.getTag(Tags.Items.MUSIC_DISCS)`.
+- **Runtime fixes found by the client smoke test:**
+  - `ChargingRecipe.getJEISubCategory` pointed at Create's `AssemblyDeploying` (scaffolding stand-in) → JEI
+    "broken recipe" on `sequenced_assembly/blacklight` (reads ingredient #1). Restored 1.20.1's
+    `AssemblyChargingSubCategory`.
+  - `SwissArmyKnifeToolC2SPacket` decoder skipped the always-written int → **NeoForge disconnects the player on
+    join** (Forge ignored leftover bytes). Decoder now always reads it. All other packets audited: symmetric.
+  - Extended inventory hotbar selection blitted 1.20.1's `textures/gui/widgets.png` (gone since 1.20.2 → black
+    square) → `blitSprite(hud/hotbar_selection, …, 24, 23)` like vanilla.
 
-### After step 6 compiles
+### Client smoke-test runbook (headless, no window on the desktop)
 
-1. `./gradlew build` (rebuild the jar into `dist/`); re-run `./gradlew runGameTestServer`
-   (JEI isn't on the GameTest classpath — server side unaffected — but confirm nothing else broke).
-2. **Ask the user to test the mod in a client world with JEI installed** (they offered debug
-   logs/tests): JEI categories render, molecule ingredient rendering, mixture fluid subtypes,
-   recipe book slots, ghost ingredient handler on the Redstone Programmer screen, extended
-   inventory JEI handler.
-3. Then step 8/9 per `PORTING-HANDOFF.md` (datagen note: `runData` fails loot validation because
-   Registrate no longer adds default drop-self loot — the committed converted 1.20.1 loot tables
-   are used instead; runtime client+server test; GitHub release + pack integration runbook).
+1. Needs a world in `run/saves/`: `cp -r run/world run/saves/smoketest` (the GameTest server's world) and
+   `run/options.txt` with `onboardAccessibility:false` (else the first-launch screen blocks quick play).
+2. Temporarily add to the `client` run in `build.gradle` (**do not commit**):
+   `programArguments.addAll('--quickPlaySingleplayer', 'smoketest')` (`--args` on `runClient` doesn't work — it
+   replaces DevLaunch's main-class argument).
+3. `xvfb-run -a -s '-screen 0 1280x720x24' ./gradlew runClient > log` — ~5 min to reach the world on llvmpipe.
+   Check the log for `Starting JEI took`, `broken recipe`, `lost connection`, `[ERROR]`. Screenshot:
+   `XAUTHORITY=<Xvfb -auth path> DISPLAY=:<n> import -window root shot.png` (ImageMagick installed in the toolbox).
+4. Payload debugging: a throwaway mixin on `ServerboundCustomPayloadPacket.<init>` printing `payload.type().id()`
+   names the packet behind a "found N bytes extra" disconnect.
+
+### Next
+
+1. **Azzie tests `dist/destroy-1.21.1-0.2.0.jar` in a real client** (with JEI): JEI categories render,
+   molecule ingredients, mixture fluid subtypes/tooltips, recipe book slots, ghost ingredients on the Redstone
+   Programmer screen, extended inventory + its JEI handler, pollution / seismology (the reworked steps 3–4).
+2. Then step 8/9 per `PORTING-HANDOFF.md` (dedicated server test; datagen note: `runData` fails loot validation
+   because Registrate no longer adds default drop-self loot — the committed converted 1.20.1 loot tables are used
+   instead; GitHub release + pack integration runbook).
 
 ## Process
 
@@ -268,4 +244,6 @@ machine) and Maddie (Windows, git identity `Meowfoe`). **Pull before starting.**
 |---|---|
 | `d9fc4668` | (Maddie) Runtime fixes, GameTest data check, built jar |
 | `448717a7` | Recipe load fixes: `SingleFluidRecipe` duration default gated on `canSpecifyDuration()`; borax biomes → `#destroy:borax_distillation` tag. GameTest server: all data loads clean, tests pass. |
-| *(this commit)* | Step 6 WIP: JEI compat restored from 1.20.1 (54 files), 8 mixins registered, mechanical renames + fix batch 1 + `super.draw` removal + holder-based RecipeTypes. Errors: 148 → 69, all remaining in the JEI files. + this doc. |
+| `159ae373` | Step 6 WIP: JEI compat restored from 1.20.1 (54 files), 8 mixins registered, mechanical renames + fix batch 1 + `super.draw` removal + holder-based RecipeTypes. Errors: 148 → 69, all remaining in the JEI files. + this doc. |
+| `167d6945` | Step 6 compiles: holder helpers, plugin/mixins on NeoForge + Create 6 types, categories. |
+| *(this commit)* | Client smoke test fixes: charging JEI sub-category, Swiss Army Knife packet decode, hotbar selection sprite; jar rebuilt; this doc. |
