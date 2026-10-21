@@ -191,6 +191,14 @@ Prism from a desktop session with `DISPLAY` set. (The Mojang session-server read
 in the same log are network flakiness — retry.) The `union:` schema WARNs at the top are
 normal NeoForge-on-Prism noise.
 
+### Prism "GLX: Failed to find a suitable GLXFBConfig" (2026-10-21, Azzie's machine) — not a pack problem
+
+Every GL version fails in NeoForge's early window (and vanilla's window: "GLX: No GLXFBConfigs returned"),
+even with **zero mods**. Cause: Flatpak updated the `org.freedesktop.Platform.GL.nvidia-615-78-08` extension while
+Prism was running; the running sandbox kept the old, now-deleted mount (its `GL/nvidia-*/lib` is empty → no
+`libGLX_nvidia`). Fix: fully quit Prism (`flatpak kill org.prismlauncher.PrismLauncher`) and start it again.
+Check: `flatpak enter <prism pid> ls /usr/lib/x86_64-linux-gnu/GL/nvidia-*/lib | wc -l` (0 = stale).
+
 ### Known non-fatal items seen in the client log (do not chase unless asked)
 
 - **Destroy port bug (cosmetic):** `destroy.mixins.json:client.CartographyTableScreenMixin`
