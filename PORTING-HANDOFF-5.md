@@ -6,6 +6,13 @@
 (pack rebuild + first server setup + boot-1/boot-2 crash root causes), then this.
 **Pull before starting.** Two humans: Azzie (Linux) and Maddie (Windows, git identity `Meowfoe`).
 
+## UPDATE 2026-10-22 (5): Presence Footsteps removed (user request)
+
+`pf-neoforge` (Presence Footsteps, client-only: replaced the walking sounds) removed from the audit (119 entries) and the
+modlist doc (change-log line added); packs rebuilt (119 files, all required deps satisfied, index valid, doc
+mismatches none). Server never had it. Azzie's Prism instance: jar moved to `minecraft/removed-mods/` (its
+`config/presencefootsteps` folder left in place, harmless).
+
 ## UPDATE 2026-10-22 (4): three custom mods by Maddie added to the pack
 
 **Chunk Claims 2.0.0** (`chunkclaims`, optional JourneyMap compat), **Curio Slot Admin 1.0.0** (`curioslotadmin`,
