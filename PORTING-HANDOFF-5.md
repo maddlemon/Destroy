@@ -23,7 +23,7 @@
 Jar sha1 `5db510c18665cf6eb963e21eeb53b48b1f3ecd19` (public URL verified), audit + modlist + mrpack/prism rebuilt
 (validation none, doc mismatches none). Server updated + restarted (old jar at `~/destroy-1.21.1-0.2.0.jar.old-6f49d09f`).
 
-**Whitelist (server):** `white-list=true`, `enforce-whitelist=true`; initial entries `azziewas`, `Mraowdeline`.
+**Whitelist (server):** `white-list=true`, `enforce-whitelist=true`; initial entries `azziewas`, `Mraowdeline`. **Ops (2026-10-22):** `azziewas` and `Mraowdeline` are operators (level 4), set via local RCON.
 `server.properties` backup: `~/maddiecraft/server.properties.bak-20261021` (file now `chmod 600`: holds the RCON password).
 
 **RCON:** `enable-rcon=true`, `rcon.port=25576`, random password (in `~/maddiecraft-bot/config.json`, 600),
