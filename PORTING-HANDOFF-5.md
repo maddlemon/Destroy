@@ -6,6 +6,20 @@
 (pack rebuild + first server setup + boot-1/boot-2 crash root causes), then this.
 **Pull before starting.** Two humans: Azzie (Linux) and Maddie (Windows, git identity `Meowfoe`).
 
+## UPDATE 2026-10-22 (4): three custom mods by Maddie added to the pack
+
+**Chunk Claims 2.0.0** (`chunkclaims`, optional JourneyMap compat), **Curio Slot Admin 1.0.0** (`curioslotadmin`,
+needs Curios [9,10)) and **Aviator's Goggles 1.0.0** (`aviatorhat`, optional Create goggle compat). All NeoForge 21.1 /
+MC 1.21.1, required on both sides. Jars inspected before adding (metadata; no exec/network/file-delete APIs; reflection
+only for Create's goggles API). **Hosting (user's choice): public repo `maddlemon/maddiecraft-mods`** (`mods/*.jar`,
+raw URLs; README credits Maddie and notes the goggles' assets are All Rights Reserved by The Simulated Team / Creators
+of Aeronautics). Local clone: `build/maddiecraft-mods/`. To update one: replace the jar there, commit + push, then
+update its audit entry (size/sha1/sha512) and run the pack pipeline.
+Audit: 3 new `group: external` entries (120 total); modlist doc external table + change log; pipeline re-run
+(119 jars downloaded + verified, all required deps satisfied, index valid, doc mismatches none; pack = 120 files).
+Server: jars added + restarted (89 mods, Done, 0 ERROR, all three mod containers created). Azzie's Prism
+instance: jars copied in.
+
 ## UPDATE 2026-10-22 (3): JEI molecule tooltips (`52ba1cd5`)
 
 Hovering a molecule in JEI showed only the mod name. JEI 19.56 calls
