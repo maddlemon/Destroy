@@ -6,6 +6,17 @@
 (pack rebuild + first server setup + boot-1/boot-2 crash root causes), then this.
 **Pull before starting.** Two humans: Azzie (Linux) and Maddie (Windows, git identity `Meowfoe`).
 
+## UPDATE 2026-10-22 (3): JEI molecule tooltips (`52ba1cd5`)
+
+Hovering a molecule in JEI showed only the mod name. JEI 19.56 calls
+`IIngredientRenderer.getTooltip(ITooltipBuilder, T, TooltipContext, Player, TooltipFlag)`, whose default falls back
+to the deprecated list method (empty in Destroy) instead of the 3-arg `ITooltipBuilder` overload Destroy implements.
+`MoleculeJEIIngredient` now overrides the 5-arg method and delegates. Verified in the headless dev client (xdotool
+drives the Xvfb display: `e`, click JEI search, type, hover; screenshot with `import`): name, structure, mass, boiling
+point, density, tags as in 1.20.1. Mixture tooltips (JEI recipe slots) were already correct. Only JEI renderer
+affected. Jar sha1 `51de87820151f6b3b04ef2f2ec6734f7c3318ed1`; packs rebuilt; server swapped + restarted (Done, 0 errors;
+old jar `~/destroy-1.21.1-0.2.0.jar.old-5db510c1`); Azzie's Prism instance updated.
+
 ## UPDATE 2026-10-22 (2): first-join kicks fixed; whitelist + Discord bot
 
 **First-join "Network Protocol Error" kicks (Azzie's client log) — two separate causes, both fixed:**
