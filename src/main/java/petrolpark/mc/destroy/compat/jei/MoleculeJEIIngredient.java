@@ -35,6 +35,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item.TooltipContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.TooltipFlag;
@@ -156,6 +158,14 @@ public class MoleculeJEIIngredient {
             else
                 IIngredientRenderer.super.renderBatch(graphics, elements);
         }
+
+        /**
+         * The overload JEI 19.56 calls; its default ignores the {@link ITooltipBuilder} overload below and would show no tooltip.
+         */
+        @Override
+        public void getTooltip(ITooltipBuilder tooltip, LegacySpecies ingredient, TooltipContext tooltipContext, @Nullable Player player, TooltipFlag tooltipFlag) {
+            getTooltip(tooltip, ingredient, tooltipFlag);
+        };
 
         @Override
         public void getTooltip(ITooltipBuilder tooltip, LegacySpecies ingredient, TooltipFlag tooltipFlag) {
